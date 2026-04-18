@@ -3,269 +3,281 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClickMaster 4.0 | Fully Functional</title>
+    <title>ClickMaster Team 4.0 | Hub de Gestión</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        :root { --cu-purple: #7b68ee; --cu-bg: #f7f8f9; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--cu-bg); color: #2b2c32; transition: all 0.3s; }
-        .dark-mode { background-color: #16181d; color: #f1f1f1; }
-        .dark-mode .bg-white { background-color: #1e2227; border-color: #333; color: white; }
-        .dark-mode .text-gray-700 { color: #ccc; }
-        .cu-card { background: white; border: 1px solid #e9ebf0; }
-        .status-pill { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; }
-        .sidebar-active { background: rgba(255,255,255,0.1); border-left: 3px solid var(--cu-purple); color: white; }
-        .collapsed { display: none; }
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7fa; color: #2d333a; }
+        .sidebar { background-color: #1e2227; color: #a0a6ad; }
+        .active-link { background: #3b3f46; color: white; border-left: 4px solid #7b68ee; }
+        .card { background: white; border: 1px solid #e1e4e8; border-radius: 12px; transition: 0.3s; }
+        .card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.05); }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .custom-range { accent-color: #7b68ee; width: 100%; cursor: pointer; }
+        #email-modal { background: rgba(0,0,0,0.6); display: none; }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden">
 
-    <div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-white">
-        <div class="w-full max-w-sm p-8 text-center">
-            <div class="bg-purple-600 w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg rotate-3">
-                <i class="fas fa-bolt text-white text-3xl"></i>
-            </div>
-            <h2 class="text-3xl font-black mb-6">ClickMaster <span class="text-purple-600">4.0</span></h2>
-            <input type="text" id="username" placeholder="Tu nombre de usuario" class="w-full p-4 border rounded-xl mb-4 outline-none focus:ring-2 focus:ring-purple-400 font-medium">
-            <button onclick="login()" class="w-full bg-[#7b68ee] text-white font-bold py-4 rounded-xl hover:opacity-90 shadow-xl transition">Iniciar Espacio de Trabajo</button>
+    <div id="login-screen" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900">
+        <div class="bg-white p-10 rounded-[30px] shadow-2xl text-center max-w-sm w-full">
+            <h2 class="text-3xl font-black mb-4">Administrador <span class="text-purple-600">Pro</span></h2>
+            <p class="text-gray-400 mb-6">Panel de control de equipos</p>
+            <input type="text" id="admin-name" placeholder="Tu Nombre" class="w-full p-4 border rounded-xl mb-4 outline-none focus:ring-2 focus:ring-purple-400" value="Admin Global">
+            <button onclick="iniciarSesion()" class="w-full bg-[#7b68ee] text-white font-bold py-4 rounded-xl shadow-lg">Acceder al Workspace</button>
         </div>
     </div>
 
-    <aside class="w-64 bg-[#2a2e34] text-gray-400 flex flex-col shrink-0 transition-all duration-300" id="sidebar">
-        <div class="p-4 flex items-center justify-between border-b border-gray-700">
-            <div class="flex items-center gap-2">
-                <div class="w-6 h-6 bg-purple-500 rounded text-white flex items-center justify-center font-bold text-xs">C</div>
-                <span class="font-bold text-white text-sm">Mi Workspace</span>
-            </div>
-            <i class="fas fa-search text-xs cursor-pointer hover:text-white"></i>
+    <aside class="w-72 sidebar flex flex-col h-screen shrink-0">
+        <div class="p-6 border-b border-gray-700 flex items-center gap-3">
+            <div class="bg-purple-600 p-2 rounded-lg"><i class="fas fa-users-cog text-white"></i></div>
+            <span class="font-bold text-white tracking-tight">TEAM OPS 4.0</span>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-2">
-            <div class="mt-4 px-3 text-[10px] font-bold text-gray-500 uppercase">Navegación</div>
-            <div class="mt-2 space-y-1">
-                <button onclick="setView('lista')" class="w-full flex items-center gap-2 p-2 rounded-md sidebar-active text-sm transition">
-                    <i class="fas fa-list text-purple-400"></i> Vista de Lista
-                </button>
-                <button onclick="setView('tablero')" class="w-full flex items-center gap-2 p-2 hover:bg-white/5 rounded-md text-sm transition">
-                    <i class="fas fa-columns"></i> Vista Tablero
+        <div class="flex-1 overflow-y-auto p-4 space-y-6">
+            <div>
+                <p class="text-[11px] font-bold text-gray-500 uppercase mb-3">Vistas Globales</p>
+                <button onclick="cambiarVista('global')" class="w-full text-left p-3 rounded-xl flex items-center gap-3 transition active-link" id="btn-global">
+                    <i class="fas fa-globe"></i> Visión General
                 </button>
             </div>
 
-            <div class="mt-8 px-3 text-[10px] font-bold text-gray-500 uppercase flex justify-between items-center">
-                <span>Espacios</span>
-                <i class="fas fa-plus cursor-pointer hover:text-white" onclick="addSpace()"></i>
-            </div>
-            <div id="spaces-list" class="mt-2 space-y-1">
-                <div class="flex items-center gap-2 p-2 hover:bg-white/5 rounded-md cursor-pointer text-sm">
-                    <i class="fas fa-circle text-[8px] text-green-400"></i> General
-                </div>
+            <div>
+                <p class="text-[11px] font-bold text-gray-500 uppercase mb-3">Seguimiento de Equipo</p>
+                <div id="team-list" class="space-y-1">
+                    </div>
             </div>
         </div>
 
-        <div class="p-4 bg-[#1e2227] border-t border-gray-700">
+        <div class="p-6 border-t border-gray-700">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold" id="u-initial">?</div>
-                <div class="flex-1 overflow-hidden">
-                    <p class="text-xs font-bold text-white truncate" id="u-name">Usuario</p>
-                    <button onclick="logout()" class="text-[10px] hover:underline">Salir</button>
+                <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center font-bold text-white">A</div>
+                <div class="flex-1 truncate">
+                    <p class="text-sm font-bold text-white" id="admin-display">Admin</p>
+                    <p class="text-[10px] text-green-400">Online</p>
                 </div>
-                <i class="fas fa-moon cursor-pointer hover:text-white" onclick="toggleDarkMode()"></i>
             </div>
         </div>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-hidden">
-        <header class="h-14 bg-white border-b flex items-center justify-between px-6 shadow-sm z-10">
-            <div class="flex items-center gap-4">
+        <header class="h-16 bg-white border-b flex items-center justify-between px-8 z-10">
+            <h1 class="font-black text-xl text-gray-700" id="view-title">Dashboard Global</h1>
+            <div class="flex items-center gap-6">
                 <div class="flex items-center bg-gray-100 rounded-lg p-1">
-                    <button onclick="changeMonth(-1)" class="p-1 hover:text-purple-600"><i class="fas fa-chevron-left"></i></button>
-                    <span id="month-display" class="px-4 font-bold text-xs">JUNIO 2024</span>
-                    <button onclick="changeMonth(1)" class="p-1 hover:text-purple-600"><i class="fas fa-chevron-right"></i></button>
+                    <button onclick="cambiarMes(-1)" class="p-1 px-3 hover:text-purple-600 font-bold"><</button>
+                    <span id="label-mes" class="text-xs font-bold uppercase w-24 text-center">Abril 2024</span>
+                    <button onclick="cambiarMes(1)" class="p-1 px-3 hover:text-purple-600 font-bold">></button>
                 </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="text-[11px] font-bold text-gray-400 uppercase">Eficiencia: <span id="eff-pct" class="text-purple-600">0%</span></div>
-                <button onclick="focusInput()" class="bg-[#7b68ee] text-white text-xs font-bold px-4 py-2 rounded-lg hover:brightness-110 shadow-lg shadow-purple-500/20 transition">+ TAREA</button>
+                <button onclick="enviarRecordatorios()" class="bg-yellow-500 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-md hover:bg-yellow-600">
+                    <i class="fas fa-paper-plane mr-2"></i> RECORDATORIO EMAIL
+                </button>
             </div>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-8 bg-slate-50 custom-scrollbar" id="content-area">
-            <div class="max-w-5xl mx-auto">
-                <div class="bg-white p-4 rounded-xl border mb-8 flex gap-3 shadow-sm">
-                    <input type="text" id="t-input" placeholder="¿Qué hay que hacer?" class="flex-1 border-none outline-none font-medium text-sm p-2">
-                    <select id="w-input" class="bg-gray-50 border rounded-lg text-xs font-bold px-3">
-                        <option value="1">Semana 1</option>
-                        <option value="2">Semana 2</option>
-                        <option value="3">Semana 3</option>
-                        <option value="4">Semana 4</option>
-                        <option value="5">Semana 5</option>
-                    </select>
-                    <button onclick="addTask()" class="bg-purple-600 text-white px-6 rounded-lg text-xs font-bold">Añadir</button>
+        <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
+            <div class="max-w-6xl mx-auto mb-8 bg-white p-6 rounded-2xl border flex flex-wrap gap-4 items-end shadow-sm">
+                <div class="flex-1">
+                    <label class="text-[10px] font-black text-gray-400 uppercase">Nueva Tarea</label>
+                    <input type="text" id="task-text" placeholder="¿Qué debe hacerse?" class="w-full mt-1 p-2 border-b-2 border-gray-100 outline-none focus:border-purple-500 font-medium">
                 </div>
-
-                <div id="weeks-render" class="space-y-8"></div>
+                <div class="w-40">
+                    <label class="text-[10px] font-black text-gray-400 uppercase">Asignar a</label>
+                    <select id="task-assignee" class="w-full mt-1 p-2 bg-gray-50 border rounded-lg text-xs font-bold"></select>
+                </div>
+                <div class="w-32">
+                    <label class="text-[10px] font-black text-gray-400 uppercase">Semana</label>
+                    <select id="task-week" class="w-full mt-1 p-2 bg-gray-50 border rounded-lg text-xs font-bold">
+                        <option value="1">Semana 1</option><option value="2">Semana 2</option>
+                        <option value="3">Semana 3</option><option value="4">Semana 4</option>
+                    </select>
+                </div>
+                <button onclick="addTask()" class="bg-[#7b68ee] text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-purple-500/20">ASIGNAR</button>
             </div>
+
+            <div id="content-container" class="max-w-6xl mx-auto space-y-10">
+                </div>
         </div>
     </main>
 
-    <script>
-        let user = "";
-        let date = new Date();
-        let db = JSON.parse(localStorage.getItem('cm4_db')) || [];
+    <div id="email-modal" class="fixed inset-0 z-[300] flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-[30px] p-8 shadow-2xl animate__animated animate__zoomIn">
+            <div class="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fas fa-envelope-open-text"></i>
+            </div>
+            <h3 class="text-center font-black text-xl mb-2">Enviando Recordatorios</h3>
+            <p class="text-gray-500 text-sm text-center mb-6">El sistema está notificando a los responsables con tareas pendientes.</p>
+            <div id="email-log" class="bg-slate-50 p-4 rounded-xl text-[10px] font-mono h-40 overflow-y-auto mb-6">
+                </div>
+            <button onclick="cerrarModal()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold">Entendido</button>
+        </div>
+    </div>
 
-        function login() {
-            const n = document.getElementById('username').value;
-            if(!n) return;
-            user = n;
-            localStorage.setItem('cm4_user', n);
+    <script>
+        // DATOS DE PRUEBA INICIALES
+        const equipo = [
+            { id: 1, nombre: "Carlos Ruiz", email: "cruiz@empresa.com", cargo: "Desarrollador Backend" },
+            { id: 2, nombre: "Elena Gómez", email: "egomez@empresa.com", cargo: "Diseñadora UX/UI" },
+            { id: 3, nombre: "Marcos Sosa", email: "msosa@empresa.com", cargo: "Data Analyst" },
+            { id: 4, nombre: "Sofía Paez", email: "spaez@empresa.com", cargo: "Product Manager" }
+        ];
+
+        let admin = "";
+        let vistaActual = "global"; // "global" o ID del usuario
+        let fechaVer = new Date();
+        let tareas = JSON.parse(localStorage.getItem('tm_team_db')) || [];
+
+        function iniciarSesion() {
+            const name = document.getElementById('admin-name').value;
+            if(!name) return;
+            admin = name;
             document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('u-name').innerText = n;
-            document.getElementById('u-initial').innerText = n.charAt(0).toUpperCase();
+            document.getElementById('admin-display').innerText = admin;
+            cargarEquipo();
             render();
+        }
+
+        function cargarEquipo() {
+            const list = document.getElementById('team-list');
+            const select = document.getElementById('task-assignee');
+            list.innerHTML = "";
+            select.innerHTML = "";
+
+            equipo.forEach(p => {
+                list.innerHTML += `
+                    <button onclick="cambiarVista(${p.id})" id="btn-user-${p.id}" class="w-full text-left p-3 rounded-xl flex items-center gap-3 transition hover:bg-gray-700 text-sm">
+                        <div class="w-6 h-6 bg-slate-600 rounded-full flex items-center justify-center text-[10px] text-white">${p.nombre[0]}</div>
+                        ${p.nombre}
+                    </button>
+                `;
+                select.innerHTML += `<option value="${p.id}">${p.nombre}</option>`;
+            });
         }
 
         function addTask() {
-            const input = document.getElementById('t-input');
-            const week = document.getElementById('w-input');
-            if(!input.value) return;
+            const text = document.getElementById('task-text');
+            const user = document.getElementById('task-assignee');
+            const week = document.getElementById('task-week');
+            if(!text.value) return;
 
-            db.push({
+            tareas.push({
                 id: Date.now(),
-                user: user,
-                text: input.value,
-                week: parseInt(week.value),
-                month: date.getMonth(),
-                year: date.getFullYear(),
-                progress: 0
+                texto: text.value,
+                responsableId: parseInt(user.value),
+                semana: parseInt(week.value),
+                mes: fechaVer.getMonth(),
+                anio: fechaVer.getFullYear(),
+                progreso: 0,
+                status: 'To Do'
             });
-            input.value = "";
+            text.value = "";
             save();
         }
 
-        function updateTask(id, val) {
-            db = db.map(t => t.id === id ? {...t, progress: parseInt(val)} : t);
+        function cambiarVista(id) {
+            vistaActual = id;
+            document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active-link'));
+            if(id === 'global') {
+                document.getElementById('btn-global').classList.add('active-link');
+                document.getElementById('view-title').innerText = "Dashboard Global";
+            } else {
+                document.getElementById(`btn-user-${id}`).classList.add('active-link');
+                const p = equipo.find(u => u.id === id);
+                document.getElementById('view-title').innerText = `Perfil de: ${p.nombre}`;
+            }
+            render();
+        }
+
+        function updateProgress(id, val) {
+            tareas = tareas.map(t => {
+                if(t.id === id) {
+                    let st = val == 100 ? 'Closed' : (val > 0 ? 'In Progress' : 'To Do');
+                    return {...t, progreso: parseInt(val), status: st};
+                }
+                return t;
+            });
             save();
         }
 
-        function deleteTask(id) {
-            if(confirm('¿Eliminar actividad?')) {
-                db = db.filter(t => t.id !== id);
-                save();
-            }
-        }
+        function enviarRecordatorios() {
+            const modal = document.getElementById('email-modal');
+            const log = document.getElementById('email-log');
+            modal.style.display = "flex";
+            log.innerHTML = "Iniciando servidor de correo...<br>";
 
-        function toggleWeek(id) {
-            document.getElementById(`week-body-${id}`).classList.toggle('collapsed');
-            document.getElementById(`icon-${id}`).classList.toggle('-rotate-90');
-        }
-
-        function changeMonth(delta) {
-            date.setMonth(date.getMonth() + delta);
-            render();
-        }
-
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-        }
-
-        function setView(tipo) {
-            // Animación de cambio de vista
-            document.getElementById('content-area').style.opacity = "0";
-            setTimeout(() => {
-                document.getElementById('content-area').style.opacity = "1";
-                alert(`Vista cambiada a: ${tipo.toUpperCase()}. En ClickUp 4.0, esto reorganiza los elementos.`);
-            }, 200);
-        }
-
-        function addSpace() {
-            const nombre = prompt("Nombre del nuevo espacio:");
-            if(nombre) {
-                const list = document.getElementById('spaces-list');
-                const div = document.createElement('div');
-                div.className = "flex items-center gap-2 p-2 hover:bg-white/5 rounded-md cursor-pointer text-sm animate__animated animate__fadeIn";
-                div.innerHTML = `<i class="fas fa-circle text-[8px] text-purple-400"></i> ${nombre}`;
-                list.appendChild(div);
-            }
-        }
-
-        function focusInput() { document.getElementById('t-input').focus(); }
-
-        function save() {
-            localStorage.setItem('cm4_db', JSON.stringify(db));
-            render();
+            const pendientes = tareas.filter(t => t.progreso < 100);
+            
+            pendientes.forEach((t, i) => {
+                const p = equipo.find(u => u.id === t.responsableId);
+                setTimeout(() => {
+                    log.innerHTML += `<span class="text-blue-500">[ENVIADO]</span> Para: ${p.email} | Tarea: "${t.texto}" - Status: ${t.progreso}%<br>`;
+                    log.scrollTop = log.scrollHeight;
+                }, i * 600);
+            });
         }
 
         function render() {
             const months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-            document.getElementById('month-display').innerText = `${months[date.getMonth()].toUpperCase()} ${date.getFullYear()}`;
+            document.getElementById('label-mes').innerText = `${months[fechaVer.getMonth()]} ${fechaVer.getFullYear()}`;
 
-            const container = document.getElementById('weeks-render');
+            const container = document.getElementById('content-container');
             container.innerHTML = "";
 
-            const tasks = db.filter(t => t.user === user && t.month === date.getMonth() && t.year === date.getFullYear());
+            let filtradas = tareas.filter(t => t.mes === fechaVer.getMonth() && t.anio === fechaVer.getFullYear());
+            if(vistaActual !== 'global') {
+                filtradas = filtradas.filter(t => t.responsableId === vistaActual);
+            }
 
-            for (let w = 1; w <= 5; w++) {
-                const wTasks = tasks.filter(t => t.week === w);
+            for(let w=1; w<=4; w++) {
+                const weekTasks = filtradas.filter(t => t.semana === w);
                 const section = document.createElement('div');
                 section.innerHTML = `
-                    <div class="flex items-center gap-2 mb-3 cursor-pointer" onclick="toggleWeek(${w})">
-                        <i class="fas fa-chevron-down text-[10px] text-gray-400 transition-transform" id="icon-${w}"></i>
-                        <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Semana ${w}</span>
-                        <span class="bg-gray-200 text-gray-600 text-[9px] px-1.5 rounded-full font-bold">${wTasks.length}</span>
+                    <div class="flex items-center gap-3 mb-4">
+                        <h2 class="text-xs font-black text-gray-400 uppercase tracking-widest">Semana ${w}</h2>
+                        <div class="h-[1px] flex-1 bg-gray-200"></div>
                     </div>
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden transition-all" id="week-body-${w}">
-                        <table class="w-full text-left text-xs">
-                            <thead class="bg-gray-50 border-b text-gray-400 font-bold">
-                                <tr>
-                                    <th class="p-3 w-10 text-center">#</th>
-                                    <th class="p-3">ACTIVIDAD</th>
-                                    <th class="p-3 w-28 text-center">ESTADO</th>
-                                    <th class="p-3 w-40">PROGRESO</th>
-                                    <th class="p-3 w-10"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${wTasks.length ? wTasks.map(t => {
-                                    const st = t.progress == 100 ? 'CLOSED' : (t.progress > 0 ? 'IN PROGRESS' : 'TO DO');
-                                    const col = t.progress == 100 ? 'bg-green-500' : (t.progress > 0 ? 'bg-blue-500' : 'bg-gray-400');
-                                    return `
-                                    <tr class="border-b border-gray-50 hover:bg-slate-50 transition group">
-                                        <td class="p-3 text-center text-gray-300 font-mono italic">${t.id.toString().slice(-3)}</td>
-                                        <td class="p-3 font-semibold text-gray-700">${t.text}</td>
-                                        <td class="p-3 text-center"><span class="status-pill text-white ${col}">${st}</span></td>
-                                        <td class="p-3">
-                                            <div class="flex items-center gap-2">
-                                                <input type="range" min="0" max="100" value="${t.progress}" oninput="updateTask(${t.id}, this.value)" class="flex-1 accent-purple-600">
-                                                <span class="font-bold text-gray-400 w-6">${t.progress}%</span>
-                                            </div>
-                                        </td>
-                                        <td class="p-3"><button onclick="deleteTask(${t.id})" class="text-gray-200 hover:text-red-500 group-hover:text-gray-400"><i class="fas fa-trash"></i></button></td>
-                                    </tr>`;
-                                }).join('') : '<tr><td colspan="5" class="p-8 text-center text-gray-400 italic">Haz clic en + TAREA para empezar esta semana.</td></tr>'}
-                            </tbody>
-                        </table>
-                        <div class="p-3 bg-gray-50/50">
-                            <button onclick="focusInput()" class="text-[10px] font-bold text-gray-400 hover:text-purple-600 transition">+ AÑADIR ACTIVIDAD</button>
-                        </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${weekTasks.length ? weekTasks.map(t => {
+                            const p = equipo.find(u => u.id === t.responsableId);
+                            return `
+                            <div class="card p-5">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 rounded-full ${t.progreso == 100 ? 'bg-green-500' : 'bg-purple-500'}"></div>
+                                        <span class="text-[10px] font-bold uppercase text-gray-400">${t.status}</span>
+                                    </div>
+                                    <button onclick="eliminar(${t.id})" class="text-gray-300 hover:text-red-500 transition"><i class="fas fa-trash-alt text-xs"></i></button>
+                                </div>
+                                <h4 class="font-bold text-gray-800 mb-2 leading-tight">${t.texto}</h4>
+                                <div class="flex items-center gap-2 mb-6">
+                                    <div class="w-5 h-5 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-[8px] font-bold">${p.nombre[0]}</div>
+                                    <span class="text-[10px] font-medium text-gray-500">${p.nombre}</span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-[10px] font-bold text-gray-400">
+                                        <span>Progreso</span>
+                                        <span class="text-purple-600">${t.progreso}%</span>
+                                    </div>
+                                    <input type="range" value="${t.progreso}" oninput="updateProgress(${t.id}, this.value)" class="custom-range">
+                                </div>
+                            </div>`;
+                        }).join('') : `<div class="col-span-full py-6 border-2 border-dashed border-gray-200 rounded-xl text-center text-gray-300 text-xs">Sin actividades asignadas</div>`}
                     </div>
                 `;
                 container.appendChild(section);
             }
-
-            const avg = tasks.length ? Math.round(tasks.reduce((a, b) => a + b.progress, 0) / tasks.length) : 0;
-            document.getElementById('eff-pct').innerText = avg + "%";
         }
 
-        function logout() { localStorage.removeItem('cm4_user'); location.reload(); }
-
-        window.onload = () => {
-            const saved = localStorage.getItem('cm4_user');
-            if(saved) {
-                document.getElementById('username').value = saved;
-                login();
+        function eliminar(id) {
+            if(confirm('¿Eliminar esta tarea asignada?')) {
+                tareas = tareas.filter(t => t.id !== id);
+                save();
             }
         }
+        function save() { localStorage.setItem('tm_team_db', JSON.stringify(tareas)); render(); }
+        function cambiarMes(d) { fechaVer.setMonth(fechaVer.getMonth() + d); render(); }
+        function cerrarModal() { document.getElementById('email-modal').style.display = "none"; }
     </script>
 </body>
 </html>
