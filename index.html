@@ -3,252 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Tablero de Control | Interactivo</title>
+    <title>Planificador Mensual Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f0f4f8; }
-        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-radius: 20px; border: 1px solid rgba(255,255,255,0.3); transition: all 0.3s ease; }
-        .task-done { opacity: 0.6; grayscale: 1; text-decoration: line-through; }
-        .tab-active { border-bottom: 3px solid #3b82f6; color: #3b82f6; }
-        .pomodoro-glow { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+        body { font-family: 'Outfit', sans-serif; background: #f8fafc; color: #1e293b; }
+        .month-card { background: white; border-radius: 24px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+        .progress-ring { transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .week-section { border-left: 2px solid #e2e8f0; padding-left: 1.5rem; position: relative; }
+        .week-section::before { content: ''; position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background: #3b82f6; border-radius: 50%; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800">
+<body class="p-4 md:p-8">
 
-    <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-blue-600">
-        <div class="bg-white p-10 rounded-[30px] shadow-2xl w-full max-w-md animate__animated animate__zoomIn">
-            <h2 class="text-3xl font-extrabold text-center mb-2">¡Hola! 👋</h2>
-            <p class="text-slate-500 text-center mb-8">Ingresa tu nombre para organizar tu día</p>
-            <input type="text" id="username" placeholder="¿Cómo te llamas?" 
-                class="w-full bg-slate-100 border-none p-4 rounded-2xl mb-4 text-center text-lg outline-none focus:ring-2 focus:ring-blue-400">
-            <button onclick="iniciarSesion()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 transition shadow-lg">
-                Comenzar ahora
-            </button>
-        </div>
-    </div>
-
-    <div id="app" class="hidden min-h-screen pb-20">
-        
-        <header class="p-6 flex justify-between items-center bg-white shadow-sm sticky top-0 z-40">
+    <div id="app" class="max-w-6xl mx-auto">
+        <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
             <div>
-                <h1 class="text-xl font-extrabold text-blue-600">TaskControl Pro</h1>
-                <p id="saludo" class="text-sm text-slate-400">¡Vamos a darle!</p>
+                <h1 class="text-3xl font-extrabold text-slate-900">Planificador <span class="text-blue-600">Mensual</span></h1>
+                <p class="text-slate-500">Gestión de actividades y flujo de trabajo semanal</p>
             </div>
-            <div class="flex items-center gap-4">
-                <div class="hidden md:block text-right">
-                    <p class="text-xs font-bold uppercase text-slate-400">Progreso Diario</p>
-                    <div class="w-32 h-2 bg-slate-100 rounded-full mt-1">
-                        <div id="progreso-bar" class="h-full bg-green-500 rounded-full transition-all duration-700" style="width: 0%"></div>
-                    </div>
-                </div>
-                <button onclick="cerrarSesion()" class="w-10 h-10 bg-red-50 text-red-500 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition">
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
+            
+            <div class="flex items-center bg-white p-2 rounded-2xl shadow-sm border">
+                <button onclick="cambiarMes(-1)" class="p-2 hover:bg-slate-100 rounded-xl transition"><i class="fas fa-chevron-left"></i></button>
+                <span id="mes-actual" class="px-6 font-bold text-lg min-w-[150px] text-center">Abril 2024</span>
+                <button onclick="cambiarMes(1)" class="p-2 hover:bg-slate-100 rounded-xl transition"><i class="fas fa-chevron-right"></i></button>
             </div>
         </header>
 
-        <main class="max-w-5xl mx-auto p-6">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                <div class="lg:col-span-1 glass-card p-6 bg-white flex flex-col items-center justify-center">
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Modo Enfoque</span>
-                    <div id="timer" class="text-5xl font-black text-slate-700 mb-4">25:00</div>
-                    <div class="flex gap-2">
-                        <button id="pomo-btn" onclick="toggleTimer()" class="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold hover:scale-105 transition">INICIAR</button>
-                        <button onclick="resetTimer()" class="bg-slate-100 p-2 px-4 rounded-xl text-slate-400"><i class="fas fa-redo"></i></button>
-                    </div>
-                </div>
-
-                <div class="lg:col-span-2 glass-card p-6 bg-white">
-                    <p class="text-xs font-bold text-slate-400 uppercase mb-3">Nueva actividad</p>
-                    <div class="flex flex-col md:flex-row gap-3">
-                        <input type="text" id="task-text" placeholder="¿Qué necesitas resolver?" class="flex-1 bg-slate-50 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-100">
-                        <select id="task-priority" class="bg-slate-50 p-4 rounded-2xl outline-none font-bold text-blue-600">
-                            <option value="normal">Normal</option>
-                            <option value="alta">🔥 Urgente</option>
-                        </select>
-                        <button onclick="agregarTarea()" class="bg-blue-600 text-white p-4 rounded-2xl font-extrabold hover:bg-blue-700 transition shadow-md">
-                            <i class="fas fa-plus mr-2"></i> AGREGAR
+            <aside class="lg:col-span-1 space-y-6">
+                <div class="month-card p-6 border border-blue-100 bg-blue-50/30">
+                    <h3 class="font-bold mb-4 flex items-center gap-2"><i class="fas fa-plus-circle text-blue-600"></i> Nueva Actividad</h3>
+                    <div class="space-y-4">
+                        <input type="text" id="task-name" placeholder="Nombre de la tarea..." class="w-full p-3 rounded-xl border-none ring-1 ring-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
+                        
+                        <div>
+                            <label class="text-xs font-bold text-slate-400 uppercase">Semana del mes</label>
+                            <select id="task-week" class="w-full p-3 mt-1 rounded-xl border-none ring-1 ring-slate-200 outline-none">
+                                <option value="1">Semana 1</option>
+                                <option value="2">Semana 2</option>
+                                <option value="3">Semana 3</option>
+                                <option value="4">Semana 4</option>
+                                <option value="5">Semana 5</option>
+                            </select>
+                        </div>
+                        
+                        <button onclick="crearTarea()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-200 hover:bg-blue-700 transition">
+                            Asignar Actividad
                         </button>
                     </div>
                 </div>
-            </div>
 
-            <div class="flex gap-6 mb-6 overflow-x-auto pb-2">
-                <button onclick="filtrar('todas')" id="f-todas" class="tab-active font-bold px-2 py-1 transition">Todas</button>
-                <button onclick="filtrar('pendientes')" id="f-pendientes" class="text-slate-400 font-bold px-2 py-1 transition">Pendientes</button>
-                <button onclick="filtrar('completadas')" id="f-completadas" class="text-slate-400 font-bold px-2 py-1 transition">Completadas</button>
-            </div>
-
-            <div id="lista-tareas" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="month-card p-6">
+                    <h3 class="font-bold mb-2">Progreso del Mes</h3>
+                    <div class="text-4xl font-black text-blue-600 mb-2" id="mes-pct">0%</div>
+                    <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                        <div id="mes-bar" class="h-full bg-blue-600 transition-all duration-1000" style="width: 0%"></div>
+                    </div>
                 </div>
-        </main>
-    </div>
+            </aside>
 
-    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl hidden animate__animated animate__fadeInUp">
-        <span id="toast-msg"></span>
+            <section class="lg:col-span-3 space-y-8" id="contenedor-semanas">
+                </section>
+        </div>
     </div>
 
     <script>
-        let usuario = "";
-        let tareas = [];
-        let timerSeconds = 25 * 60;
-        let timerInterval = null;
-        let filtroActual = 'todas';
+        let fechaVisual = new Date(); // Fecha que el usuario está viendo
+        let db = JSON.parse(localStorage.getItem('planificador_db')) || [];
 
-        function iniciarSesion() {
-            const input = document.getElementById('username');
-            if (!input.value) return;
-            usuario = input.value;
-            localStorage.setItem('user_v2', usuario);
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('app').classList.remove('hidden');
-            document.getElementById('saludo').innerText = `¡Hola, ${usuario}! Estás en control.`;
-            cargarDatos();
+        function cambiarMes(delta) {
+            fechaVisual.setMonth(fechaVisual.getMonth() + delta);
+            render();
         }
 
-        function agregarTarea() {
-            const input = document.getElementById('task-text');
-            const prioridad = document.getElementById('task-priority');
-            if (!input.value) return;
+        function crearTarea() {
+            const nombre = document.getElementById('task-name');
+            const semana = document.getElementById('task-week');
+            
+            if (!nombre.value) return;
 
-            const nueva = {
+            const nuevaTarea = {
                 id: Date.now(),
-                texto: input.value,
-                prioridad: prioridad.value,
-                completada: false,
-                fecha: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                nombre: nombre.value,
+                semana: parseInt(semana.value),
+                mes: fechaVisual.getMonth(),
+                anio: fechaVisual.getFullYear(),
+                progreso: 0 // De 0 a 100
             };
 
-            tareas.unshift(nueva);
-            input.value = "";
-            mostrarToast("✅ Tarea agregada con éxito");
+            db.push(nuevaTarea);
+            nombre.value = "";
             guardarYRender();
         }
 
-        function toggleTarea(id) {
-            tareas = tareas.map(t => t.id === id ? {...t, completada: !t.completada} : t);
-            mostrarToast("🔄 Estado actualizado");
+        function actualizarProgreso(id, valor) {
+            db = db.map(t => t.id === id ? {...t, progreso: parseInt(valor)} : t);
             guardarYRender();
         }
 
         function eliminarTarea(id) {
-            tareas = tareas.filter(t => t.id !== id);
-            mostrarToast("🗑️ Tarea eliminada");
+            db = db.filter(t => t.id !== id);
             guardarYRender();
         }
 
         function guardarYRender() {
-            localStorage.setItem(`tareas_${usuario}`, JSON.stringify(tareas));
-            render();
-        }
-
-        function cargarDatos() {
-            const guardado = localStorage.getItem(`tareas_${usuario}`);
-            tareas = guardado ? JSON.parse(guardado) : [];
+            localStorage.setItem('planificador_db', JSON.stringify(db));
             render();
         }
 
         function render() {
-            const container = document.getElementById('lista-tareas');
-            container.innerHTML = "";
-            
-            let filtradas = tareas;
-            if (filtroActual === 'pendientes') filtradas = tareas.filter(t => !t.completada);
-            if (filtroActual === 'completadas') filtradas = tareas.filter(t => t.completada);
+            // Actualizar Texto del Mes
+            const opcionesMes = { month: 'long', year: 'numeric' };
+            document.getElementById('mes-actual').innerText = fechaVisual.toLocaleDateString('es-ES', opcionesMes).toUpperCase();
 
-            if (filtradas.length === 0) {
-                container.innerHTML = `<div class="col-span-full text-center p-20 text-slate-400">No hay tareas aquí. ¡Empieza por crear una!</div>`;
-            }
+            const contenedor = document.getElementById('contenedor-semanas');
+            contenedor.innerHTML = "";
 
-            filtradas.forEach(t => {
-                const card = document.createElement('div');
-                card.className = `glass-card p-5 bg-white flex justify-between items-center animate__animated animate__fadeInUp ${t.completada ? 'task-done' : ''}`;
-                card.innerHTML = `
-                    <div class="flex items-center gap-4">
-                        <button onclick="toggleTarea(${t.id})" class="w-8 h-8 rounded-full border-2 border-blue-600 flex items-center justify-center transition ${t.completada ? 'bg-blue-600 text-white' : 'text-transparent'}">
-                            <i class="fas fa-check"></i>
-                        </button>
-                        <div>
-                            <p class="font-bold ${t.prioridad === 'alta' ? 'text-red-500' : 'text-slate-700'}">${t.texto}</p>
-                            <span class="text-[10px] uppercase font-bold text-slate-400">${t.fecha} • ${t.prioridad}</span>
-                        </div>
+            // Filtrar tareas del mes y año actual
+            const tareasMes = db.filter(t => t.mes === fechaVisual.getMonth() && t.anio === fechaVisual.getFullYear());
+
+            // Generar 5 semanas
+            for (let i = 1; i <= 5; i++) {
+                const tareasSemana = tareasMes.filter(t => t.semana === i);
+                
+                const semanaDiv = document.createElement('div');
+                semanaDiv.className = "week-section";
+                semanaDiv.innerHTML = `
+                    <h3 class="text-sm font-black text-slate-400 uppercase tracking-widest mb-4 font-mono">SEMANA 0${i}</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${tareasSemana.length > 0 ? tareasSemana.map(t => `
+                            <div class="month-card p-5 border border-slate-100 hover:border-blue-200 transition">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h4 class="font-bold text-slate-800">${t.nombre}</h4>
+                                    <button onclick="eliminarTarea(${t.id})" class="text-slate-300 hover:text-red-500"><i class="fas fa-times"></i></button>
+                                </div>
+                                
+                                <div class="flex items-center gap-4">
+                                    <div class="flex-1 bg-slate-100 h-2 rounded-full overflow-hidden">
+                                        <div class="progress-ring h-full bg-blue-500" style="width: ${t.progreso}%"></div>
+                                    </div>
+                                    <span class="text-xs font-bold mono w-8">${t.progreso}%</span>
+                                </div>
+                                
+                                <input type="range" min="0" max="100" value="${t.progreso}" 
+                                    oninput="actualizarProgreso(${t.id}, this.value)"
+                                    class="w-full mt-4 h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                            </div>
+                        `).join('') : '<p class="text-slate-300 text-sm italic">Sin actividades asignadas</p>'}
                     </div>
-                    <button onclick="eliminarTarea(${t.id})" class="text-slate-300 hover:text-red-500 transition"><i class="fas fa-trash"></i></button>
                 `;
-                container.appendChild(card);
-            });
-
-            // Actualizar barra de progreso
-            const completadas = tareas.filter(t => t.completada).length;
-            const porcentaje = tareas.length ? Math.round((completadas / tareas.length) * 100) : 0;
-            document.getElementById('progreso-bar').style.width = porcentaje + '%';
-        }
-
-        function filtrar(tipo) {
-            filtroActual = tipo;
-            document.querySelectorAll('button[id^="f-"]').forEach(btn => btn.className = 'text-slate-400 font-bold px-2 py-1 transition');
-            document.getElementById('f-' + tipo).className = 'tab-active font-bold px-2 py-1 transition';
-            render();
-        }
-
-        // TIMER
-        function toggleTimer() {
-            const btn = document.getElementById('pomo-btn');
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                btn.innerText = "CONTINUAR";
-            } else {
-                btn.innerText = "PAUSA";
-                timerInterval = setInterval(() => {
-                    timerSeconds--;
-                    actualizarTimerUI();
-                    if (timerSeconds <= 0) {
-                        clearInterval(timerInterval);
-                        alert("¡Tiempo fuera! Toma un descanso.");
-                        resetTimer();
-                    }
-                }, 1000);
+                contenedor.appendChild(semanaDiv);
             }
+
+            // Calcular progreso total del mes
+            const totalProgreso = tareasMes.reduce((acc, t) => acc + t.progreso, 0);
+            const pctMes = tareasMes.length ? Math.round(totalProgreso / tareasMes.length) : 0;
+            
+            document.getElementById('mes-pct').innerText = pctMes + "%";
+            document.getElementById('mes-bar').style.width = pctMes + "%";
         }
 
-        function resetTimer() {
-            clearInterval(timerInterval);
-            timerInterval = null;
-            timerSeconds = 25 * 60;
-            document.getElementById('pomo-btn').innerText = "INICIAR";
-            actualizarTimerUI();
-        }
-
-        function actualizarTimerUI() {
-            const m = Math.floor(timerSeconds / 60);
-            const s = timerSeconds % 60;
-            document.getElementById('timer').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        }
-
-        function mostrarToast(msg) {
-            const t = document.getElementById('toast');
-            document.getElementById('toast-msg').innerText = msg;
-            t.classList.remove('hidden');
-            setTimeout(() => t.classList.add('hidden'), 2000);
-        }
-
-        function cerrarSesion() {
-            localStorage.removeItem('user_v2');
-            location.reload();
-        }
-
-        window.onload = () => {
-            const anterior = localStorage.getItem('user_v2');
-            if (anterior) {
-                document.getElementById('username').value = anterior;
-                iniciarSesion();
-            }
-        }
+        // Carga inicial
+        render();
     </script>
 </body>
 </html>
