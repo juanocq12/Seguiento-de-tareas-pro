@@ -3,97 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClickMaster Enterprise | Hub de Seguimiento</title>
+    <title>ClickMaster Enterprise | Full Logic</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; color: #0f172a; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #0f172a; }
         .sidebar { background-color: #020617; }
-        .glass-card { background: white; border: 1px solid #e2e8f0; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .glass-card { background: white; border: 1px solid #e2e8f0; border-radius: 20px; transition: all 0.3s ease; }
         .btn-active { background: #1e293b; border-left: 4px solid #6366f1; color: white; }
-        .progress-circle { transition: stroke-dashoffset 0.5s ease; }
-        .modal { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: none; position: fixed; inset: 0; z-index: 50; align-items: center; justify-content: center; }
+        .progress-fill { transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .modal { background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: none; position: fixed; inset: 0; z-index: 100; align-items: center; justify-content: center; p: 20px; }
+        input[type="checkbox"] { width: 18px; height: 18px; accent-color: #6366f1; cursor: pointer; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden">
 
     <aside class="w-72 sidebar flex flex-col h-screen shrink-0 text-slate-400">
         <div class="p-8 flex items-center gap-3 border-b border-slate-800">
-            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg">
-                <i class="fas fa-layer-group text-lg"></i>
+            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+                <i class="fas fa-rocket text-lg"></i>
             </div>
-            <span class="font-extrabold text-white text-xl tracking-tight">ENTERPRISE</span>
+            <span class="font-extrabold text-white text-xl tracking-tight">WORKFLOW PRO</span>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-4 space-y-2">
-            <p class="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4">Módulos</p>
+        <div class="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
+            <p class="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4">Administración</p>
             <button onclick="cambiarVista('global')" id="nav-global" class="w-full text-left p-4 rounded-xl flex items-center gap-3 hover:text-white transition btn-active">
-                <i class="fas fa-chart-line"></i> Dashboard Global
+                <i class="fas fa-globe"></i> Dashboard Global
             </button>
             <button onclick="cambiarVista('equipo')" id="nav-equipo" class="w-full text-left p-4 rounded-xl flex items-center gap-3 hover:text-white transition">
-                <i class="fas fa-users-gear"></i> Gestión de Equipo
+                <i class="fas fa-user-plus"></i> Gestionar Equipo
             </button>
             <button onclick="cambiarVista('notificar')" id="nav-notificar" class="w-full text-left p-4 rounded-xl flex items-center gap-3 hover:text-white transition">
-                <i class="fas fa-paper-plane"></i> Centro de Notificaciones
+                <i class="fas fa-bullhorn"></i> Notificaciones/Feedback
             </button>
             
             <p class="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-8 mb-4">Informes Individuales</p>
             <div id="sidebar-team-list" class="space-y-1"></div>
+        </div>
+
+        <div class="p-6 bg-slate-900 border-t border-slate-800">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center font-bold text-white">A</div>
+                <div class="truncate">
+                    <p class="text-xs font-bold text-white">Admin Global</p>
+                    <p class="text-[10px] text-green-400 font-bold uppercase tracking-tighter">Conectado</p>
+                </div>
+            </div>
         </div>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-hidden">
         <header class="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0">
             <h1 class="font-black text-2xl text-slate-800" id="header-title">Dashboard Global</h1>
-            <div class="flex items-center gap-4">
-                <div class="flex items-center bg-slate-100 rounded-full p-1">
-                    <button onclick="cambiarMes(-1)" class="w-8 h-8 flex items-center justify-center hover:bg-white rounded-full transition"><</button>
-                    <span id="label-mes" class="px-4 text-xs font-black uppercase text-slate-600">Abril 2024</span>
-                    <button onclick="cambiarMes(1)" class="w-8 h-8 flex items-center justify-center hover:bg-white rounded-full transition">></button>
+            <div class="flex items-center gap-6">
+                <div class="flex items-center bg-slate-100 rounded-full p-1 shadow-inner">
+                    <button onclick="cambiarMes(-1)" class="w-8 h-8 flex items-center justify-center hover:bg-white rounded-full transition shadow-sm font-bold"><</button>
+                    <span id="label-mes" class="px-6 text-xs font-black uppercase text-slate-600 tracking-tighter">Abril 2026</span>
+                    <button onclick="cambiarMes(1)" class="w-8 h-8 flex items-center justify-center hover:bg-white rounded-full transition shadow-sm font-bold">></button>
                 </div>
+                <button onclick="abrirModalTarea()" class="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-xl shadow-indigo-100 hover:bg-indigo-700 hover:scale-105 transition active:scale-95 flex items-center gap-2">
+                    <i class="fas fa-plus"></i> NUEVO PROYECTO
+                </button>
             </div>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-10 bg-slate-50" id="main-render"></div>
+        <div class="flex-1 overflow-y-auto p-10 bg-slate-50 custom-scrollbar" id="main-render">
+            </div>
     </main>
 
     <div id="modal-persona" class="modal">
-        <div class="glass-card p-8 w-full max-w-md">
-            <h3 class="text-xl font-bold mb-6 text-slate-800" id="modal-title">Gestionar Miembro</h3>
+        <div class="glass-card p-8 w-full max-w-md animate__animated animate__zoomIn">
+            <h3 class="text-xl font-bold mb-6 text-slate-800">Gestionar Miembro</h3>
             <div class="space-y-4">
-                <input type="hidden" id="edit-id">
-                <div>
-                    <label class="text-xs font-bold text-slate-400">Nombre Completo</label>
-                    <input type="text" id="p-nombre" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500">
-                </div>
-                <div>
-                    <label class="text-xs font-bold text-slate-400">Cargo / Rol</label>
-                    <input type="text" id="p-cargo" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500">
-                </div>
-                <div>
-                    <label class="text-xs font-bold text-slate-400">Email</label>
-                    <input type="email" id="p-email" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500">
-                </div>
+                <input type="hidden" id="edit-p-id">
+                <div><label class="text-[10px] font-bold text-slate-400 uppercase">Nombre</label><input type="text" id="p-nombre" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50"></div>
+                <div><label class="text-[10px] font-bold text-slate-400 uppercase">Cargo</label><input type="text" id="p-cargo" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50"></div>
+                <div><label class="text-[10px] font-bold text-slate-400 uppercase">Email</label><input type="email" id="p-email" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50"></div>
                 <div class="flex gap-4 mt-6">
-                    <button onclick="cerrarModal()" class="flex-1 p-3 rounded-xl font-bold bg-slate-100 text-slate-600">Cancelar</button>
-                    <button onclick="guardarPersona()" class="flex-1 p-3 rounded-xl font-bold bg-indigo-600 text-white">Guardar</button>
+                    <button onclick="cerrarModal('modal-persona')" class="flex-1 p-3 rounded-xl font-bold text-slate-500 bg-slate-100">Cancelar</button>
+                    <button onclick="guardarPersona()" class="flex-1 p-3 rounded-xl font-bold bg-indigo-600 text-white shadow-lg shadow-indigo-100">Guardar</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <div id="modal-tarea" class="modal">
+        <div class="glass-card p-10 w-full max-w-2xl">
+            <h3 class="text-2xl font-bold mb-6 text-slate-800">Nuevo Proyecto / Tarea</h3>
+            <div class="grid grid-cols-2 gap-6 mb-6">
+                <div class="col-span-2">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Título de la Actividad</label>
+                    <input type="text" id="t-nombre" class="w-full p-3 border-b-2 bg-slate-50 outline-none focus:border-indigo-600 font-bold">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Asignar Responsable</label>
+                    <select id="t-responsable" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-bold"></select>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Semana del Mes</label>
+                    <select id="t-semana" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-bold">
+                        <option value="1">Semana 1</option><option value="2">Semana 2</option>
+                        <option value="3">Semana 3</option><option value="4">Semana 4</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mb-6 bg-slate-50 p-6 rounded-2xl border-2 border-dashed border-slate-200">
+                <label class="text-[10px] font-bold text-slate-400 uppercase block mb-3">Definir Etapas (Mínimo 1)</label>
+                <div class="flex gap-2 mb-4">
+                    <input type="text" id="subtask-input" placeholder="Ej: Fase de diseño preliminar" class="flex-1 p-3 rounded-xl border-none outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm">
+                    <button onclick="agregarSubtaskADraft()" class="bg-indigo-600 text-white px-6 rounded-xl font-bold text-xs"><i class="fas fa-plus"></i></button>
+                </div>
+                <div id="draft-subtasks" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <div class="flex justify-end gap-4">
+                <button onclick="cerrarModal('modal-tarea')" class="px-8 py-3 rounded-xl font-bold text-slate-500 bg-slate-100">Cancelar</button>
+                <button onclick="guardarTarea()" class="px-8 py-3 rounded-xl font-bold bg-indigo-600 text-white shadow-lg">LANZAR PROYECTO</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // ESTADO GLOBAL
-        let equipo = JSON.parse(localStorage.getItem('ce_team')) || [
-            { id: 1, nombre: "Carlos Ruiz", cargo: "Senior Dev", email: "carlos@tech.com" },
-            { id: 2, nombre: "Elena Gómez", cargo: "Diseñadora UI", email: "elena@tech.com" }
+        // DB INICIAL
+        let equipo = JSON.parse(localStorage.getItem('ent_team')) || [
+            { id: 1, nombre: "Carlos Ruiz", cargo: "Senior Dev", email: "carlos@mail.com" },
+            { id: 2, nombre: "Elena Gómez", cargo: "UX Designer", email: "elena@mail.com" }
         ];
-        let tareas = JSON.parse(localStorage.getItem('ce_tasks')) || [];
+        let tareas = JSON.parse(localStorage.getItem('ent_tasks')) || [];
+        let draftSubtasks = [];
         let vistaActual = "global";
         let mesVer = new Date();
 
-        // INICIO
         function init() {
             actualizarSidebar();
             render();
@@ -103,7 +148,7 @@
             const list = document.getElementById('sidebar-team-list');
             list.innerHTML = equipo.map(p => `
                 <button onclick="cambiarVista('dashboard-${p.id}')" class="w-full text-left p-3 rounded-xl flex items-center gap-3 hover:text-white transition text-sm">
-                    <div class="w-6 h-6 bg-slate-700 rounded-lg flex items-center justify-center text-[10px] font-bold text-indigo-400">${p.nombre[0]}</div>
+                    <div class="w-6 h-6 bg-slate-800 rounded-lg flex items-center justify-center text-[10px] font-bold text-indigo-400 shadow-sm">${p.nombre[0]}</div>
                     ${p.nombre}
                 </button>
             `).join('');
@@ -118,9 +163,8 @@
 
         function render() {
             const container = document.getElementById('main-render');
-            const labelMes = document.getElementById('label-mes');
             const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-            labelMes.innerText = `${meses[mesVer.getMonth()]} ${mesVer.getFullYear()}`;
+            document.getElementById('label-mes').innerText = `${meses[mesVer.getMonth()]} ${mesVer.getFullYear()}`;
 
             if(vistaActual === 'global') renderGlobal(container);
             else if(vistaActual === 'equipo') renderGestionEquipo(container);
@@ -128,205 +172,224 @@
             else if(vistaActual.startsWith('dashboard-')) renderDashboardIndividual(container, vistaActual.split('-')[1]);
         }
 
-        // --- VISTA: GESTIÓN DE EQUIPO ---
-        function renderGestionEquipo(container) {
-            document.getElementById('header-title').innerText = "Gestión de Personal";
-            container.innerHTML = `
-                <div class="glass-card overflow-hidden">
-                    <div class="p-6 border-b flex justify-between items-center bg-slate-50">
-                        <h3 class="font-bold">Miembros del Equipo (${equipo.length})</h3>
-                        <button onclick="abrirModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-indigo-700">+ AGREGAR PERSONA</button>
-                    </div>
-                    <table class="w-full text-left text-sm">
-                        <thead class="text-slate-400 font-bold border-b">
-                            <tr>
-                                <th class="p-6">PERSONA</th>
-                                <th class="p-6">CARGO</th>
-                                <th class="p-6">EMAIL</th>
-                                <th class="p-6 text-right">ACCIONES</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${equipo.map(p => `
-                                <tr class="border-b hover:bg-slate-50 transition">
-                                    <td class="p-6 font-bold text-slate-700">${p.nombre}</td>
-                                    <td class="p-6"><span class="bg-slate-100 px-3 py-1 rounded-full text-[10px] font-bold">${p.cargo}</span></td>
-                                    <td class="p-6 text-slate-500">${p.email}</td>
-                                    <td class="p-6 text-right space-x-2">
-                                        <button onclick="abrirModal(${p.id})" class="text-indigo-500 hover:underline font-bold">Editar</button>
-                                        <button onclick="eliminarPersona(${p.id})" class="text-red-400 hover:underline font-bold">Eliminar</button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
+        // --- LÓGICA TAREAS ---
+        function abrirModalTarea() {
+            document.getElementById('modal-tarea').style.display = "flex";
+            const select = document.getElementById('t-responsable');
+            select.innerHTML = equipo.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
+            draftSubtasks = [];
+            renderDrafts();
         }
 
-        // --- VISTA: DASHBOARD INDIVIDUAL ---
+        function agregarSubtaskADraft() {
+            const input = document.getElementById('subtask-input');
+            if(!input.value) return;
+            draftSubtasks.push(input.value);
+            input.value = "";
+            renderDrafts();
+        }
+
+        function renderDrafts() {
+            const container = document.getElementById('draft-subtasks');
+            container.innerHTML = draftSubtasks.map((s, i) => `
+                <div class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-2 border border-indigo-100">
+                    ${s} <i class="fas fa-times cursor-pointer hover:text-red-500" onclick="draftSubtasks.splice(${i},1);renderDrafts()"></i>
+                </div>
+            `).join('');
+        }
+
+        function guardarTarea() {
+            const nombre = document.getElementById('t-nombre').value;
+            const resp = document.getElementById('t-responsable').value;
+            const sem = document.getElementById('t-semana').value;
+            
+            if(!nombre || draftSubtasks.length === 0) return alert("Pon un nombre y añade etapas");
+
+            tareas.push({
+                id: Date.now(),
+                texto: nombre,
+                userId: parseInt(resp),
+                semana: parseInt(sem),
+                mes: mesVer.getMonth(),
+                anio: mesVer.getFullYear(),
+                subtasks: draftSubtasks.map(s => ({ texto: s, completed: false }))
+            });
+            
+            saveData();
+            cerrarModal('modal-tarea');
+        }
+
+        function toggleSub(tId, sIdx) {
+            const t = tareas.find(x => x.id === tId);
+            t.subtasks[sIdx].completed = !t.subtasks[sIdx].completed;
+            saveData();
+        }
+
+        // --- DASHBOARD INDIVIDUAL ---
         function renderDashboardIndividual(container, id) {
             const p = equipo.find(u => u.id == id);
             if(!p) return renderGlobal(container);
             
             const pTasks = tareas.filter(t => t.userId == id && t.mes == mesVer.getMonth());
-            const completadas = pTasks.filter(t => t.pct == 100).length;
-            const eficiencia = pTasks.length ? Math.round((completadas / pTasks.length)*100) : 0;
+            let totalSub = 0, doneSub = 0;
+            pTasks.forEach(t => {
+                totalSub += t.subtasks.length;
+                doneSub += t.subtasks.filter(s => s.completed).length;
+            });
+            const eficiencia = totalSub ? Math.round((doneSub / totalSub) * 100) : 0;
 
             document.getElementById('header-title').innerText = `Reporte: ${p.nombre}`;
             container.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="glass-card p-8 flex flex-col items-center text-center">
-                        <div class="w-24 h-24 bg-indigo-100 text-indigo-600 rounded-3xl flex items-center justify-center text-3xl font-black mb-4">
-                            ${p.nombre[0]}
-                        </div>
-                        <h3 class="text-xl font-bold">${p.nombre}</h3>
-                        <p class="text-slate-400 text-xs font-bold uppercase mb-6">${p.cargo}</p>
-                        <div class="w-full space-y-3 pt-6 border-t">
-                            <div class="flex justify-between text-xs font-bold">
-                                <span class="text-slate-400">Tareas Mes</span>
-                                <span>${pTasks.length}</span>
-                            </div>
-                            <div class="flex justify-between text-xs font-bold">
-                                <span class="text-slate-400">Estatus</span>
-                                <span class="text-green-500">Activo</span>
-                            </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="glass-card p-8 flex flex-col items-center text-center h-fit">
+                        <div class="w-24 h-24 bg-indigo-600 rounded-[30px] flex items-center justify-center text-4xl font-black text-white shadow-2xl mb-6">${p.nombre[0]}</div>
+                        <h3 class="text-2xl font-black text-slate-800">${p.nombre}</h3>
+                        <p class="text-indigo-600 font-bold text-xs uppercase tracking-widest mt-1">${p.cargo}</p>
+                        <div class="w-full border-t border-slate-100 mt-8 pt-8 space-y-4">
+                            <div class="flex justify-between text-xs font-bold"><span class="text-slate-400">Eficiencia Promedio</span><span class="text-indigo-600">${eficiencia}%</span></div>
+                            <div class="flex justify-between text-xs font-bold"><span class="text-slate-400">Proyectos Activos</span><span>${pTasks.length}</span></div>
                         </div>
                     </div>
 
-                    <div class="glass-card p-8 md:col-span-2 flex items-center justify-around">
-                        <div class="relative w-40 h-40">
-                            <svg class="w-full h-full" viewBox="0 0 100 100">
-                                <circle class="text-slate-100" stroke-width="10" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"/>
-                                <circle class="text-indigo-600 progress-circle" stroke-width="10" stroke-dasharray="251.2" stroke-dashoffset="${251.2 - (251.2 * eficiencia / 100)}" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"/>
-                            </svg>
-                            <div class="absolute inset-0 flex items-center justify-center flex-col">
-                                <span class="text-3xl font-black">${eficiencia}%</span>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Eficiencia</span>
+                    <div class="lg:col-span-2 space-y-8">
+                        <div class="glass-card p-8 bg-gradient-to-r from-indigo-600 to-indigo-800 text-white flex justify-between items-center shadow-2xl shadow-indigo-200">
+                            <div>
+                                <p class="text-xs font-bold uppercase opacity-70 tracking-tighter">Status de Productividad</p>
+                                <h2 class="text-4xl font-black">${eficiencia >= 80 ? 'Excelente' : (eficiencia >= 50 ? 'En Progreso' : 'Crítico')}</h2>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-5xl font-black">${doneSub}/${totalSub}</p>
+                                <p class="text-[10px] font-bold opacity-70">ETAPAS COMPLETADAS</p>
                             </div>
                         </div>
-                        <div class="space-y-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-                                <span class="text-sm font-medium text-slate-600">Completado: ${completadas}</span>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <div class="w-3 h-3 bg-slate-200 rounded-full"></div>
-                                <span class="text-sm font-medium text-slate-600">Pendiente: ${pTasks.length - completadas}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="mt-8 glass-card p-8">
-                    <h4 class="font-bold mb-6">Seguimiento de Desempeño</h4>
-                    <div class="bg-indigo-50 p-6 rounded-2xl border border-indigo-100 flex gap-6 items-center">
-                        <i class="fas fa-comment-dots text-3xl text-indigo-400"></i>
-                        <div>
-                            <p class="text-sm font-medium text-indigo-900 italic">"El desempeño de ${p.nombre} este mes está siendo ${eficiencia > 70 ? 'sobresaliente' : 'regular'}. Se recomienda revisar las tareas pendientes de la semana 2."</p>
-                            <p class="text-[10px] font-bold text-indigo-400 mt-2 uppercase">Nota generada automáticamente por IA</p>
+                        <div class="space-y-6">
+                            ${pTasks.map(t => {
+                                const tDone = t.subtasks.filter(s => s.completed).length;
+                                const tPct = Math.round((tDone / t.subtasks.length)*100);
+                                return `
+                                <div class="glass-card p-6 shadow-sm border-l-4 ${tPct === 100 ? 'border-green-500' : 'border-indigo-500'}">
+                                    <div class="flex justify-between items-center mb-6">
+                                        <h4 class="font-bold text-slate-800">${t.texto}</h4>
+                                        <span class="text-[10px] font-black px-3 py-1 bg-slate-100 rounded-full">${tPct}%</span>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        ${t.subtasks.map((s, i) => `
+                                            <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                                                <input type="checkbox" ${s.completed ? 'checked' : ''} onchange="toggleSub(${t.id}, ${i})">
+                                                <span class="text-xs ${s.completed ? 'text-slate-300 line-through' : 'text-slate-700 font-bold'}">${s.texto}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>`;
+                            }).join('')}
                         </div>
                     </div>
                 </div>
             `;
         }
 
-        // --- VISTA: PANEL DE NOTIFICACIONES ---
-        function renderPanelNotificaciones(container) {
-            document.getElementById('header-title').innerText = "Centro de Notificaciones";
+        // --- GESTIÓN EQUIPO ---
+        function renderGestionEquipo(container) {
+            document.getElementById('header-title').innerText = "Gestión de Personal";
             container.innerHTML = `
-                <div class="max-w-4xl mx-auto space-y-6">
-                    <div class="glass-card p-8">
-                        <h3 class="font-bold mb-6 flex items-center gap-2"><i class="fas fa-envelope text-indigo-500"></i> Enviar Información de Desempeño</h3>
-                        <div class="space-y-4">
-                            <select id="notif-user" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
-                                <option value="">Seleccionar destinatario...</option>
-                                ${equipo.map(p => `<option value="${p.id}">${p.nombre} (${p.email})</option>`).join('')}
-                            </select>
-                            <textarea id="notif-msg" placeholder="Escribe aquí el reporte de seguimiento o instrucciones de trabajo..." class="w-full p-4 h-32 bg-slate-50 border rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
-                            <button onclick="simularEnvio()" class="w-full bg-indigo-600 text-white p-4 rounded-2xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition">ENVIAR SEGUIMIENTO</button>
-                        </div>
+                <div class="glass-card overflow-hidden animate__animated animate__fadeIn">
+                    <div class="p-8 border-b flex justify-between items-center">
+                        <h3 class="font-black text-slate-800">Miembros del Staff (${equipo.length})</h3>
+                        <button onclick="abrirModalPersona()" class="bg-indigo-600 text-white px-6 py-2 rounded-xl text-xs font-black shadow-lg shadow-indigo-100">+ AÑADIR MIEMBRO</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b">
+                                <tr><th class="p-6">Nombre</th><th class="p-6">Cargo</th><th class="p-6">Email</th><th class="p-6 text-right">Acción</th></tr>
+                            </thead>
+                            <tbody class="text-sm">
+                                ${equipo.map(p => `
+                                    <tr class="border-b hover:bg-slate-50 transition">
+                                        <td class="p-6 font-bold text-slate-700">${p.nombre}</td>
+                                        <td class="p-6 font-bold text-slate-400 text-xs tracking-tighter">${p.cargo}</td>
+                                        <td class="p-6 text-slate-400">${p.email}</td>
+                                        <td class="p-6 text-right"><button onclick="eliminarPersona(${p.id})" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             `;
         }
 
-        // --- LÓGICA DE PERSONAS ---
-        function abrirModal(id = null) {
-            const m = document.getElementById('modal-persona');
-            m.style.display = "flex";
-            if(id) {
-                const p = equipo.find(x => x.id == id);
-                document.getElementById('edit-id').value = p.id;
-                document.getElementById('p-nombre').value = p.nombre;
-                document.getElementById('p-cargo').value = p.cargo;
-                document.getElementById('p-email').value = p.email;
-                document.getElementById('modal-title').innerText = "Editar Miembro";
-            } else {
-                document.getElementById('edit-id').value = "";
-                document.getElementById('p-nombre').value = "";
-                document.getElementById('p-cargo').value = "";
-                document.getElementById('p-email').value = "";
-                document.getElementById('modal-title').innerText = "Agregar Nuevo Miembro";
-            }
-        }
-
-        function guardarPersona() {
-            const id = document.getElementById('edit-id').value;
-            const nuevo = {
-                id: id ? parseInt(id) : Date.now(),
-                nombre: document.getElementById('p-nombre').value,
-                cargo: document.getElementById('p-cargo').value,
-                email: document.getElementById('p-email').value
-            };
-            if(!nuevo.nombre || !nuevo.cargo) return alert("Completa los datos");
-
-            if(id) equipo = equipo.map(x => x.id == id ? nuevo : x);
-            else equipo.push(nuevo);
-
-            localStorage.setItem('ce_team', JSON.stringify(equipo));
-            cerrarModal();
-            actualizarSidebar();
-            render();
-        }
-
-        function eliminarPersona(id) {
-            if(confirm("¿Eliminar a esta persona y todos sus informes?")) {
-                equipo = equipo.filter(x => x.id != id);
-                localStorage.setItem('ce_team', JSON.stringify(equipo));
-                actualizarSidebar();
-                render();
-            }
+        // --- NOTIFICACIONES ---
+        function renderPanelNotificaciones(container) {
+            document.getElementById('header-title').innerText = "Seguimiento y Feedback";
+            container.innerHTML = `
+                <div class="max-w-3xl mx-auto glass-card p-10 animate__animated animate__fadeIn">
+                    <h3 class="font-black text-xl mb-6">Enviar Reporte de Desempeño</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="text-[10px] font-black text-slate-400 uppercase mb-2 block">Destinatario</label>
+                            <select id="notif-user" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none font-bold">
+                                ${equipo.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black text-slate-400 uppercase mb-2 block">Cuerpo del Mensaje de Seguimiento</label>
+                            <textarea id="notif-msg" class="w-full p-6 h-48 bg-slate-50 border rounded-2xl outline-none focus:ring-2 focus:ring-indigo-600 font-medium" placeholder="Escribe observaciones sobre su desempeño mensual..."></textarea>
+                        </div>
+                        <button onclick="alert('Enviado al correo corporativo')" class="w-full bg-indigo-600 text-white p-5 rounded-2xl font-black shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition">ENVIAR FEEDBACK DIRECTO</button>
+                    </div>
+                </div>
+            `;
         }
 
         function renderGlobal(container) {
             document.getElementById('header-title').innerText = "Dashboard Global";
             container.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                    <div class="glass-card p-6 border-l-4 border-indigo-600">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Total Equipo</p>
-                        <h4 class="text-3xl font-black">${equipo.length}</h4>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+                    <div class="glass-card p-8 bg-white border-l-8 border-indigo-600 shadow-xl shadow-slate-200">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Staff</p>
+                        <h4 class="text-4xl font-black text-slate-800">${equipo.length}</h4>
                     </div>
-                    <div class="glass-card p-6 border-l-4 border-green-500">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Productividad</p>
-                        <h4 class="text-3xl font-black">84%</h4>
+                    <div class="glass-card p-8 bg-white border-l-8 border-green-500 shadow-xl shadow-slate-200">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Tareas Activas</p>
+                        <h4 class="text-4xl font-black text-slate-800">${tareas.filter(t=>t.mes == mesVer.getMonth()).length}</h4>
                     </div>
                 </div>
-                <div class="p-20 text-center glass-card">
-                    <i class="fas fa-folder-open text-5xl text-slate-200 mb-4"></i>
-                    <p class="text-slate-400 font-medium">Selecciona una persona de la izquierda para ver su informe detallado o ve a Gestión de Equipo para añadir personal.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    ${tareas.filter(t=>t.mes == mesVer.getMonth()).map(t => {
+                        const done = t.subtasks.filter(s=>s.completed).length;
+                        const pct = Math.round((done/t.subtasks.length)*100);
+                        const u = equipo.find(x => x.id === t.userId);
+                        return `
+                        <div class="glass-card p-6 shadow-sm border border-slate-100 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between text-[10px] font-black text-indigo-600 mb-4 tracking-tighter"><span>SEMANA ${t.semana}</span><span>${pct}% COMPLETO</span></div>
+                                <h3 class="font-black text-slate-800 text-lg leading-tight mb-2">${t.texto}</h3>
+                                <div class="flex items-center gap-2 mb-6">
+                                    <div class="w-5 h-5 bg-slate-100 rounded-full flex items-center justify-center text-[8px] font-black text-slate-500 border border-slate-200">${u ? u.nombre[0] : '?'}</div>
+                                    <span class="text-[10px] font-bold text-slate-400">${u ? u.nombre : 'Sin asignar'}</span>
+                                </div>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                <div class="progress-fill h-full bg-indigo-600" style="width: ${pct}%"></div>
+                            </div>
+                        </div>`;
+                    }).join('')}
                 </div>
             `;
         }
 
-        function simularEnvio() {
-            const user = document.getElementById('notif-user').value;
-            if(!user) return alert("Selecciona a una persona");
-            alert("¡Informe enviado con éxito al correo del trabajador!");
-            document.getElementById('notif-msg').value = "";
+        // --- FUNCIONES CORE ---
+        function abrirModalPersona() { document.getElementById('modal-persona').style.display = "flex"; }
+        function cerrarModal(id) { document.getElementById(id).style.display = "none"; }
+        function saveData() { localStorage.setItem('ent_team', JSON.stringify(equipo)); localStorage.setItem('ent_tasks', JSON.stringify(tareas)); render(); actualizarSidebar(); }
+        function eliminarPersona(id) { if(confirm("¿Eliminar?")) { equipo = equipo.filter(x=>x.id != id); saveData(); } }
+        function guardarPersona() {
+            const n = document.getElementById('p-nombre').value, c = document.getElementById('p-cargo').value, e = document.getElementById('p-email').value;
+            if(!n || !c) return;
+            equipo.push({ id: Date.now(), nombre: n, cargo: c, email: e });
+            saveData(); cerrarModal('modal-persona');
         }
-
-        function cerrarModal() { document.getElementById('modal-persona').style.display = "none"; }
         function cambiarMes(d) { mesVer.setMonth(mesVer.getMonth() + d); render(); }
 
         window.onload = init;
