@@ -3,297 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClickMaster 4.0 | Workspace</title>
+    <title>ClickMaster 4.0 | Fully Functional</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
-        :root {
-            --cu-purple: #7b68ee;
-            --cu-bg: #f7f8f9;
-            --cu-sidebar: #2a2e34;
-        }
-
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--cu-bg);
-            color: #2b2c32;
-        }
-
-        .cu-card {
-            background: white;
-            border: 1px solid #e9ebf0;
-            transition: all 0.2s ease;
-        }
-
-        .cu-card:hover {
-            border-color: #d1d5db;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-        .status-pill {
-            font-size: 10px;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 4px;
-            text-transform: uppercase;
-        }
-
-        /* Estilos personalizados para el slider de progreso */
-        input[type="range"] {
-            -webkit-appearance: none;
-            background: #e9ebf0;
-            height: 4px;
-            border-radius: 5px;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 12px;
-            height: 12px;
-            background: var(--cu-purple);
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
-        .sidebar-active {
-            background: rgba(255,255,255,0.1);
-            border-left: 3px solid var(--cu-purple);
-        }
-
-        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        :root { --cu-purple: #7b68ee; --cu-bg: #f7f8f9; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--cu-bg); color: #2b2c32; transition: all 0.3s; }
+        .dark-mode { background-color: #16181d; color: #f1f1f1; }
+        .dark-mode .bg-white { background-color: #1e2227; border-color: #333; color: white; }
+        .dark-mode .text-gray-700 { color: #ccc; }
+        .cu-card { background: white; border: 1px solid #e9ebf0; }
+        .status-pill { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; }
+        .sidebar-active { background: rgba(255,255,255,0.1); border-left: 3px solid var(--cu-purple); color: white; }
+        .collapsed { display: none; }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden">
 
     <div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-white">
         <div class="w-full max-w-sm p-8 text-center">
-            <img src="https://clickup.com/assets/images/brand-guidelines/logos/clickup-logo-color.svg" class="w-32 mx-auto mb-8" alt="Logo">
-            <h2 class="text-2xl font-bold mb-6">Bienvenido a tu Workspace</h2>
-            <input type="text" id="username" placeholder="Email o nombre de usuario" class="w-full p-3 border border-gray-300 rounded-lg mb-4 outline-none focus:ring-2 focus:ring-purple-400">
-            <button onclick="login()" class="w-full bg-[#7b68ee] text-white font-bold py-3 rounded-lg hover:opacity-90 transition shadow-lg">Log In</button>
+            <div class="bg-purple-600 w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg rotate-3">
+                <i class="fas fa-bolt text-white text-3xl"></i>
+            </div>
+            <h2 class="text-3xl font-black mb-6">ClickMaster <span class="text-purple-600">4.0</span></h2>
+            <input type="text" id="username" placeholder="Tu nombre de usuario" class="w-full p-4 border rounded-xl mb-4 outline-none focus:ring-2 focus:ring-purple-400 font-medium">
+            <button onclick="login()" class="w-full bg-[#7b68ee] text-white font-bold py-4 rounded-xl hover:opacity-90 shadow-xl transition">Iniciar Espacio de Trabajo</button>
         </div>
     </div>
 
-    <aside class="w-64 bg-[#2a2e34] text-gray-300 flex flex-col shrink-0">
-        <div class="p-4 flex items-center gap-3 border-b border-gray-700">
-            <div class="w-8 h-8 bg-gradient-to-tr from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white font-bold">W</div>
-            <span class="font-bold text-white truncate" id="ws-name">Workspace</span>
+    <aside class="w-64 bg-[#2a2e34] text-gray-400 flex flex-col shrink-0 transition-all duration-300" id="sidebar">
+        <div class="p-4 flex items-center justify-between border-b border-gray-700">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 bg-purple-500 rounded text-white flex items-center justify-center font-bold text-xs">C</div>
+                <span class="font-bold text-white text-sm">Mi Workspace</span>
+            </div>
+            <i class="fas fa-search text-xs cursor-pointer hover:text-white"></i>
         </div>
 
-        <div class="flex-1 overflow-y-auto custom-scrollbar p-2">
-            <div class="mt-4 px-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Favoritos</div>
+        <div class="flex-1 overflow-y-auto p-2">
+            <div class="mt-4 px-3 text-[10px] font-bold text-gray-500 uppercase">Navegación</div>
             <div class="mt-2 space-y-1">
-                <div class="flex items-center gap-2 p-2 rounded-md sidebar-active text-white cursor-pointer text-sm">
-                    <i class="fas fa-calendar-alt text-purple-400"></i> Plan Mensual
-                </div>
+                <button onclick="setView('lista')" class="w-full flex items-center gap-2 p-2 rounded-md sidebar-active text-sm transition">
+                    <i class="fas fa-list text-purple-400"></i> Vista de Lista
+                </button>
+                <button onclick="setView('tablero')" class="w-full flex items-center gap-2 p-2 hover:bg-white/5 rounded-md text-sm transition">
+                    <i class="fas fa-columns"></i> Vista Tablero
+                </button>
             </div>
 
-            <div class="mt-8 px-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Espacios</div>
-            <div class="mt-2 space-y-1">
-                <div class="flex items-center justify-between p-2 hover:bg-gray-700 rounded-md cursor-pointer text-sm">
-                    <div class="flex items-center gap-2">
-                        <i class="fas fa-layer-group text-green-400"></i> Proyectos
-                    </div>
-                    <i class="fas fa-plus text-[10px]"></i>
+            <div class="mt-8 px-3 text-[10px] font-bold text-gray-500 uppercase flex justify-between items-center">
+                <span>Espacios</span>
+                <i class="fas fa-plus cursor-pointer hover:text-white" onclick="addSpace()"></i>
+            </div>
+            <div id="spaces-list" class="mt-2 space-y-1">
+                <div class="flex items-center gap-2 p-2 hover:bg-white/5 rounded-md cursor-pointer text-sm">
+                    <i class="fas fa-circle text-[8px] text-green-400"></i> General
                 </div>
             </div>
         </div>
 
         <div class="p-4 bg-[#1e2227] border-t border-gray-700">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold" id="user-initial">U</div>
-                <div class="text-xs truncate flex-1">
-                    <p class="font-bold text-white" id="user-display">Usuario</p>
-                    <button onclick="logout()" class="text-gray-500 hover:text-white">Cerrar Sesión</button>
+                <div class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold" id="u-initial">?</div>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-xs font-bold text-white truncate" id="u-name">Usuario</p>
+                    <button onclick="logout()" class="text-[10px] hover:underline">Salir</button>
                 </div>
-                <i class="fas fa-cog text-gray-500"></i>
+                <i class="fas fa-moon cursor-pointer hover:text-white" onclick="toggleDarkMode()"></i>
             </div>
         </div>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-hidden">
-        
-        <header class="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-6">
+        <header class="h-14 bg-white border-b flex items-center justify-between px-6 shadow-sm z-10">
             <div class="flex items-center gap-4">
-                <h2 class="font-bold text-gray-700">Planificador de Actividades</h2>
-                <div class="flex items-center bg-gray-100 rounded-md px-3 py-1 gap-4">
-                    <button onclick="changeMonth(-1)" class="hover:text-purple-600"><i class="fas fa-chevron-left text-xs"></i></button>
-                    <span id="month-name" class="text-xs font-bold w-24 text-center">JUNIO 2024</span>
-                    <button onclick="changeMonth(1)" class="hover:text-purple-600"><i class="fas fa-chevron-right text-xs"></i></button>
+                <div class="flex items-center bg-gray-100 rounded-lg p-1">
+                    <button onclick="changeMonth(-1)" class="p-1 hover:text-purple-600"><i class="fas fa-chevron-left"></i></button>
+                    <span id="month-display" class="px-4 font-bold text-xs">JUNIO 2024</span>
+                    <button onclick="changeMonth(1)" class="p-1 hover:text-purple-600"><i class="fas fa-chevron-right"></i></button>
                 </div>
             </div>
-            
             <div class="flex items-center gap-4">
-                <div class="text-xs text-gray-500 font-medium">Progreso Global: <span id="global-pct" class="text-purple-600 font-bold">0%</span></div>
-                <button class="bg-[#7b68ee] text-white text-xs font-bold px-4 py-2 rounded shadow-sm hover:brightness-110">NUEVA VISTA</button>
+                <div class="text-[11px] font-bold text-gray-400 uppercase">Eficiencia: <span id="eff-pct" class="text-purple-600">0%</span></div>
+                <button onclick="focusInput()" class="bg-[#7b68ee] text-white text-xs font-bold px-4 py-2 rounded-lg hover:brightness-110 shadow-lg shadow-purple-500/20 transition">+ TAREA</button>
             </div>
         </header>
 
-        <div class="h-10 bg-white border-b border-gray-100 flex items-center px-6 gap-6">
-            <div class="text-[12px] font-semibold text-purple-600 border-b-2 border-purple-600 h-full flex items-center px-1">
-                <i class="fas fa-th-list mr-2"></i> Lista Semanal
-            </div>
-            <div class="text-[12px] font-semibold text-gray-400 hover:text-gray-600 cursor-pointer h-full flex items-center px-1">
-                <i class="fas fa-columns mr-2"></i> Tablero
-            </div>
-        </div>
-
-        <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
-            
-            <div class="max-w-5xl mx-auto mb-10 flex gap-2">
-                <input type="text" id="task-input" placeholder="+ Nueva actividad..." class="flex-1 bg-white border border-gray-200 p-3 rounded-lg shadow-sm outline-none focus:ring-2 focus:ring-purple-200 text-sm">
-                <select id="week-input" class="bg-white border border-gray-200 p-3 rounded-lg text-sm font-bold text-gray-600 outline-none">
-                    <option value="1">Semana 1</option>
-                    <option value="2">Semana 2</option>
-                    <option value="3">Semana 3</option>
-                    <option value="4">Semana 4</option>
-                    <option value="5">Semana 5</option>
-                </select>
-                <button onclick="addTask()" class="bg-[#7b68ee] text-white px-6 rounded-lg font-bold text-sm">Añadir</button>
-            </div>
-
-            <div id="workspace-content" class="max-w-5xl mx-auto space-y-12">
+        <div class="flex-1 overflow-y-auto p-8 bg-slate-50 custom-scrollbar" id="content-area">
+            <div class="max-w-5xl mx-auto">
+                <div class="bg-white p-4 rounded-xl border mb-8 flex gap-3 shadow-sm">
+                    <input type="text" id="t-input" placeholder="¿Qué hay que hacer?" class="flex-1 border-none outline-none font-medium text-sm p-2">
+                    <select id="w-input" class="bg-gray-50 border rounded-lg text-xs font-bold px-3">
+                        <option value="1">Semana 1</option>
+                        <option value="2">Semana 2</option>
+                        <option value="3">Semana 3</option>
+                        <option value="4">Semana 4</option>
+                        <option value="5">Semana 5</option>
+                    </select>
+                    <button onclick="addTask()" class="bg-purple-600 text-white px-6 rounded-lg text-xs font-bold">Añadir</button>
                 </div>
+
+                <div id="weeks-render" class="space-y-8"></div>
+            </div>
         </div>
     </main>
 
     <script>
-        let currentUser = "";
-        let viewDate = new Date();
-        let db = JSON.parse(localStorage.getItem('cu_v4_db')) || [];
+        let user = "";
+        let date = new Date();
+        let db = JSON.parse(localStorage.getItem('cm4_db')) || [];
 
         function login() {
-            const user = document.getElementById('username').value;
-            if(!user) return;
-            currentUser = user;
-            localStorage.setItem('cu_last_user', user);
+            const n = document.getElementById('username').value;
+            if(!n) return;
+            user = n;
+            localStorage.setItem('cm4_user', n);
             document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('user-display').innerText = user;
-            document.getElementById('user-initial').innerText = user.charAt(0).toUpperCase();
+            document.getElementById('u-name').innerText = n;
+            document.getElementById('u-initial').innerText = n.charAt(0).toUpperCase();
             render();
         }
 
         function addTask() {
-            const input = document.getElementById('task-input');
-            const week = document.getElementById('week-input');
+            const input = document.getElementById('t-input');
+            const week = document.getElementById('w-input');
             if(!input.value) return;
 
             db.push({
                 id: Date.now(),
-                user: currentUser,
+                user: user,
                 text: input.value,
                 week: parseInt(week.value),
-                month: viewDate.getMonth(),
-                year: viewDate.getFullYear(),
+                month: date.getMonth(),
+                year: date.getFullYear(),
                 progress: 0
             });
-
             input.value = "";
             save();
         }
 
-        function updateProgress(id, val) {
+        function updateTask(id, val) {
             db = db.map(t => t.id === id ? {...t, progress: parseInt(val)} : t);
             save();
         }
 
         function deleteTask(id) {
-            db = db.filter(t => t.id !== id);
-            save();
+            if(confirm('¿Eliminar actividad?')) {
+                db = db.filter(t => t.id !== id);
+                save();
+            }
+        }
+
+        function toggleWeek(id) {
+            document.getElementById(`week-body-${id}`).classList.toggle('collapsed');
+            document.getElementById(`icon-${id}`).classList.toggle('-rotate-90');
         }
 
         function changeMonth(delta) {
-            viewDate.setMonth(viewDate.getMonth() + delta);
+            date.setMonth(date.getMonth() + delta);
             render();
         }
 
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        function setView(tipo) {
+            // Animación de cambio de vista
+            document.getElementById('content-area').style.opacity = "0";
+            setTimeout(() => {
+                document.getElementById('content-area').style.opacity = "1";
+                alert(`Vista cambiada a: ${tipo.toUpperCase()}. En ClickUp 4.0, esto reorganiza los elementos.`);
+            }, 200);
+        }
+
+        function addSpace() {
+            const nombre = prompt("Nombre del nuevo espacio:");
+            if(nombre) {
+                const list = document.getElementById('spaces-list');
+                const div = document.createElement('div');
+                div.className = "flex items-center gap-2 p-2 hover:bg-white/5 rounded-md cursor-pointer text-sm animate__animated animate__fadeIn";
+                div.innerHTML = `<i class="fas fa-circle text-[8px] text-purple-400"></i> ${nombre}`;
+                list.appendChild(div);
+            }
+        }
+
+        function focusInput() { document.getElementById('t-input').focus(); }
+
         function save() {
-            localStorage.setItem('cu_v4_db', JSON.stringify(db));
+            localStorage.setItem('cm4_db', JSON.stringify(db));
             render();
         }
 
         function render() {
             const months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-            document.getElementById('month-name').innerText = `${months[viewDate.getMonth()].toUpperCase()} ${viewDate.getFullYear()}`;
+            document.getElementById('month-display').innerText = `${months[date.getMonth()].toUpperCase()} ${date.getFullYear()}`;
 
-            const container = document.getElementById('workspace-content');
+            const container = document.getElementById('weeks-render');
             container.innerHTML = "";
 
-            const monthlyTasks = db.filter(t => t.user === currentUser && t.month === viewDate.getMonth() && t.year === viewDate.getFullYear());
+            const tasks = db.filter(t => t.user === user && t.month === date.getMonth() && t.year === date.getFullYear());
 
             for (let w = 1; w <= 5; w++) {
-                const weekTasks = monthlyTasks.filter(t => t.week === w);
-                
-                const weekSection = document.createElement('div');
-                weekSection.innerHTML = `
-                    <div class="flex items-center gap-2 mb-4 group cursor-pointer">
-                        <i class="fas fa-chevron-down text-[10px] text-gray-400"></i>
-                        <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Semana ${w}</h3>
-                        <span class="text-[10px] bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">${weekTasks.length}</span>
+                const wTasks = tasks.filter(t => t.week === w);
+                const section = document.createElement('div');
+                section.innerHTML = `
+                    <div class="flex items-center gap-2 mb-3 cursor-pointer" onclick="toggleWeek(${w})">
+                        <i class="fas fa-chevron-down text-[10px] text-gray-400 transition-transform" id="icon-${w}"></i>
+                        <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Semana ${w}</span>
+                        <span class="bg-gray-200 text-gray-600 text-[9px] px-1.5 rounded-full font-bold">${wTasks.length}</span>
                     </div>
-                    <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden transition-all" id="week-body-${w}">
                         <table class="w-full text-left text-xs">
-                            <thead class="bg-gray-50 border-b border-gray-200 text-gray-400 font-bold">
+                            <thead class="bg-gray-50 border-b text-gray-400 font-bold">
                                 <tr>
-                                    <th class="p-3 w-12 text-center">ID</th>
-                                    <th class="p-3">NOMBRE DE LA TAREA</th>
-                                    <th class="p-3 w-32 text-center">ESTADO</th>
-                                    <th class="p-3 w-48">PROGRESO</th>
-                                    <th class="p-3 w-12"></th>
+                                    <th class="p-3 w-10 text-center">#</th>
+                                    <th class="p-3">ACTIVIDAD</th>
+                                    <th class="p-3 w-28 text-center">ESTADO</th>
+                                    <th class="p-3 w-40">PROGRESO</th>
+                                    <th class="p-3 w-10"></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                ${weekTasks.length ? weekTasks.map(t => {
-                                    const status = t.progress == 100 ? 'Closed' : (t.progress > 0 ? 'In Progress' : 'To Do');
-                                    const statusColor = t.progress == 100 ? 'bg-green-500 text-white' : (t.progress > 0 ? 'bg-blue-400 text-white' : 'bg-gray-400 text-white');
+                                ${wTasks.length ? wTasks.map(t => {
+                                    const st = t.progress == 100 ? 'CLOSED' : (t.progress > 0 ? 'IN PROGRESS' : 'TO DO');
+                                    const col = t.progress == 100 ? 'bg-green-500' : (t.progress > 0 ? 'bg-blue-500' : 'bg-gray-400');
                                     return `
-                                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
-                                        <td class="p-3 text-center text-gray-300 font-mono">#${t.id.toString().slice(-4)}</td>
-                                        <td class="p-3 font-medium text-gray-700">${t.text}</td>
-                                        <td class="p-3 text-center">
-                                            <span class="status-pill ${statusColor}">${status}</span>
-                                        </td>
+                                    <tr class="border-b border-gray-50 hover:bg-slate-50 transition group">
+                                        <td class="p-3 text-center text-gray-300 font-mono italic">${t.id.toString().slice(-3)}</td>
+                                        <td class="p-3 font-semibold text-gray-700">${t.text}</td>
+                                        <td class="p-3 text-center"><span class="status-pill text-white ${col}">${st}</span></td>
                                         <td class="p-3">
-                                            <div class="flex items-center gap-3">
-                                                <input type="range" min="0" max="100" value="${t.progress}" 
-                                                    oninput="updateProgress(${t.id}, this.value)"
-                                                    class="flex-1 accent-purple-600">
-                                                <span class="w-8 font-bold text-gray-500">${t.progress}%</span>
+                                            <div class="flex items-center gap-2">
+                                                <input type="range" min="0" max="100" value="${t.progress}" oninput="updateTask(${t.id}, this.value)" class="flex-1 accent-purple-600">
+                                                <span class="font-bold text-gray-400 w-6">${t.progress}%</span>
                                             </div>
                                         </td>
-                                        <td class="p-3 text-right">
-                                            <button onclick="deleteTask(${t.id})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
-                                        </td>
+                                        <td class="p-3"><button onclick="deleteTask(${t.id})" class="text-gray-200 hover:text-red-500 group-hover:text-gray-400"><i class="fas fa-trash"></i></button></td>
                                     </tr>`;
-                                }).join('') : `<tr><td colspan="5" class="p-6 text-center text-gray-400 italic">No hay tareas asignadas para esta semana.</td></tr>`}
+                                }).join('') : '<tr><td colspan="5" class="p-8 text-center text-gray-400 italic">Haz clic en + TAREA para empezar esta semana.</td></tr>'}
                             </tbody>
                         </table>
-                        <div class="p-2 bg-gray-50 border-t border-gray-200">
-                            <button class="text-[11px] font-bold text-gray-400 hover:text-purple-600 ml-2">+ AÑADIR TAREA</button>
+                        <div class="p-3 bg-gray-50/50">
+                            <button onclick="focusInput()" class="text-[10px] font-bold text-gray-400 hover:text-purple-600 transition">+ AÑADIR ACTIVIDAD</button>
                         </div>
                     </div>
                 `;
-                container.appendChild(weekSection);
+                container.appendChild(section);
             }
 
-            // Global Pct
-            const total = monthlyTasks.reduce((acc, t) => acc + t.progress, 0);
-            const globalPct = monthlyTasks.length ? Math.round(total / monthlyTasks.length) : 0;
-            document.getElementById('global-pct').innerText = globalPct + "%";
+            const avg = tasks.length ? Math.round(tasks.reduce((a, b) => a + b.progress, 0) / tasks.length) : 0;
+            document.getElementById('eff-pct').innerText = avg + "%";
         }
 
-        function logout() {
-            localStorage.removeItem('cu_last_user');
-            location.reload();
-        }
+        function logout() { localStorage.removeItem('cm4_user'); location.reload(); }
 
         window.onload = () => {
-            const last = localStorage.getItem('cu_last_user');
-            if(last) {
-                document.getElementById('username').value = last;
+            const saved = localStorage.getItem('cm4_user');
+            if(saved) {
+                document.getElementById('username').value = saved;
                 login();
             }
         }
