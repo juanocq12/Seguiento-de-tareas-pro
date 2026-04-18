@@ -3,242 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskMaster Ultra | Gestión de Actividades</title>
+    <title>ClickMaster 4.0 | Workspace</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
-        :root { --primary: #2563eb; --bg: #f8fafc; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: #1e293b; }
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.4); }
-        .card-shadow { box-shadow: 0 10px 30px -5px rgba(0,0,0,0.03); }
-        .sidebar-item:hover { background: rgba(37, 99, 235, 0.1); color: var(--primary); }
-        input[type="range"]::-webkit-slider-thumb { appearance: none; width: 15px; height: 15px; background: var(--primary); border-radius: 50%; cursor: pointer; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --cu-purple: #7b68ee;
+            --cu-bg: #f7f8f9;
+            --cu-sidebar: #2a2e34;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--cu-bg);
+            color: #2b2c32;
+        }
+
+        .cu-card {
+            background: white;
+            border: 1px solid #e9ebf0;
+            transition: all 0.2s ease;
+        }
+
+        .cu-card:hover {
+            border-color: #d1d5db;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .status-pill {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        /* Estilos personalizados para el slider de progreso */
+        input[type="range"] {
+            -webkit-appearance: none;
+            background: #e9ebf0;
+            height: 4px;
+            border-radius: 5px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--cu-purple);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .sidebar-active {
+            background: rgba(255,255,255,0.1);
+            border-left: 3px solid var(--cu-purple);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
-<body class="antialiased">
+<body class="flex h-screen overflow-hidden">
 
-    <div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900">
-        <div class="bg-white p-12 rounded-[40px] shadow-2xl w-full max-w-md text-center">
-            <div class="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-6 rotate-12 shadow-xl shadow-blue-500/30">
-                <i class="fas fa-layer-group text-white text-3xl"></i>
-            </div>
-            <h2 class="text-4xl font-black mb-2 text-slate-800">TaskMaster</h2>
-            <p class="text-slate-400 mb-8 font-medium italic">Tu flujo de trabajo profesional</p>
-            <input type="text" id="username" placeholder="Nombre de usuario" 
-                class="w-full bg-slate-100 border-none p-4 rounded-2xl mb-4 text-center text-lg outline-none focus:ring-4 focus:ring-blue-100 transition-all">
-            <button onclick="login()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 transition transform hover:scale-[1.02]">
-                Entrar al Tablero
-            </button>
+    <div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-white">
+        <div class="w-full max-w-sm p-8 text-center">
+            <img src="https://clickup.com/assets/images/brand-guidelines/logos/clickup-logo-color.svg" class="w-32 mx-auto mb-8" alt="Logo">
+            <h2 class="text-2xl font-bold mb-6">Bienvenido a tu Workspace</h2>
+            <input type="text" id="username" placeholder="Email o nombre de usuario" class="w-full p-3 border border-gray-300 rounded-lg mb-4 outline-none focus:ring-2 focus:ring-purple-400">
+            <button onclick="login()" class="w-full bg-[#7b68ee] text-white font-bold py-3 rounded-lg hover:opacity-90 transition shadow-lg">Log In</button>
         </div>
     </div>
 
-    <div id="app" class="hidden flex min-h-screen">
+    <aside class="w-64 bg-[#2a2e34] text-gray-300 flex flex-col shrink-0">
+        <div class="p-4 flex items-center gap-3 border-b border-gray-700">
+            <div class="w-8 h-8 bg-gradient-to-tr from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white font-bold">W</div>
+            <span class="font-bold text-white truncate" id="ws-name">Workspace</span>
+        </div>
+
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-2">
+            <div class="mt-4 px-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Favoritos</div>
+            <div class="mt-2 space-y-1">
+                <div class="flex items-center gap-2 p-2 rounded-md sidebar-active text-white cursor-pointer text-sm">
+                    <i class="fas fa-calendar-alt text-purple-400"></i> Plan Mensual
+                </div>
+            </div>
+
+            <div class="mt-8 px-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Espacios</div>
+            <div class="mt-2 space-y-1">
+                <div class="flex items-center justify-between p-2 hover:bg-gray-700 rounded-md cursor-pointer text-sm">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-layer-group text-green-400"></i> Proyectos
+                    </div>
+                    <i class="fas fa-plus text-[10px]"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4 bg-[#1e2227] border-t border-gray-700">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold" id="user-initial">U</div>
+                <div class="text-xs truncate flex-1">
+                    <p class="font-bold text-white" id="user-display">Usuario</p>
+                    <button onclick="logout()" class="text-gray-500 hover:text-white">Cerrar Sesión</button>
+                </div>
+                <i class="fas fa-cog text-gray-500"></i>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
         
-        <aside class="w-72 bg-white border-r border-slate-100 flex flex-col p-6 sticky top-0 h-screen">
-            <div class="flex items-center gap-3 mb-10 px-2">
-                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-check-double text-white text-xs"></i>
-                </div>
-                <span class="font-extrabold text-xl tracking-tight">TM ULTRA</span>
-            </div>
-
-            <nav class="flex-1 space-y-2">
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Planificación</p>
-                <div class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-100 mb-6">
-                    <button onclick="changeMonth(-1)" class="text-slate-400 hover:text-blue-600"><i class="fas fa-chevron-left"></i></button>
-                    <span id="current-month-display" class="font-bold text-sm uppercase">Junio 2024</span>
-                    <button onclick="changeMonth(1)" class="text-slate-400 hover:text-blue-600"><i class="fas fa-chevron-right"></i></button>
-                </div>
-
-                <div class="space-y-4">
-                    <div class="bg-blue-50 p-4 rounded-2xl">
-                        <p class="text-[10px] font-bold text-blue-400 uppercase mb-2">Progreso Mensual</p>
-                        <div class="flex items-center justify-between mb-1">
-                            <span id="monthly-pct" class="text-2xl font-black text-blue-700">0%</span>
-                        </div>
-                        <div class="w-full bg-white h-2 rounded-full overflow-hidden">
-                            <div id="monthly-bar" class="h-full bg-blue-600 rounded-full transition-all duration-1000" style="width: 0%"></div>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
-            <div class="mt-auto pt-6 border-t border-slate-100">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center font-bold text-slate-600" id="user-avatar">?</div>
-                    <div>
-                        <p id="display-name" class="font-bold text-sm truncate w-32">Usuario</p>
-                        <button onclick="logout()" class="text-[10px] text-red-400 font-bold uppercase hover:text-red-600">Cerrar Sesión</button>
-                    </div>
+        <header class="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-6">
+            <div class="flex items-center gap-4">
+                <h2 class="font-bold text-gray-700">Planificador de Actividades</h2>
+                <div class="flex items-center bg-gray-100 rounded-md px-3 py-1 gap-4">
+                    <button onclick="changeMonth(-1)" class="hover:text-purple-600"><i class="fas fa-chevron-left text-xs"></i></button>
+                    <span id="month-name" class="text-xs font-bold w-24 text-center">JUNIO 2024</span>
+                    <button onclick="changeMonth(1)" class="hover:text-purple-600"><i class="fas fa-chevron-right text-xs"></i></button>
                 </div>
             </div>
-        </aside>
+            
+            <div class="flex items-center gap-4">
+                <div class="text-xs text-gray-500 font-medium">Progreso Global: <span id="global-pct" class="text-purple-600 font-bold">0%</span></div>
+                <button class="bg-[#7b68ee] text-white text-xs font-bold px-4 py-2 rounded shadow-sm hover:brightness-110">NUEVA VISTA</button>
+            </div>
+        </header>
 
-        <main class="flex-1 p-8">
-            <div class="glass p-6 rounded-[32px] mb-8 flex flex-wrap items-center gap-4 card-shadow">
-                <div class="flex-1 min-w-[250px]">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">¿Qué actividad vas a realizar?</label>
-                    <input type="text" id="task-input" placeholder="Ej: Reporte de ventas semanal..." 
-                        class="w-full bg-transparent p-2 text-lg font-semibold outline-none border-b-2 border-slate-100 focus:border-blue-500 transition-all">
-                </div>
-                <div class="w-48">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Asignar Semana</label>
-                    <select id="week-input" class="w-full bg-slate-50 p-3 rounded-xl font-bold text-slate-600 outline-none">
-                        <option value="1">Semana 1</option>
-                        <option value="2">Semana 2</option>
-                        <option value="3">Semana 3</option>
-                        <option value="4">Semana 4</option>
-                        <option value="5">Semana 5</option>
-                    </select>
-                </div>
-                <button onclick="addTask()" class="bg-blue-600 text-white px-8 py-4 rounded-2xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition flex items-center gap-2">
-                    <i class="fas fa-plus"></i> Asignar
-                </button>
+        <div class="h-10 bg-white border-b border-gray-100 flex items-center px-6 gap-6">
+            <div class="text-[12px] font-semibold text-purple-600 border-b-2 border-purple-600 h-full flex items-center px-1">
+                <i class="fas fa-th-list mr-2"></i> Lista Semanal
+            </div>
+            <div class="text-[12px] font-semibold text-gray-400 hover:text-gray-600 cursor-pointer h-full flex items-center px-1">
+                <i class="fas fa-columns mr-2"></i> Tablero
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
+            
+            <div class="max-w-5xl mx-auto mb-10 flex gap-2">
+                <input type="text" id="task-input" placeholder="+ Nueva actividad..." class="flex-1 bg-white border border-gray-200 p-3 rounded-lg shadow-sm outline-none focus:ring-2 focus:ring-purple-200 text-sm">
+                <select id="week-input" class="bg-white border border-gray-200 p-3 rounded-lg text-sm font-bold text-gray-600 outline-none">
+                    <option value="1">Semana 1</option>
+                    <option value="2">Semana 2</option>
+                    <option value="3">Semana 3</option>
+                    <option value="4">Semana 4</option>
+                    <option value="5">Semana 5</option>
+                </select>
+                <button onclick="addTask()" class="bg-[#7b68ee] text-white px-6 rounded-lg font-bold text-sm">Añadir</button>
             </div>
 
-            <div id="weeks-container" class="space-y-10">
+            <div id="workspace-content" class="max-w-5xl mx-auto space-y-12">
                 </div>
-        </main>
-    </div>
+        </div>
+    </main>
 
     <script>
         let currentUser = "";
         let viewDate = new Date();
-        let db = JSON.parse(localStorage.getItem('tm_ultra_db')) || [];
+        let db = JSON.parse(localStorage.getItem('cu_v4_db')) || [];
 
         function login() {
-            const name = document.getElementById('username').value;
-            if (!name) return;
-            currentUser = name;
-            localStorage.setItem('tm_last_user', name);
+            const user = document.getElementById('username').value;
+            if(!user) return;
+            currentUser = user;
+            localStorage.setItem('cu_last_user', user);
             document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('app').classList.remove('hidden');
-            document.getElementById('display-name').innerText = name;
-            document.getElementById('user-avatar').innerText = name.charAt(0).toUpperCase();
+            document.getElementById('user-display').innerText = user;
+            document.getElementById('user-initial').innerText = user.charAt(0).toUpperCase();
             render();
         }
 
         function addTask() {
             const input = document.getElementById('task-input');
             const week = document.getElementById('week-input');
-            if (!input.value) return;
+            if(!input.value) return;
 
-            const task = {
+            db.push({
                 id: Date.now(),
                 user: currentUser,
                 text: input.value,
                 week: parseInt(week.value),
                 month: viewDate.getMonth(),
                 year: viewDate.getFullYear(),
-                progress: 0,
-                status: 'Pendiente', // Pendiente, Proceso, Finalizado
-                timestamp: new Date().toLocaleString()
-            };
+                progress: 0
+            });
 
-            db.push(task);
             input.value = "";
             save();
         }
 
         function updateProgress(id, val) {
-            db = db.map(t => {
-                if(t.id === id) {
-                    let status = 'Pendiente';
-                    if(val > 0) status = 'Proceso';
-                    if(val == 100) status = 'Finalizado';
-                    return {...t, progress: parseInt(val), status: status};
-                }
-                return t;
-            });
+            db = db.map(t => t.id === id ? {...t, progress: parseInt(val)} : t);
             save();
         }
 
         function deleteTask(id) {
-            if(confirm('¿Eliminar esta actividad?')) {
-                db = db.filter(t => t.id !== id);
-                save();
-            }
+            db = db.filter(t => t.id !== id);
+            save();
         }
 
-        function changeMonth(step) {
-            viewDate.setMonth(viewDate.getMonth() + step);
+        function changeMonth(delta) {
+            viewDate.setMonth(viewDate.getMonth() + delta);
             render();
         }
 
         function save() {
-            localStorage.setItem('tm_ultra_db', JSON.stringify(db));
+            localStorage.setItem('cu_v4_db', JSON.stringify(db));
             render();
         }
 
         function render() {
-            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-            document.getElementById('current-month-display').innerText = `${monthNames[viewDate.getMonth()]} ${viewDate.getFullYear()}`;
+            const months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            document.getElementById('month-name').innerText = `${months[viewDate.getMonth()].toUpperCase()} ${viewDate.getFullYear()}`;
 
-            const container = document.getElementById('weeks-container');
+            const container = document.getElementById('workspace-content');
             container.innerHTML = "";
 
-            // Filtro por usuario y fecha
             const monthlyTasks = db.filter(t => t.user === currentUser && t.month === viewDate.getMonth() && t.year === viewDate.getFullYear());
 
             for (let w = 1; w <= 5; w++) {
                 const weekTasks = monthlyTasks.filter(t => t.week === w);
-                const weekDiv = document.createElement('div');
-                weekDiv.className = "animate__animated animate__fadeIn";
-                weekDiv.innerHTML = `
-                    <div class="flex items-center gap-4 mb-4">
-                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.3em]">Semana 0${w}</h3>
-                        <div class="h-[1px] flex-1 bg-slate-200"></div>
+                
+                const weekSection = document.createElement('div');
+                weekSection.innerHTML = `
+                    <div class="flex items-center gap-2 mb-4 group cursor-pointer">
+                        <i class="fas fa-chevron-down text-[10px] text-gray-400"></i>
+                        <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Semana ${w}</h3>
+                        <span class="text-[10px] bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">${weekTasks.length}</span>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        ${weekTasks.length ? weekTasks.map(t => `
-                            <div class="glass p-6 rounded-[28px] card-shadow border-l-8 ${t.progress == 100 ? 'border-green-500' : (t.progress > 0 ? 'border-blue-400' : 'border-slate-200')}">
-                                <div class="flex justify-between items-start mb-4">
-                                    <span class="text-[9px] font-bold px-2 py-1 rounded-full ${t.status === 'Finalizado' ? 'bg-green-100 text-green-600' : 'bg-blue-100 text-blue-600'} uppercase">
-                                        ${t.status}
-                                    </span>
-                                    <button onclick="deleteTask(${t.id})" class="text-slate-300 hover:text-red-500 transition"><i class="fas fa-trash-alt text-xs"></i></button>
-                                </div>
-                                <h4 class="font-bold text-slate-800 mb-6 leading-tight h-12 overflow-hidden">${t.text}</h4>
-                                
-                                <div class="space-y-2">
-                                    <div class="flex justify-between text-[10px] font-bold">
-                                        <span class="text-slate-400 italic">${t.timestamp}</span>
-                                        <span class="text-blue-600">${t.progress}%</span>
-                                    </div>
-                                    <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                                        <div class="h-full bg-blue-600 transition-all duration-500" style="width: ${t.progress}%"></div>
-                                    </div>
-                                    <input type="range" min="0" max="100" value="${t.progress}" 
-                                        oninput="updateProgress(${t.id}, this.value)"
-                                        class="w-full h-1.5 bg-transparent appearance-none cursor-pointer">
-                                </div>
-                            </div>
-                        `).join('') : `
-                            <div class="col-span-full py-4 border-2 border-dashed border-slate-200 rounded-[28px] text-center text-slate-300 text-sm">
-                                No hay actividades para esta semana
-                            </div>
-                        `}
+                    <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-gray-50 border-b border-gray-200 text-gray-400 font-bold">
+                                <tr>
+                                    <th class="p-3 w-12 text-center">ID</th>
+                                    <th class="p-3">NOMBRE DE LA TAREA</th>
+                                    <th class="p-3 w-32 text-center">ESTADO</th>
+                                    <th class="p-3 w-48">PROGRESO</th>
+                                    <th class="p-3 w-12"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${weekTasks.length ? weekTasks.map(t => {
+                                    const status = t.progress == 100 ? 'Closed' : (t.progress > 0 ? 'In Progress' : 'To Do');
+                                    const statusColor = t.progress == 100 ? 'bg-green-500 text-white' : (t.progress > 0 ? 'bg-blue-400 text-white' : 'bg-gray-400 text-white');
+                                    return `
+                                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                                        <td class="p-3 text-center text-gray-300 font-mono">#${t.id.toString().slice(-4)}</td>
+                                        <td class="p-3 font-medium text-gray-700">${t.text}</td>
+                                        <td class="p-3 text-center">
+                                            <span class="status-pill ${statusColor}">${status}</span>
+                                        </td>
+                                        <td class="p-3">
+                                            <div class="flex items-center gap-3">
+                                                <input type="range" min="0" max="100" value="${t.progress}" 
+                                                    oninput="updateProgress(${t.id}, this.value)"
+                                                    class="flex-1 accent-purple-600">
+                                                <span class="w-8 font-bold text-gray-500">${t.progress}%</span>
+                                            </div>
+                                        </td>
+                                        <td class="p-3 text-right">
+                                            <button onclick="deleteTask(${t.id})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
+                                        </td>
+                                    </tr>`;
+                                }).join('') : `<tr><td colspan="5" class="p-6 text-center text-gray-400 italic">No hay tareas asignadas para esta semana.</td></tr>`}
+                            </tbody>
+                        </table>
+                        <div class="p-2 bg-gray-50 border-t border-gray-200">
+                            <button class="text-[11px] font-bold text-gray-400 hover:text-purple-600 ml-2">+ AÑADIR TAREA</button>
+                        </div>
                     </div>
                 `;
-                container.appendChild(weekDiv);
+                container.appendChild(weekSection);
             }
 
-            // Global Stats
-            const totalProgress = monthlyTasks.reduce((acc, t) => acc + t.progress, 0);
-            const monthlyPct = monthlyTasks.length ? Math.round(totalProgress / monthlyTasks.length) : 0;
-            document.getElementById('monthly-pct').innerText = monthlyPct + "%";
-            document.getElementById('monthly-bar').style.width = monthlyPct + "%";
+            // Global Pct
+            const total = monthlyTasks.reduce((acc, t) => acc + t.progress, 0);
+            const globalPct = monthlyTasks.length ? Math.round(total / monthlyTasks.length) : 0;
+            document.getElementById('global-pct').innerText = globalPct + "%";
         }
 
         function logout() {
-            localStorage.removeItem('tm_last_user');
+            localStorage.removeItem('cu_last_user');
             location.reload();
         }
 
         window.onload = () => {
-            const last = localStorage.getItem('tm_last_user');
-            if (last) {
+            const last = localStorage.getItem('cu_last_user');
+            if(last) {
                 document.getElementById('username').value = last;
                 login();
             }
