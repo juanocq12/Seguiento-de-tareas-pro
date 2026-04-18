@@ -3,139 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise OS | Report Edition</title>
+    <title>Master OS Platinum | Enterprise Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #0f172a; overflow: hidden; }
-        .sidebar { background-color: #020617; }
-        .glass-card { background: white; border: 1px solid #e2e8f0; border-radius: 24px; transition: all 0.3s ease; }
-        .btn-active { background: #1e293b; border-left: 4px solid #6366f1; color: white; }
-        .progress-bar { transition: width 0.6s ease-in-out; }
-        .modal { background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: none; position: fixed; inset: 0; z-index: 100; align-items: center; justify-content: center; padding: 20px; }
-        input[type="checkbox"] { width: 18px; height: 18px; accent-color: #6366f1; cursor: pointer; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        
+        :root {
+            --primary: #6366f1;
+            --dark: #0f172a;
+            --bg: #f8fafc;
+        }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--dark); }
+        
+        .sidebar { background: #020617; }
+        .glass-card { background: white; border: 1px solid #e2e8f0; border-radius: 24px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .glass-card:hover { transform: translateY(-4px); border-color: #6366f1; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+        
+        /* Contador de Tiempo */
+        .timer-badge { font-family: 'Courier New', monospace; letter-spacing: 1px; }
+
+        /* Estilos de Impresión (Tipo PDF) */
+        @media print {
+            .no-print, aside, header, .filter-bar, button { display: none !important; }
+            main { padding: 0 !important; background: white !important; }
+            .print-header { display: block !important; border-bottom: 2px solid #000; margin-bottom: 30px; padding-bottom: 10px; }
+            .glass-card { border: 1px solid #ddd !important; break-inside: avoid; box-shadow: none !important; margin-bottom: 20px !important; }
+            body { background: white !important; }
+        }
+
+        .modal { background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(12px); display: none; position: fixed; inset: 0; z-index: 100; align-items: center; justify-content: center; padding: 20px; }
+        
+        .status-delayed { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        .status-on-time { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
-<body class="flex h-screen">
+<body class="flex h-screen overflow-hidden">
 
-    <aside class="w-72 sidebar flex flex-col h-screen shrink-0 text-slate-400">
-        <div class="p-8 flex items-center gap-3 border-b border-slate-800">
-            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg"><i class="fas fa-chart-pie"></i></div>
-            <span class="font-extrabold text-white text-xl tracking-tight">MASTER HUB</span>
+    <aside class="w-72 sidebar flex flex-col h-screen shrink-0 text-slate-400 no-print">
+        <div class="p-8 border-b border-slate-800 flex items-center gap-3">
+            <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-2xl shadow-indigo-500/40">
+                <i class="fas fa-microchip text-xl"></i>
+            </div>
+            <div>
+                <span class="block font-extrabold text-white text-lg tracking-tight">OS PLATINUM</span>
+                <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-[2px]">Enterprise v8.0</span>
+            </div>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
-            <p class="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4">Administración</p>
-            <button onclick="cambiarVista('global')" id="nav-global" class="w-full text-left p-4 rounded-xl flex items-center gap-3 hover:text-white transition btn-active">
-                <i class="fas fa-home"></i> Inicio Global
+            <button onclick="cambiarVista('global')" id="nav-global" class="w-full text-left p-4 rounded-2xl flex items-center gap-3 hover:text-white transition btn-active">
+                <i class="fas fa-layer-group"></i> Dashboard Global
             </button>
-            <button onclick="cambiarVista('equipo')" id="nav-equipo" class="w-full text-left p-4 rounded-xl flex items-center gap-3 hover:text-white transition">
-                <i class="fas fa-users-cog"></i> Gestión Staff
+            <button onclick="cambiarVista('staff')" id="nav-staff" class="w-full text-left p-4 rounded-2xl flex items-center gap-3 hover:text-white transition">
+                <i class="fas fa-user-shield"></i> Recursos Humanos
             </button>
             
-            <p class="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-8 mb-4">Seguimiento por Persona</p>
+            <p class="px-5 text-[10px] font-black text-slate-600 uppercase tracking-[3px] mt-8 mb-4">Reportes de Control</p>
             <div id="sidebar-team-list" class="space-y-1"></div>
+        </div>
+
+        <div class="p-6 bg-slate-900/50 m-4 rounded-3xl border border-slate-800">
+            <p class="text-[10px] font-bold text-slate-500 mb-2">SISTEMA AUTÓNOMO</p>
+            <div class="flex items-center gap-3">
+                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span class="text-xs text-slate-300 font-bold">Horario: Operativo</span>
+            </div>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col overflow-hidden">
-        <header class="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0">
-            <h1 class="font-black text-2xl text-slate-800" id="header-title">Inicio Global</h1>
+    <main class="flex-1 flex flex-col overflow-hidden relative">
+        <div class="hidden print-header text-center">
+            <h1 class="text-3xl font-black uppercase">Informe Corporativo de Productividad</h1>
+            <p class="text-sm text-gray-500">Documento Oficial de Seguimiento y Control de Actividades</p>
+            <div id="print-date" class="mt-2 font-bold text-xs"></div>
+        </div>
+
+        <header class="h-24 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0 no-print">
+            <div>
+                <h1 class="font-black text-2xl text-slate-800" id="header-title">Panel Central</h1>
+                <p id="clock" class="text-xs font-bold text-indigo-600 uppercase tracking-widest mt-1"></p>
+            </div>
             <div class="flex items-center gap-4">
-                <div class="flex items-center bg-slate-100 rounded-full p-1 border shadow-sm">
-                    <button onclick="cambiarMes(-1)" class="w-8 h-8 flex items-center justify-center hover:bg-white rounded-full transition font-bold"><</button>
-                    <span id="label-mes" class="px-4 text-[10px] font-black uppercase text-slate-600">Abril 2026</span>
-                    <button onclick="cambiarMes(1)" class="w-8 h-8 flex items-center justify-center hover:bg-white rounded-full transition font-bold">></button>
-                </div>
-                <button onclick="abrirModalTarea()" class="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition">+ CREAR PROYECTO</button>
+                <button onclick="generarDataDemo()" class="bg-amber-500/10 text-amber-600 px-4 py-2.5 rounded-xl font-bold text-[10px] border border-amber-200 hover:bg-amber-500 hover:text-white transition">CARGAR DEMO DATA</button>
+                <button onclick="abrirModalTarea()" class="bg-indigo-600 text-white px-8 py-3 rounded-2xl font-bold text-sm shadow-xl shadow-indigo-200 hover:bg-indigo-700 hover:scale-105 transition active:scale-95">
+                    + NUEVA ACTIVIDAD
+                </button>
             </div>
         </header>
 
-        <div id="filter-bar" class="bg-white border-b px-10 py-3 flex items-center gap-4 hidden animate__animated animate__fadeInDown">
-            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Filtrar por:</span>
-            <div class="flex bg-slate-100 p-1 rounded-lg">
-                <button onclick="setFiltro('dia')" id="f-dia" class="px-4 py-1.5 rounded-md text-[10px] font-bold text-slate-500 transition">Día</button>
-                <button onclick="setFiltro('semana')" id="f-semana" class="px-4 py-1.5 rounded-md text-[10px] font-bold text-slate-500 transition">Semana</button>
-                <button onclick="setFiltro('mes')" id="f-mes" class="px-4 py-1.5 rounded-md text-[10px] font-bold bg-white text-indigo-600 shadow-sm transition">Mes</button>
+        <div id="filter-bar" class="bg-white border-b px-10 py-4 flex items-center gap-4 hidden no-print">
+            <div class="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl border">
+                <button onclick="setFiltro('dia')" id="f-dia" class="px-6 py-2 rounded-xl text-[10px] font-black transition">DÍA</button>
+                <button onclick="setFiltro('semana')" id="f-semana" class="px-6 py-2 rounded-xl text-[10px] font-black transition">SEMANA</button>
+                <button onclick="setFiltro('mes')" id="f-mes" class="px-6 py-2 rounded-xl text-[10px] font-black bg-white text-indigo-600 shadow-sm transition">MES</button>
             </div>
-            <input type="date" id="calendar-input" onchange="render()" class="ml-auto text-xs font-bold p-1.5 border rounded-lg outline-none bg-slate-50 focus:ring-2 focus:ring-indigo-500">
+            <input type="date" id="calendar-input" onchange="render()" class="ml-auto text-xs font-black p-3 border-2 border-slate-100 rounded-2xl outline-none focus:border-indigo-500 transition">
         </div>
 
         <div class="flex-1 overflow-y-auto p-10 bg-slate-50 custom-scrollbar" id="main-render"></div>
     </main>
 
     <div id="modal-tarea" class="modal">
-        <div class="glass-card p-8 w-full max-w-xl">
-            <h3 class="text-xl font-black mb-6 text-slate-800">Definir Nueva Tarea</h3>
-            <div class="space-y-4">
-                <input type="text" id="t-nombre" placeholder="Nombre de la actividad" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none font-bold">
-                <div class="grid grid-cols-2 gap-4">
-                    <select id="t-resp" class="p-3 bg-slate-50 border rounded-xl text-xs font-bold"></select>
-                    <select id="t-sem" class="p-3 bg-slate-50 border rounded-xl text-xs font-bold">
-                        <option value="1">Semana 1</option><option value="2">Semana 2</option>
-                        <option value="3">Semana 3</option><option value="4">Semana 4</option>
-                    </select>
+        <div class="glass-card p-10 w-full max-w-2xl">
+            <div class="flex justify-between items-start mb-8">
+                <div>
+                    <h3 class="text-2xl font-black text-slate-800">Planificar Tarea Pro</h3>
+                    <p class="text-xs text-slate-400 font-bold">Define objetivos y tiempos límites</p>
                 </div>
-                <div class="bg-indigo-50 p-6 rounded-2xl border-2 border-dashed border-indigo-200">
-                    <p class="text-[10px] font-black text-indigo-400 mb-3 uppercase tracking-widest">Añadir Etapas (Progress Check)</p>
-                    <div class="flex gap-2 mb-4">
-                        <input type="text" id="sub-input" placeholder="Ej: Entrega de archivos finales" class="flex-1 p-2 rounded-lg border-none shadow-sm text-sm">
-                        <button onclick="addEtapaDraft()" class="bg-indigo-600 text-white px-4 rounded-xl font-bold text-xs"><i class="fas fa-plus"></i></button>
+                <button onclick="cerrarModal('modal-tarea')" class="text-slate-300 hover:text-slate-600"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-6">
+                <div class="col-span-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Nombre del Proyecto / Actividad</label>
+                    <input type="text" id="t-nombre" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none font-bold focus:border-indigo-600 transition">
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Asignar Responsable</label>
+                    <select id="t-resp" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold outline-none"></select>
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Fecha de Entrega (Deadline)</label>
+                    <input type="datetime-local" id="t-deadline" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold outline-none">
+                </div>
+                <div class="col-span-2 bg-slate-900 p-8 rounded-[32px] text-white">
+                    <p class="text-[10px] font-black text-indigo-400 mb-4 uppercase tracking-[2px]">Desglose de Etapas</p>
+                    <div class="flex gap-3 mb-6">
+                        <input type="text" id="sub-input" placeholder="Ej: Fase de Auditoría..." class="flex-1 p-3 rounded-xl border-none outline-none text-slate-800 font-bold text-sm">
+                        <button onclick="addEtapaDraft()" class="bg-indigo-600 px-6 rounded-xl font-bold text-sm hover:bg-indigo-500 transition">Añadir</button>
                     </div>
                     <div id="etapas-draft" class="flex flex-wrap gap-2"></div>
                 </div>
-                <div class="flex gap-4 pt-4">
-                    <button onclick="cerrarModal('modal-tarea')" class="flex-1 p-3 font-bold text-slate-400">Cancelar</button>
-                    <button onclick="guardarTarea()" class="flex-1 p-3 bg-indigo-600 text-white rounded-2xl font-bold">Lanzar Actividad</button>
-                </div>
+            </div>
+            
+            <div class="flex gap-4 mt-10">
+                <button onclick="cerrarModal('modal-tarea')" class="flex-1 p-4 font-black text-slate-400 uppercase text-xs">Descartar</button>
+                <button onclick="guardarTarea()" class="flex-[2] p-4 bg-indigo-600 text-white rounded-2xl font-black shadow-2xl shadow-indigo-200 uppercase text-xs">Lanzar Actividad</button>
             </div>
         </div>
     </div>
 
-    <div id="modal-equipo" class="modal">
-        <div class="glass-card p-8 w-full max-w-md">
-            <h3 class="text-xl font-black mb-6">Nuevo Integrante</h3>
-            <div class="space-y-4">
-                <input type="text" id="p-nom" placeholder="Nombre Completo" class="w-full p-3 border rounded-xl outline-none font-bold">
-                <input type="text" id="p-car" placeholder="Cargo" class="w-full p-3 border rounded-xl outline-none">
-                <input type="email" id="p-ema" placeholder="Email de contacto" class="w-full p-3 border rounded-xl outline-none">
-                <button onclick="guardarPersonal()" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-bold shadow-lg">Registrar</button>
-                <button onclick="cerrarModal('modal-equipo')" class="w-full p-2 text-xs font-bold text-slate-400">Cancelar</button>
+    <div id="modal-retraso" class="modal">
+        <div class="glass-card p-10 w-full max-w-md border-t-8 border-red-500">
+            <h3 class="text-xl font-black text-slate-800 mb-2">Justificación de Retraso</h3>
+            <p class="text-xs text-slate-400 font-bold mb-6">Esta tarea ha superado el tiempo estimado sin completarse.</p>
+            <textarea id="motivo-text" class="w-full p-4 bg-red-50 border border-red-100 rounded-2xl h-32 outline-none font-medium text-red-900" placeholder="Describe el inconveniente o cuello de botella..."></textarea>
+            <div class="flex gap-4 mt-6">
+                <button onclick="guardarMotivo()" class="w-full p-4 bg-red-600 text-white rounded-2xl font-black shadow-xl shadow-red-200">REGISTRAR JUSTIFICACIÓN</button>
             </div>
         </div>
     </div>
 
     <script>
-        // DB Y ESTADO
-        let equipo = JSON.parse(localStorage.getItem('v7_team')) || [
-            { id: 1, nombre: "Carlos Ruiz", cargo: "Senior Dev", email: "carlos@corp.com" },
-            { id: 2, nombre: "Elena Gómez", cargo: "Diseñadora", email: "elena@corp.com" }
+        // CONFIGURACIÓN DE HORARIOS LABORALES
+        const SCHEDULE = {
+            workStart: 7,
+            workEndMonFri: 18,
+            workEndSat: 13,
+            workDays: [1,2,3,4,5], // L-V
+            satDay: 6
+        };
+
+        let equipo = JSON.parse(localStorage.getItem('v8_team')) || [
+            { id: 1, nombre: "Carlos Ruiz", cargo: "Gerente Operativo" },
+            { id: 2, nombre: "Elena Gómez", cargo: "Líder Técnica" }
         ];
-        let tareas = JSON.parse(localStorage.getItem('v7_tasks')) || [];
+        let tareas = JSON.parse(localStorage.getItem('v8_tasks')) || [];
         let draftEtapas = [];
         let vistaActual = 'global';
-        let filtroT = 'mes'; // dia, semana, mes
+        let filtroT = 'mes';
         let mesRef = new Date();
+        let currentRetrasoId = null;
 
         function init() {
-            document.getElementById('calendar-input').valueAsDate = new Date();
             actualizarSidebar();
             render();
+            startTime();
+            setInterval(updateAllTimers, 1000);
         }
 
-        function actualizarSidebar() {
-            const list = document.getElementById('sidebar-team-list');
-            list.innerHTML = equipo.map(p => `
-                <button onclick="cambiarVista('rep-${p.id}')" class="w-full text-left p-3 rounded-xl flex items-center gap-3 hover:text-white transition text-sm">
-                    <div class="w-6 h-6 bg-slate-800 rounded-lg flex items-center justify-center text-[10px] font-bold text-indigo-400">${p.nombre[0]}</div>
-                    ${p.nombre}
-                </button>
-            `).join('');
+        // --- RELOJ Y TIEMPOS LABORALES ---
+        function startTime() {
+            const clock = document.getElementById('clock');
+            setInterval(() => {
+                const now = new Date();
+                clock.innerText = now.toLocaleString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            }, 1000);
         }
 
+        function calculateWorkTimeRemaining(deadline) {
+            const now = new Date();
+            const end = new Date(deadline);
+            if (end < now) return "VENCIDO";
+
+            let totalSeconds = Math.floor((end - now) / 1000);
+            let days = Math.floor(totalSeconds / 86400);
+            let hours = Math.floor((totalSeconds % 86400) / 3600);
+            let minutes = Math.floor((totalSeconds % 3600) / 60);
+            
+            return `${days}d ${hours}h ${minutes}m`;
+        }
+
+        // --- GENERADOR DE DATA DEMO ---
+        function generarDataDemo() {
+            const demo = [
+                {
+                    id: Date.now(),
+                    texto: "Auditoría General Q2 - Finanzas",
+                    userId: 1,
+                    creada: new Date().toISOString().split('T')[0],
+                    deadline: new Date(Date.now() + 172800000).toISOString(),
+                    semana: 2,
+                    mes: 3,
+                    anio: 2026,
+                    subtasks: [
+                        { texto: "Recopilación de facturas", completed: true },
+                        { texto: "Conciliación bancaria", completed: true },
+                        { texto: "Informe de discrepancias", completed: false }
+                    ],
+                    retraso: ""
+                },
+                {
+                    id: Date.now()+1,
+                    texto: "Despliegue de Infraestructura Cloud",
+                    userId: 2,
+                    creada: new Date().toISOString().split('T')[0],
+                    deadline: new Date(Date.now() - 3600000).toISOString(), // Ya vencida
+                    semana: 2,
+                    mes: 3,
+                    anio: 2026,
+                    subtasks: [
+                        { texto: "Configuración AWS EC2", completed: true },
+                        { texto: "Migración de Base de Datos", completed: false }
+                    ],
+                    retraso: "Esperando confirmación del proveedor de ISP por caída de fibra."
+                }
+            ];
+            tareas = demo;
+            save();
+            alert("Data de demostración cargada con éxito.");
+        }
+
+        // --- RENDERIZADO ---
         function cambiarVista(v) {
             vistaActual = v;
             document.getElementById('filter-bar').classList.toggle('hidden', !v.startsWith('rep-'));
@@ -144,185 +258,137 @@
 
         function render() {
             const container = document.getElementById('main-render');
-            const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-            document.getElementById('label-mes').innerText = `${meses[mesRef.getMonth()]} ${mesRef.getFullYear()}`;
-
-            if(vistaActual === 'global') renderGlobal(container);
-            else if(vistaActual === 'equipo') renderGestionEquipo(container);
-            else if(vistaActual.startsWith('rep-')) renderInformeIndividual(container, vistaActual.split('-')[1]);
+            if (vistaActual === 'global') renderGlobal(container);
+            else if (vistaActual === 'staff') renderStaff(container);
+            else if (vistaActual.startsWith('rep-')) renderInformeIndividual(container, vistaActual.split('-')[1]);
+            actualizarSidebar();
         }
 
-        // --- DASHBOARD INDIVIDUAL CON FILTROS ---
+        function cardTarea(t) {
+            const done = t.subtasks.filter(s => s.completed).length;
+            const pct = Math.round((done / t.subtasks.length) * 100);
+            const timeRem = calculateWorkTimeRemaining(t.deadline);
+            const isVencido = timeRem === "VENCIDO" && pct < 100;
+
+            return `
+                <div class="glass-card p-8 flex flex-col justify-between ${isVencido ? 'border-red-400 bg-red-50/30' : ''}">
+                    <div>
+                        <div class="flex justify-between items-start mb-6">
+                            <span class="text-[9px] font-black px-3 py-1 bg-slate-100 rounded-full tracking-widest text-slate-500 uppercase">SEM ${t.semana}</span>
+                            <div class="timer-badge text-[10px] font-black ${isVencido ? 'text-red-600 animate-pulse' : 'text-indigo-600'}">
+                                <i class="far fa-clock mr-1"></i> ${timeRem}
+                            </div>
+                        </div>
+                        <h4 class="text-lg font-black text-slate-800 leading-tight mb-4">${t.texto}</h4>
+                        <div class="space-y-3 mb-6">
+                            ${t.subtasks.map((s, i) => `
+                                <div class="flex items-center gap-3 group">
+                                    <input type="checkbox" ${s.completed ? 'checked' : ''} onchange="toggleSub(${t.id}, ${i})" class="rounded-lg">
+                                    <span class="text-xs ${s.completed ? 'text-slate-300 line-through' : 'text-slate-600 font-bold'}">${s.texto}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="pt-6 border-t border-slate-100 mt-auto">
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-tighter mb-1">PROGRESO REAL</p>
+                                <p class="text-xl font-black text-slate-800">${pct}%</p>
+                            </div>
+                            <div class="w-32 bg-slate-100 h-2 rounded-full overflow-hidden">
+                                <div class="bg-indigo-600 h-full transition-all duration-1000" style="width: ${pct}%"></div>
+                            </div>
+                        </div>
+                        ${t.retraso ? `
+                            <div class="mt-4 p-3 bg-red-100 border border-red-200 rounded-xl">
+                                <p class="text-[9px] font-black text-red-800 uppercase mb-1">Motivo del Retraso:</p>
+                                <p class="text-[10px] font-bold text-red-700 italic">"${t.retraso}"</p>
+                            </div>
+                        ` : (isVencido ? `
+                            <button onclick="pedirMotivo(${t.id})" class="w-full mt-4 p-2 bg-red-600 text-white text-[10px] font-black rounded-xl shadow-lg">EXPLICAR RETRASO</button>
+                        ` : '')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- VISTA INFORME TIPO PDF ---
         function renderInformeIndividual(container, userId) {
             const user = equipo.find(u => u.id == userId);
-            const fechaSelec = new Date(document.getElementById('calendar-input').value);
-            let filtradas = tareas.filter(t => t.userId == userId);
+            const filtradas = tareas.filter(t => t.userId == userId);
+            document.getElementById('header-title').innerText = "Expediente de Desempeño";
+            document.getElementById('print-date').innerText = "Emitido el: " + new Date().toLocaleString();
 
-            // LOGICA DE FILTRADO
-            if(filtroT === 'mes') {
-                filtradas = filtradas.filter(t => t.mes === mesRef.getMonth() && t.anio === mesRef.getFullYear());
-            } else if(filtroT === 'dia') {
-                const fStr = fechaSelec.toISOString().split('T')[0];
-                filtradas = filtradas.filter(t => t.creada === fStr);
-            } else if(filtroT === 'semana') {
-                const semSelec = Math.ceil(fechaSelec.getDate() / 7);
-                filtradas = filtradas.filter(t => t.semana == semSelec && t.mes === fechaSelec.getMonth());
-            }
-
-            document.getElementById('header-title').innerText = `Seguimiento: ${user.nombre}`;
-            
             container.innerHTML = `
-                <div class="max-w-5xl mx-auto space-y-6">
-                    <div class="glass-card p-8 flex justify-between items-center bg-white border-b-8 border-indigo-600 shadow-xl">
-                        <div>
-                            <h2 class="text-2xl font-black">${user.nombre}</h2>
-                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">${user.cargo} • Período: ${filtroT.toUpperCase()}</p>
-                        </div>
-                        <button onclick="enviarInforme(${userId})" class="bg-slate-900 text-white px-6 py-3 rounded-2xl font-black text-[10px] flex items-center gap-2 hover:scale-105 transition">
-                            <i class="fas fa-paper-plane"></i> ENVIAR INFORME A JEFE
-                        </button>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        ${filtradas.length ? filtradas.map(t => cardTarea(t)).join('') : `<div class="col-span-2 p-20 text-center glass-card border-dashed border-2 text-slate-400 font-bold">No hay tareas registradas en este período.</div>`}
-                    </div>
-                </div>
-            `;
-        }
-
-        // --- EXPORTACIÓN DE INFORME ---
-        function enviarInforme(userId) {
-            const user = equipo.find(u => u.id == userId);
-            const fecha = new Date(document.getElementById('calendar-input').value);
-            let filtradas = tareas.filter(t => t.userId == userId);
-
-            if(filtroT==='mes') filtradas = filtradas.filter(t => t.mes === mesRef.getMonth());
-            if(filtroT==='dia') filtradas = filtradas.filter(t => t.creada === fecha.toISOString().split('T')[0]);
-
-            let reporte = `📋 REPORTE DE ACTUALIZACIÓN - ${user.nombre.toUpperCase()}\n`;
-            reporte += `📅 Fecha: ${fecha.toLocaleDateString()} | Modo: ${filtroT.toUpperCase()}\n`;
-            reporte += `-------------------------------------------\n\n`;
-
-            filtradas.forEach(t => {
-                const pct = Math.round((t.subtasks.filter(s=>s.completed).length / t.subtasks.length) * 100);
-                reporte += `📌 ${t.texto} [${pct}%]\n`;
-                t.subtasks.forEach(s => {
-                    reporte += `   ${s.completed ? '✅' : '⏳'} ${s.texto}\n`;
-                });
-                reporte += `\n`;
-            });
-
-            reporte += `-------------------------------------------\nReporte generado por Enterprise Hub.`;
-            
-            navigator.clipboard.writeText(reporte);
-            alert("¡Informe generado y copiado al portapapeles! Listo para enviar por WhatsApp o Email.");
-        }
-
-        // --- COMPONENTES ---
-        function cardTarea(t) {
-            const completas = t.subtasks.filter(s => s.completed).length;
-            const pct = Math.round((completas / t.subtasks.length) * 100);
-            return `
-                <div class="glass-card p-6 border-l-4 ${pct === 100 ? 'border-green-500' : 'border-indigo-500'}">
-                    <div class="flex justify-between items-start mb-4">
-                        <h4 class="font-black text-slate-800 leading-tight">${t.texto}</h4>
-                        <span class="text-[10px] font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">${pct}%</span>
-                    </div>
-                    <div class="space-y-2 mb-4">
-                        ${t.subtasks.map((s, i) => `
-                            <div class="flex items-center gap-3 p-2 bg-slate-50 rounded-xl text-[11px]">
-                                <input type="checkbox" ${s.completed ? 'checked' : ''} onchange="toggleSub(${t.id}, ${i})">
-                                <span class="${s.completed ? 'text-slate-300 line-through' : 'text-slate-700 font-bold'}">${s.texto}</span>
+                <div class="max-w-6xl mx-auto">
+                    <div class="glass-card p-10 mb-8 bg-gradient-to-br from-indigo-900 to-slate-900 text-white border-none shadow-2xl">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h2 class="text-4xl font-black">${user.nombre}</h2>
+                                <p class="text-indigo-400 font-bold tracking-[4px] text-xs uppercase mt-2">${user.cargo}</p>
                             </div>
-                        `).join('')}
+                            <div class="text-right">
+                                <button onclick="window.print()" class="no-print bg-white/10 hover:bg-white/20 text-white px-8 py-3 rounded-2xl font-black text-xs border border-white/20 transition backdrop-blur-md">
+                                    <i class="fas fa-file-pdf mr-2"></i> DESCARGAR INFORME PDF
+                                </button>
+                                <p class="mt-4 text-[10px] font-bold opacity-60">ID EMPLEADO: #PLAT-${user.id}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-8 mt-12 border-t border-white/10 pt-10">
+                            <div>
+                                <p class="text-[10px] font-bold text-indigo-300 uppercase tracking-widest">Eficiencia Total</p>
+                                <p class="text-3xl font-black">${calcularEficiencia(filtradas)}%</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-indigo-300 uppercase tracking-widest">Tareas Finalizadas</p>
+                                <p class="text-3xl font-black">${filtradas.filter(t => t.subtasks.every(s => s.completed)).length}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-indigo-300 uppercase tracking-widest">Retrasos Registrados</p>
+                                <p class="text-3xl font-black text-red-400">${filtradas.filter(t => t.retraso).length}</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="pt-3 border-t flex justify-between text-[9px] font-bold text-slate-400 uppercase tracking-tighter">
-                        <span>Creada: ${t.creada}</span>
-                        <span>Semana ${t.semana}</span>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        ${filtradas.map(t => cardTarea(t)).join('')}
                     </div>
                 </div>
             `;
         }
 
-        // --- LOGICA CORE ---
-        function setFiltro(f) {
-            filtroT = f;
-            document.querySelectorAll('#filter-bar button').forEach(b => {
-                b.className = "px-4 py-1.5 rounded-md text-[10px] font-bold text-slate-500 transition";
-            });
-            document.getElementById(`f-${f}`).className = "px-4 py-1.5 rounded-md text-[10px] font-bold bg-white text-indigo-600 shadow-sm transition";
-            render();
-        }
-
+        // --- LOGICA DE DATOS ---
         function guardarTarea() {
             const t = {
                 id: Date.now(),
                 texto: document.getElementById('t-nombre').value,
                 userId: parseInt(document.getElementById('t-resp').value),
-                semana: parseInt(document.getElementById('t-sem').value),
-                mes: mesRef.getMonth(),
-                anio: mesRef.getFullYear(),
+                deadline: document.getElementById('t-deadline').value,
                 creada: new Date().toISOString().split('T')[0],
-                subtasks: draftEtapas.map(s => ({ texto: s, completed: false }))
+                semana: Math.ceil(new Date().getDate() / 7),
+                mes: new Date().getMonth(),
+                anio: new Date().getFullYear(),
+                subtasks: draftEtapas.map(s => ({ texto: s, completed: false })),
+                retraso: ""
             };
-            if(!t.texto || !draftEtapas.length) return alert("Faltan datos");
+            if(!t.texto || !t.deadline) return alert("Completa el nombre y la fecha de entrega.");
             tareas.push(t);
             save();
             cerrarModal('modal-tarea');
         }
 
-        function guardarPersonal() {
-            const p = { id: Date.now(), nombre: document.getElementById('p-nom').value, cargo: document.getElementById('p-car').value, email: document.getElementById('p-ema').value };
-            equipo.push(p);
+        function pedirMotivo(id) {
+            currentRetrasoId = id;
+            document.getElementById('modal-retraso').style.display = 'flex';
+        }
+
+        function guardarMotivo() {
+            const t = tareas.find(x => x.id === currentRetrasoId);
+            t.retraso = document.getElementById('motivo-text').value;
             save();
-            actualizarSidebar();
-            cerrarModal('modal-equipo');
-        }
-
-        function renderGlobal(container) {
-            document.getElementById('header-title').innerText = "Inicio Global";
-            const delMes = tareas.filter(t => t.mes === mesRef.getMonth());
-            container.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                    <div class="glass-card p-6 bg-white border-l-4 border-indigo-600">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Tareas Mes</p>
-                        <h4 class="text-3xl font-black">${delMes.length}</h4>
-                    </div>
-                    <div class="glass-card p-6 bg-white border-l-4 border-green-500">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Staff</p>
-                        <h4 class="text-3xl font-black">${equipo.length}</h4>
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    ${delMes.map(t => cardTarea(t)).join('')}
-                </div>
-            `;
-        }
-
-        function renderGestionEquipo(container) {
-            document.getElementById('header-title').innerText = "Gestión de Staff";
-            container.innerHTML = `
-                <div class="glass-card overflow-hidden">
-                    <div class="p-6 border-b flex justify-between items-center">
-                        <h3 class="font-black">Lista de Personal</h3>
-                        <button onclick="document.getElementById('modal-equipo').style.display='flex'" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold">AÑADIR</button>
-                    </div>
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 text-[10px] font-black text-slate-400 uppercase">
-                            <tr><th class="p-6">Nombre</th><th class="p-6">Cargo</th><th class="p-6">Acción</th></tr>
-                        </thead>
-                        <tbody>
-                            ${equipo.map(p => `
-                                <tr class="border-b hover:bg-slate-50 transition">
-                                    <td class="p-6 font-bold text-slate-700">${p.nombre}</td>
-                                    <td class="p-6 text-slate-400">${p.cargo}</td>
-                                    <td class="p-6"><button onclick="eliminarP(${p.id})" class="text-red-400"><i class="fas fa-trash"></i></button></td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
+            document.getElementById('modal-retraso').style.display = 'none';
         }
 
         function toggleSub(tId, sIdx) {
@@ -340,7 +406,74 @@
         }
 
         function renderDrafts() {
-            document.getElementById('etapas-draft').innerHTML = draftEtapas.map(s => `<span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-lg text-[10px] font-black">${s}</span>`).join('');
+            document.getElementById('etapas-draft').innerHTML = draftEtapas.map(s => `
+                <span class="bg-indigo-500/20 text-indigo-200 px-4 py-1.5 rounded-xl text-[10px] font-bold border border-indigo-500/30">${s}</span>
+            `).join('');
+        }
+
+        function calcularEficiencia(list) {
+            if(!list.length) return 0;
+            let total = 0;
+            list.forEach(t => {
+                const pct = (t.subtasks.filter(s=>s.completed).length / t.subtasks.length);
+                total += pct;
+            });
+            return Math.round((total / list.length) * 100);
+        }
+
+        function save() { localStorage.setItem('v8_team', JSON.stringify(equipo)); localStorage.setItem('v8_tasks', JSON.stringify(tareas)); render(); }
+        function actualizarSidebar() {
+            document.getElementById('sidebar-team-list').innerHTML = equipo.map(p => `
+                <button onclick="cambiarVista('rep-${p.id}')" class="w-full text-left p-4 rounded-2xl flex items-center gap-3 hover:text-white transition text-[13px] font-bold">
+                    <div class="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_#6366f1]"></div> ${p.nombre}
+                </button>
+            `).join('');
+        }
+
+        function updateAllTimers() {
+            // Esto forza que los relojes de las tarjetas se actualicen visualmente
+            if(vistaActual === 'global' || vistaActual.startsWith('rep-')) render();
+        }
+
+        function renderGlobal(container) {
+            document.getElementById('header-title').innerText = "Centro de Control Operativo";
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+                    <div class="glass-card p-6 border-l-8 border-indigo-600">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">En Curso</p>
+                        <p class="text-4xl font-black">${tareas.length}</p>
+                    </div>
+                    <div class="glass-card p-6 border-l-8 border-red-500">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Críticas/Retrasadas</p>
+                        <p class="text-4xl font-black">${tareas.filter(t => calculateWorkTimeRemaining(t.deadline) === "VENCIDO" && t.retraso === "").length}</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    ${tareas.map(t => cardTarea(t)).join('')}
+                </div>
+            `;
+        }
+
+        function renderStaff(container) {
+            document.getElementById('header-title').innerText = "Gestión de Capital Humano";
+            container.innerHTML = `
+                <div class="glass-card overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-900 text-white text-[10px] uppercase font-black tracking-widest">
+                            <tr><th class="p-6">Miembro</th><th class="p-6">Cargo</th><th class="p-6">Acciones</th></tr>
+                        </thead>
+                        <tbody>
+                            ${equipo.map(p => `
+                                <tr class="border-b font-bold text-sm">
+                                    <td class="p-6">${p.nombre}</td>
+                                    <td class="p-6 text-indigo-600">${p.cargo}</td>
+                                    <td class="p-6"><button onclick="eliminarP(${p.id})" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
         }
 
         function abrirModalTarea() {
@@ -350,11 +483,9 @@
             renderDrafts();
         }
 
-        function save() { localStorage.setItem('v7_team', JSON.stringify(equipo)); localStorage.setItem('v7_tasks', JSON.stringify(tareas)); render(); }
+        function eliminarP(id) { if(confirm("¿Remover del equipo?")) { equipo = equipo.filter(x => x.id != id); save(); } }
         function cerrarModal(id) { document.getElementById(id).style.display='none'; }
-        function cambiarMes(d) { mesRef.setMonth(mesRef.getMonth() + d); render(); }
-        function eliminarP(id) { if(confirm("¿Eliminar?")) { equipo = equipo.filter(x => x.id != id); save(); actualizarSidebar(); } }
-
+        
         window.onload = init;
     </script>
 </body>
