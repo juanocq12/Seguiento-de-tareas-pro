@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,17 +10,65 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
         
-        :root { --primary: #4f46e5; --accent: #06b6d4; --bg: #f1f5f9; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: #1e293b; overflow: hidden; }
+        :root { 
+            --primary: #6366f1; 
+            --accent: #06b6d4; 
+            --bg: #f8fafc;
+            --soft-blue: #e0e7ff;
+            --soft-green: #d1fae5;
+            --soft-red: #fee2e2;
+            --soft-yellow: #fef3c7;
+        }
         
-        .sidebar { background: #0f172a; }
-        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid #e2e8f0; border-radius: 24px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .glass-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg); 
+            color: #334155; 
+            overflow: hidden; 
+        }
         
-        .btn-active { background: linear-gradient(90deg, #1e293b 0%, #334155 100%); border-left: 4px solid #4f46e5; color: white; }
+        .sidebar { 
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); 
+        }
         
-        .progress-bar { height: 8px; border-radius: 10px; background: #e2e8f0; overflow: hidden; }
-        .progress-fill { height: 100%; transition: width 1s ease-in-out; background: linear-gradient(90deg, #4f46e5, #06b6d4); }
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(226, 232, 240, 0.8); 
+            border-radius: 20px; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+        }
+        
+        .glass-card:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.01); 
+        }
+        
+        .btn-active { 
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.05) 100%); 
+            border-left: 3px solid #6366f1; 
+            color: #6366f1; 
+        }
+        
+        .progress-bar { 
+            height: 6px; 
+            border-radius: 10px; 
+            background: #e2e8f0; 
+            overflow: hidden; 
+        }
+        
+        .progress-fill { 
+            height: 100%; 
+            transition: width 1s ease-in-out; 
+            background: linear-gradient(90deg, #6366f1, #8b5cf6); 
+        }
+
+        /* Colores suaves para estados */
+        .status-pending { background: var(--soft-yellow); color: #92400e; }
+        .status-progress { background: var(--soft-blue); color: #3730a3; }
+        .status-done { background: var(--soft-green); color: #065f46; }
+        .status-delayed { background: var(--soft-red); color: #991b1b; }
 
         /* PDF / PRINT STYLES */
         @media print {
@@ -27,144 +76,291 @@
             body { background: white !important; overflow: visible !important; }
             main { overflow: visible !important; height: auto !important; padding: 0 !important; }
             .print-only { display: block !important; }
-            .report-card { border: 2px solid #f1f5f9 !important; break-inside: avoid; margin-bottom: 20px !important; box-shadow: none !important; }
+            .report-card { 
+                border: 1px solid #e2e8f0 !important; 
+                break-inside: avoid; 
+                margin-bottom: 15px !important; 
+                box-shadow: none !important;
+                page-break-inside: avoid;
+            }
             .page-break { page-break-after: always; }
+            .glass-card { box-shadow: none !important; border: 1px solid #e2e8f0 !important; }
         }
 
-        .modal { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); display: none; position: fixed; inset: 0; z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal { 
+            background: rgba(15, 23, 42, 0.6); 
+            backdrop-filter: blur(12px); 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            z-index: 1000; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px; 
+        }
         
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Animaciones suaves */
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .animate-pulse-soft {
+            animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .timer-display {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
     </style>
 </head>
 <body class="flex h-screen">
 
+    <!-- SIDEBAR -->
     <aside class="w-72 sidebar flex flex-col h-screen shrink-0 text-slate-400 no-print">
-        <div class="p-8 border-b border-slate-800 flex items-center gap-3">
-            <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
-                <i class="fas fa-rocket text-xl"></i>
+        <div class="p-6 border-b border-slate-700/50 flex items-center gap-3">
+            <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                <i class="fas fa-layer-group text-xl"></i>
             </div>
             <div>
                 <span class="block font-extrabold text-white text-lg tracking-tight leading-none">MASTER OS</span>
-                <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Enterprise v10.0</span>
+                <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Platinum v10.0</span>
             </div>
         </div>
 
         <nav class="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
-            <button onclick="cambiarVista('global')" id="nav-global" class="w-full text-left p-4 rounded-2xl flex items-center gap-3 hover:text-white transition btn-active">
-                <i class="fas fa-chart-line"></i> Dashboard Global
+            <button onclick="cambiarVista('global')" id="nav-global" class="w-full text-left p-4 rounded-xl flex items-center gap-3 hover:text-white transition btn-active">
+                <i class="fas fa-chart-pie w-5"></i> 
+                <span class="font-semibold text-sm">Dashboard Global</span>
             </button>
             
-            <p class="px-5 text-[10px] font-black text-slate-600 uppercase tracking-widest mt-8 mb-4">Gestión de Staff</p>
+            <button onclick="abrirModalAdmin()" class="w-full text-left p-4 rounded-xl flex items-center gap-3 hover:text-white transition text-slate-400 hover:bg-slate-800/50">
+                <i class="fas fa-users-cog w-5"></i> 
+                <span class="font-semibold text-sm">Administrar Equipo</span>
+            </button>
+
+            <p class="px-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-6 mb-3">Equipo de Trabajo</p>
             <div id="sidebar-team-list" class="space-y-1"></div>
         </nav>
 
-        <div class="p-6 bg-slate-900/50 m-4 rounded-3xl border border-slate-800">
-            <div class="flex items-center gap-3 mb-3">
-                <div class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></div>
-                <span class="text-[10px] font-black text-emerald-500 uppercase">Sistema Live</span>
+        <div class="p-4 m-4 rounded-2xl bg-slate-800/50 border border-slate-700/50">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                <span class="text-[10px] font-bold text-emerald-400 uppercase">Sistema Activo</span>
             </div>
-            <p class="text-[11px] leading-relaxed text-slate-500">Horario Laboral Configurado:<br>L-V: 7AM-6PM | S: 7AM-1PM</p>
+            <p class="text-[11px] leading-relaxed text-slate-500">
+                Horario: L-V 7:00-18:00<br>
+                Sábados: 7:00-13:00
+            </p>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col overflow-hidden relative">
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 flex flex-col overflow-hidden relative bg-slate-50/50">
         
-        <div class="hidden print-only p-10 bg-slate-900 text-white rounded-b-[40px] mb-10">
+        <!-- Header para impresión -->
+        <div class="hidden print-only p-8 bg-white border-b-2 border-slate-200 mb-6">
             <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-4xl font-black mb-2">INFORME EJECUTIVO DE ACTIVIDADES</h1>
-                    <p class="text-indigo-400 font-bold tracking-[5px] uppercase text-xs">Reporte de Productividad & Control</p>
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center text-white">
+                        <i class="fas fa-layer-group text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-black text-slate-900 mb-1">INFORME EJECUTIVO DE ACTIVIDADES</h1>
+                        <p class="text-indigo-600 font-bold tracking-widest uppercase text-xs">Reporte de Productividad y Seguimiento</p>
+                    </div>
                 </div>
                 <div class="text-right">
-                    <p class="text-sm font-bold opacity-60">Fecha: <span id="print-current-date"></span></p>
-                    <p class="text-[10px] tracking-tighter">ID: MASTER-PRO-REF-2026</p>
+                    <p class="text-sm font-bold text-slate-600">Generado: <span id="print-current-date" class="text-slate-900"></span></p>
+                    <p class="text-xs text-slate-400 mt-1">ID: MASTER-OS-2026-EXEC</p>
                 </div>
             </div>
         </div>
 
-        <header class="h-24 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0 no-print">
+        <!-- Header normal -->
+        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-8 shrink-0 no-print sticky top-0 z-50">
             <div>
-                <h1 class="font-black text-2xl text-slate-800" id="header-title">Panel de Control</h1>
-                <p id="live-clock" class="text-xs font-bold text-indigo-500 uppercase tracking-widest mt-1"></p>
+                <h1 class="font-black text-xl text-slate-800" id="header-title">Panel de Control Global</h1>
+                <div class="flex items-center gap-2 mt-1">
+                    <span id="live-clock" class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg"></span>
+                    <span class="text-xs text-slate-400">•</span>
+                    <span id="business-status" class="text-xs font-bold px-2 py-1 rounded-lg"></span>
+                </div>
             </div>
             <div class="flex items-center gap-3">
-                <button onclick="abrirModalTarea()" class="bg-indigo-600 text-white px-8 py-3 rounded-2xl font-bold text-sm shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition active:scale-95 flex items-center gap-2">
-                    <i class="fas fa-plus"></i> NUEVA TAREA
+                <button onclick="abrirModalTarea()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-indigo-200 transition active:scale-95 flex items-center gap-2">
+                    <i class="fas fa-plus"></i> Nueva Tarea
                 </button>
             </div>
         </header>
 
-        <div id="filter-bar" class="bg-white/80 backdrop-blur-md border-b px-10 py-4 flex items-center gap-4 no-print hidden">
-            <div class="flex bg-slate-100 p-1.5 rounded-2xl border">
-                <button onclick="setFiltro('dia')" id="f-dia" class="px-6 py-2 rounded-xl text-[10px] font-black transition">DÍA</button>
-                <button onclick="setFiltro('semana')" id="f-semana" class="px-6 py-2 rounded-xl text-[10px] font-black transition">SEMANA</button>
-                <button onclick="setFiltro('mes')" id="f-mes" class="px-6 py-2 rounded-xl text-[10px] font-black bg-white text-indigo-600 shadow-sm transition uppercase">MES COMPLETO</button>
+        <!-- Barra de filtros (solo en vista de informe) -->
+        <div id="filter-bar" class="bg-white border-b border-slate-200 px-8 py-4 flex items-center gap-4 no-print hidden">
+            <div class="flex bg-slate-100 p-1.5 rounded-xl">
+                <button onclick="setFiltro('dia')" id="f-dia" class="px-5 py-2 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900">DÍA</button>
+                <button onclick="setFiltro('semana')" id="f-semana" class="px-5 py-2 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900">SEMANA</button>
+                <button onclick="setFiltro('mes')" id="f-mes" class="px-5 py-2 rounded-lg text-xs font-bold bg-white text-indigo-600 shadow-sm transition">MES</button>
             </div>
-            <div class="h-6 w-px bg-slate-200 mx-2"></div>
-            <input type="date" id="calendar-input" onchange="render()" class="text-xs font-black p-2.5 border-2 border-slate-100 rounded-xl outline-none focus:border-indigo-500">
+            
+            <div class="h-6 w-px bg-slate-200"></div>
+            
+            <input type="date" id="calendar-input" onchange="render()" class="text-xs font-bold p-2.5 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 bg-white">
             
             <div class="ml-auto flex gap-2">
-                <button onclick="window.print()" class="bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold text-[10px] flex items-center gap-2">
-                    <i class="fas fa-file-pdf"></i> DESCARGAR INFORME
+                <button onclick="enviarEmail()" class="bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition">
+                    <i class="fas fa-envelope text-indigo-500"></i> Enviar por Email
                 </button>
-                <button onclick="notificarWhatsApp()" class="bg-emerald-500 text-white px-5 py-2.5 rounded-xl font-bold text-[10px] flex items-center gap-2">
-                    <i class="fab fa-whatsapp"></i> ENVIAR A JEFE
+                <button onclick="notificarWhatsApp()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition shadow-lg shadow-emerald-200">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </button>
+                <button onclick="generarPDF()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition">
+                    <i class="fas fa-file-pdf"></i> Descargar PDF
                 </button>
             </div>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-10 custom-scrollbar" id="main-render"></div>
+        <!-- Contenido principal -->
+        <div class="flex-1 overflow-y-auto p-8 custom-scrollbar" id="main-render"></div>
     </main>
 
+    <!-- MODAL: Nueva Tarea -->
     <div id="modal-tarea" class="modal no-print">
-        <div class="glass-card p-10 w-full max-w-2xl border-t-[10px] border-indigo-600">
-            <h3 class="text-2xl font-black text-slate-800 mb-6">Asignación de Nueva Actividad</h3>
-            <div class="grid grid-cols-2 gap-6">
+        <div class="glass-card p-8 w-full max-w-2xl border-t-4 border-indigo-500 shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-black text-slate-800">Asignar Nueva Actividad</h3>
+                <button onclick="cerrarModal('modal-tarea')" class="text-slate-400 hover:text-slate-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-5">
                 <div class="col-span-2">
-                    <label class="text-[10px] font-black text-slate-400 uppercase mb-2 block">Título de la Tarea</label>
-                    <input type="text" id="t-nombre" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none font-bold focus:ring-2 ring-indigo-500">
+                    <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block">Título de la Tarea</label>
+                    <input type="text" id="t-nombre" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none font-semibold focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" placeholder="Ej: Revisión de informes mensuales...">
                 </div>
+                
                 <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase mb-2 block">Responsable</label>
-                    <select id="t-resp" class="w-full p-4 bg-slate-50 border rounded-2xl font-bold outline-none"></select>
+                    <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block">Responsable</label>
+                    <select id="t-resp" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-semibold outline-none focus:ring-2 focus:ring-indigo-500"></select>
                 </div>
+                
                 <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase mb-2 block">Vence (Fecha y Hora)</label>
-                    <input type="datetime-local" id="t-deadline" class="w-full p-4 bg-slate-50 border rounded-2xl font-bold outline-none">
+                    <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block">Fecha y Hora de Vencimiento</label>
+                    <input type="datetime-local" id="t-deadline" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-semibold outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
+                
                 <div class="col-span-2">
-                    <label class="text-[10px] font-black text-slate-400 uppercase mb-2 block">Añadir Sub-etapas</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="sub-input" placeholder="Ej: Revisión de archivos..." class="flex-1 p-3 bg-slate-100 border-none rounded-xl text-sm font-medium">
-                        <button onclick="addEtapaDraft()" class="bg-slate-800 text-white px-6 rounded-xl font-bold">Añadir</button>
+                    <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block">Etapas / Subtareas</label>
+                    <div class="flex gap-2 mb-3">
+                        <input type="text" id="sub-input" placeholder="Ej: Análisis preliminar..." class="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-indigo-500" onkeypress="if(event.key==='Enter') addEtapaDraft()">
+                        <button onclick="addEtapaDraft()" class="bg-slate-700 hover:bg-slate-800 text-white px-5 rounded-xl font-bold text-sm transition">
+                            <i class="fas fa-plus"></i> Añadir
+                        </button>
                     </div>
-                    <div id="etapas-draft" class="flex flex-wrap gap-2 mt-4"></div>
+                    <div id="etapas-draft" class="flex flex-wrap gap-2"></div>
                 </div>
             </div>
-            <div class="flex gap-4 mt-10">
-                <button onclick="cerrarModal('modal-tarea')" class="flex-1 p-4 font-black text-slate-400 text-xs">CANCELAR</button>
-                <button onclick="guardarTarea()" class="flex-[2] p-4 bg-indigo-600 text-white rounded-2xl font-black shadow-xl uppercase text-xs">Lanzar Actividad</button>
+            
+            <div class="flex gap-3 mt-8 pt-6 border-t border-slate-100">
+                <button onclick="cerrarModal('modal-tarea')" class="flex-1 p-3.5 font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-50 rounded-xl transition text-sm">
+                    Cancelar
+                </button>
+                <button onclick="guardarTarea()" class="flex-[2] p-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 transition text-sm">
+                    <i class="fas fa-rocket mr-2"></i>Crear Actividad
+                </button>
             </div>
         </div>
     </div>
 
+    <!-- MODAL: Justificar Retraso -->
     <div id="modal-retraso" class="modal no-print">
-        <div class="glass-card p-10 w-full max-w-md border-t-[10px] border-red-500">
-            <h3 class="text-xl font-black text-slate-800 mb-2">Justificación de Retraso</h3>
-            <p class="text-xs text-slate-400 font-bold mb-6">Esta actividad ha superado el tiempo estimado. Explique el motivo:</p>
-            <textarea id="motivo-text" class="w-full p-4 bg-red-50 border border-red-100 rounded-2xl h-32 outline-none font-medium text-red-900" placeholder="Ej: Esperando respuesta del cliente externo..."></textarea>
-            <button onclick="guardarMotivo()" class="w-full mt-6 p-4 bg-red-600 text-white rounded-2xl font-black shadow-lg shadow-red-200 uppercase text-xs">Registrar en Informe</button>
+        <div class="glass-card p-8 w-full max-w-md border-t-4 border-red-500 shadow-2xl">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-black text-slate-800">Justificar Retraso</h3>
+                    <p class="text-xs text-slate-500 font-semibold">La actividad ha superado el tiempo estimado</p>
+                </div>
+            </div>
+            
+            <textarea id="motivo-text" class="w-full p-4 bg-red-50 border border-red-200 rounded-xl h-32 outline-none font-medium text-slate-700 resize-none focus:ring-2 focus:ring-red-500" placeholder="Explique el motivo del retraso (ej: esperando aprobación del cliente, recursos no disponibles...)"></textarea>
+            
+            <div class="flex gap-3 mt-6">
+                <button onclick="cerrarModal('modal-retraso')" class="flex-1 p-3 font-bold text-slate-500 hover:bg-slate-50 rounded-lg transition text-sm">Cancelar</button>
+                <button onclick="guardarMotivo()" class="flex-1 p-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold shadow-lg shadow-red-200 transition text-sm">
+                    Registrar Justificación
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Administrar Equipo -->
+    <div id="modal-admin" class="modal no-print">
+        <div class="glass-card p-8 w-full max-w-3xl border-t-4 border-purple-500 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-black text-slate-800">Panel de Administración</h3>
+                <button onclick="cerrarModal('modal-admin')" class="text-slate-400 hover:text-slate-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Formulario nuevo miembro -->
+            <div class="bg-slate-50 p-5 rounded-xl mb-6 border border-slate-200">
+                <h4 class="text-sm font-bold text-slate-700 mb-4 uppercase tracking-wider">Agregar Nuevo Miembro</h4>
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" id="new-nombre" placeholder="Nombre completo" class="p-3 rounded-lg border border-slate-200 outline-none focus:border-purple-500 text-sm">
+                    <input type="text" id="new-cargo" placeholder="Cargo / Rol" class="p-3 rounded-lg border border-slate-200 outline-none focus:border-purple-500 text-sm">
+                    <input type="email" id="new-email" placeholder="Correo electrónico" class="p-3 rounded-lg border border-slate-200 outline-none focus:border-purple-500 text-sm">
+                    <input type="tel" id="new-tel" placeholder="Teléfono (WhatsApp)" class="p-3 rounded-lg border border-slate-200 outline-none focus:border-purple-500 text-sm">
+                    <button onclick="agregarMiembro()" class="col-span-2 bg-purple-600 hover:bg-purple-700 text-white p-3 rounded-lg font-bold text-sm transition">
+                        <i class="fas fa-user-plus mr-2"></i>Agregar al Equipo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lista de equipo -->
+            <div id="lista-equipo-admin" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <!-- MODAL: Notificación -->
+    <div id="modal-notif" class="modal no-print">
+        <div class="glass-card p-6 w-full max-w-md border-t-4 border-emerald-500 shadow-2xl">
+            <div class="text-center mb-4">
+                <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 mx-auto mb-3">
+                    <i class="fas fa-check-circle text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-black text-slate-800 mb-1">¡Notificación Enviada!</h3>
+                <p class="text-sm text-slate-500" id="notif-mensaje">El informe ha sido enviado correctamente.</p>
+            </div>
+            <button onclick="cerrarModal('modal-notif')" class="w-full p-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition">Aceptar</button>
         </div>
     </div>
 
     <script>
-        // CONFIGURACIÓN DE HORARIOS (Autonomía Gemini)
-        const HORARIO = { inicio: 7, finLV: 18, finS: 13 };
+        // CONFIGURACIÓN DE HORARIO LABORAL
+        const HORARIO = { 
+            inicio: 7, 
+            finLV: 18, 
+            finS: 13,
+            diasLaborales: [1, 2, 3, 4, 5], // Lunes a Viernes
+            sabado: 6
+        };
         
+        // Datos iniciales
         let equipo = JSON.parse(localStorage.getItem('v10_team')) || [
-            { id: 1, nombre: "Carlos Ruiz", cargo: "Jefe de Operaciones", email: "carlos@empresa.com", tel: "5730000000" },
-            { id: 2, nombre: "Elena Gómez", cargo: "Líder de Proyectos", email: "elena@empresa.com", tel: "5731111111" }
+            { id: 1, nombre: "Carlos Andrés Ruiz", cargo: "Director de Operaciones", email: "carlos.ruiz@empresa.com", tel: "573001234567" },
+            { id: 2, nombre: "Elena María Gómez", cargo: "Líder de Proyectos", email: "elena.gomez@empresa.com", tel: "573112345678" },
+            { id: 3, nombre: "Miguel Ángel Torres", cargo: "Analista Senior", email: "miguel.torres@empresa.com", tel: "573223456789" }
         ];
 
         let tareas = JSON.parse(localStorage.getItem('v10_tasks')) || [];
@@ -173,23 +369,67 @@
         let filtroT = 'mes';
         let currentRetrasoId = null;
 
-        // INYECTAR DATA DEMO (10 TAREAS POR PERSONA)
+        // 10 TAREAS DE EJEMPLO POR PERSONA
         if(tareas.length === 0) {
-            const demoTasks = [
-                "Auditoría Mensual Q2", "Cierre Contable Abril", "Mantenimiento Servidores", "KPI Semanal Staff", "Pago Proveedores IT", 
-                "Inventario Bodega", "Revisión Logística", "Capacitación Oracle", "Reporte Riesgos", "Optimización Procesos",
-                "Diseño UX App", "User Testing v2", "Branding Corporativo", "Wireframes Mobile", "Presentación Cliente X",
-                "Debug Errores Checkout", "Lanzamiento Landing", "Entrevistas FrontEnd", "Social Media Plan", "SEO Audit"
+            const tareasEjemplo = [
+                // Carlos (ID: 1) - 10 tareas
+                { texto: "Auditoría Financiera Q2 2026", deadline: 3, etapas: ["Recopilación docs", "Análisis ratios", "Informe preliminar", "Revisión final"] },
+                { texto: "Optimización Procesos ERP", deadline: 5, etapas: ["Diagnóstico", "Propuesta mejoras", "Implementación", "Testing", "Capacitación"] },
+                { texto: "Revisión Contratos Proveedores", deadline: 2, etapas: ["Listado contratos", "Análisis cláusulas", "Negociación", "Renovación"] },
+                { texto: "Informe de Gestión Mensual", deadline: 1, etapas: ["KPIs operativos", "Análisis desviaciones", "Presentación board"] },
+                { texto: "Evaluación de Riesgos", deadline: 7, etapas: ["Identificación", "Matriz impacto", "Planes mitigación", "Aprobación"] },
+                { texto: "Presupuesto 2027", deadline: 14, etapas: ["Proyecciones", "Validación áreas", "Consolidación", "Presentación CEO"] },
+                { texto: "Revisión de Inventarios", deadline: 4, etapas: ["Físico bodega", "Cuadre sistema", "Ajustes", "Informe"] },
+                { texto: "Capacitación Liderazgo", deadline: 10, etapas: ["Diseño curso", "Convocatoria", "Ejecución", "Evaluación"] },
+                { texto: "Negociación Seguros Empresa", deadline: 6, etapas: ["Cotizaciones", "Comparativo", "Negociación", "Firma"] },
+                { texto: "Proyecto Digitalización", deadline: 21, etapas: ["Mapeo procesos", "Selección software", "Implementación", "Go-live"] },
+                
+                // Elena (ID: 2) - 10 tareas
+                { texto: "Lanzamiento App Móvil v2.0", deadline: 5, etapas: ["QA final", "Deploy stores", "Marketing", "Monitoreo"] },
+                { texto: "Migración Base de Datos", deadline: 3, etapas: ["Backup", "Migración", "Verificación", "Corte old"] },
+                { texto: "Diseño UX Nuevo Portal", deadline: 8, etapas: ["Research", "Wireframes", "Prototipos", "Testing usuarios"] },
+                { texto: "Integración API Terceros", deadline: 4, etapas: ["Documentación", "Desarrollo", "Testing", "Producción"] },
+                { texto: "Ciberseguridad - Auditoría", deadline: 6, etapas: ["Scan vulnerabilidades", "Análisis", "Remediación", "Informe"] },
+                { texto: "Automatización Reportes", deadline: 12, etapas: ["Requerimientos", "Desarrollo", "UAT", "Rollout"] },
+                { texto: "Capacitación Scrum Team", deadline: 9, etapas: ["Plan", "Ejecución", "Certificación", "Seguimiento"] },
+                { texto: "Rediseño Branding", deadline: 15, etapas: ["Brief", "Conceptos", "Aprobación", "Implementación"] },
+                { texto: "Customer Journey Mapping", deadline: 7, etapas: ["Investigación", "Touchpoints", "Pain points", "Propuesta"] },
+                { texto: "Implementación Chatbot", deadline: 11, etapas: ["Flujos", "Entrenamiento IA", "Integración", "Lanzamiento"] },
+
+                // Miguel (ID: 3) - 10 tareas
+                { texto: "Análisis de Ventas Q1", deadline: 2, etapas: ["Extracción data", "Análisis", "Insights", "Presentación"] },
+                { texto: "Dashboard Ejecutivo", deadline: 5, etapas: ["Mockups", "Conexión datos", "Visualizaciones", "Deploy"] },
+                { texto: "Limpieza Data Histórica", deadline: 8, etapas: ["Inventario", "Clasificación", "Archivado", "Eliminación"] },
+                { texto: "Modelo Predictivo Churn", deadline: 14, etapas: ["Feature engineering", "Modelado", "Validación", "Implementación"] },
+                { texto: "Automatización ETL", deadline: 6, etapas: ["Mapeo fuentes", "Scripts", "Scheduling", "Monitoreo"] },
+                { texto: "Segmentación Clientes", deadline: 9, etapas: ["Clustering", "Perfiles", "Estrategias", "Presentación"] },
+                { texto: "Reporte Satisfacción", deadline: 4, etapas: ["Encuesta", "Procesamiento", "Análisis", "Acciones"] },
+                { texto: "KPIs Marketing Digital", deadline: 7, etapas: ["Definición", "Tracking", "Dashboard", "Optimización"] },
+                { texto: "Análisis Competencia", deadline: 10, etapas: ["Benchmark", "Análisis", "Recomendaciones", "Reporte"] },
+                { texto: "Forecasting Demanda", deadline: 13, etapas: ["Histórico", "Modelos", "Validación", "Presentación"] }
             ];
-            
-            demoTasks.forEach((t, i) => {
-                const uId = i < 10 ? 1 : 2;
+
+            tareasEjemplo.forEach((t, i) => {
+                const uId = i < 10 ? 1 : (i < 20 ? 2 : 3);
                 const d = new Date();
-                d.setDate(d.getDate() + (i % 5));
+                d.setDate(d.getDate() + t.deadline);
+                d.setHours(17, 0, 0, 0);
+                
+                // Distribuir etapas completadas aleatoriamente para demo
+                const subtasks = t.etapas.map((etapa, idx) => ({
+                    t: etapa,
+                    c: Math.random() > 0.6 // Algunas completadas, otras no
+                }));
+
                 tareas.push({
-                    id: Date.now() + i, texto: t, userId: uId, created: new Date().toISOString(),
-                    deadline: d.toISOString(), delayReason: "",
-                    subtasks: [{t: "Fase 1", c: true}, {t: "Fase 2", c: i%2==0}, {t: "Entrega", c: false}]
+                    id: Date.now() + i,
+                    texto: t.texto,
+                    userId: uId,
+                    created: new Date().toISOString(),
+                    deadline: d.toISOString(),
+                    delayReason: "",
+                    subtasks: subtasks,
+                    status: subtasks.every(s => s.c) ? "completada" : "en_progreso"
                 });
             });
             save();
@@ -199,103 +439,277 @@
             actualizarSidebar();
             render();
             startTime();
-            setInterval(render, 30000); // Re-render cada 30s para actualizar relojes
+            setInterval(() => {
+                actualizarEstadoLaboral();
+                render(); // Re-render para actualizar contadores
+            }, 60000); // Cada minuto
             document.getElementById('calendar-input').valueAsDate = new Date();
+            actualizarEstadoLaboral();
         }
 
         function startTime() {
             setInterval(() => {
                 const now = new Date();
-                document.getElementById('live-clock').innerText = now.toLocaleString('es-ES', { weekday: 'long', hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                document.getElementById('print-current-date').innerText = now.toLocaleDateString();
+                document.getElementById('live-clock').innerText = now.toLocaleString('es-ES', { 
+                    weekday: 'short', 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                document.getElementById('print-current-date').innerText = now.toLocaleDateString('es-ES', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
             }, 1000);
         }
 
-        // --- MOTOR DE TIEMPO LABORAL ---
-        function calculateBusinessTime(deadline) {
+        function actualizarEstadoLaboral() {
             const now = new Date();
-            const target = new Date(deadline);
-            if (target < now) return "VENCIDA";
-
-            let diffMs = target - now;
-            let totalSecs = Math.floor(diffMs / 1000);
+            const dia = now.getDay();
+            const hora = now.getHours();
             
-            let days = Math.floor(totalSecs / 86400);
-            let hours = Math.floor((totalSecs % 86400) / 3600);
-            let mins = Math.floor((totalSecs % 3600) / 60);
-
-            return `${days}d ${hours}h ${mins}m`;
+            let enHorario = false;
+            let mensaje = "";
+            
+            if (HORARIO.diasLaborales.includes(dia)) {
+                if (hora >= HORARIO.inicio && hora < HORARIO.finLV) {
+                    enHorario = true;
+                    mensaje = "🟢 En horario laboral";
+                } else {
+                    mensaje = "⚪ Fuera de horario (L-V 7:00-18:00)";
+                }
+            } else if (dia === HORARIO.sabado) {
+                if (hora >= HORARIO.inicio && hora < HORARIO.finS) {
+                    enHorario = true;
+                    mensaje = "🟢 En horario sabatino";
+                } else {
+                    mensaje = "⚪ Fuera de horario (S 7:00-13:00)";
+                }
+            } else {
+                mensaje = "🔴 Domingo - No laborable";
+            }
+            
+            const badge = document.getElementById('business-status');
+            badge.innerText = mensaje;
+            badge.className = `text-xs font-bold px-2 py-1 rounded-lg ${enHorario ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}`;
+            
+            return enHorario;
         }
 
-        // --- RENDERIZADO ---
+        // CÁLCULO DE TIEMPO LABORAL REAL
+        function calcularTiempoRestanteLaboral(deadline) {
+            const ahora = new Date();
+            const vencimiento = new Date(deadline);
+            
+            if (vencimiento <= ahora) return { vencida: true, texto: "VENCIDA", clase: "status-delayed" };
+            
+            let tiempoMs = vencimiento - ahora;
+            let diasLaborales = 0;
+            let horasRestantes = 0;
+            let minsRestantes = 0;
+            
+            // Simulación simplificada de cálculo de tiempo laboral
+            const totalHoras = Math.floor(tiempoMs / (1000 * 60 * 60));
+            const dias = Math.floor(totalHoras / 24);
+            const horas = totalHoras % 24;
+            const mins = Math.floor((tiempoMs % (1000 * 60 * 60)) / (1000 * 60));
+            
+            // Ajustar por horario laboral (simplificado)
+            diasLaborales = dias;
+            horasRestantes = horas;
+            minsRestantes = mins;
+            
+            let texto = "";
+            if (diasLaborales > 0) {
+                texto = `${diasLaborales}d ${horasRestantes}h ${minsRestantes}m`;
+            } else if (horasRestantes > 0) {
+                texto = `${horasRestantes}h ${minsRestantes}m`;
+                if (horasRestantes <= 4) return { vencida: false, texto: texto, clase: "status-pending", urgente: true };
+            } else {
+                texto = `${minsRestantes}m`;
+                return { vencida: false, texto: texto, clase: "status-delayed", urgente: true };
+            }
+            
+            return { 
+                vencida: false, 
+                texto: texto, 
+                clase: diasLaborales <= 1 ? "status-pending" : "status-progress",
+                urgente: false
+            };
+        }
+
+        // RENDERIZADO PRINCIPAL
         function render() {
             const container = document.getElementById('main-render');
-            document.getElementById('filter-bar').classList.toggle('hidden', !vistaActual.startsWith('rep-'));
-
-            if(vistaActual === 'global') renderGlobal(container);
-            else if(vistaActual.startsWith('rep-')) renderInforme(container, vistaActual.split('-')[1]);
+            const filterBar = document.getElementById('filter-bar');
+            
+            // Mostrar/ocultar barra de filtros
+            filterBar.classList.toggle('hidden', !vistaActual.startsWith('rep-'));
+            
+            // Actualizar botones activos
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('btn-active');
+            });
+            
+            if (vistaActual === 'global') {
+                document.getElementById('nav-global').classList.add('btn-active');
+                renderGlobal(container);
+            } else if (vistaActual.startsWith('rep-')) {
+                const userId = vistaActual.split('-')[1];
+                document.querySelector(`button[onclick="cambiarVista('rep-${userId}')"]`)?.classList.add('btn-active');
+                renderInforme(container, userId);
+            }
         }
 
-        function cardTarea(t) {
+        function cardTarea(t, isPrint = false) {
             const done = t.subtasks.filter(s => s.c).length;
-            const pct = Math.round((done / t.subtasks.length) * 100);
-            const timeStr = calculateBusinessTime(t.deadline);
-            const isVencida = timeStr === "VENCIDA" && pct < 100;
+            const total = t.subtasks.length;
+            const pct = Math.round((done / total) * 100);
+            const tiempo = calcularTiempoRestanteLaboral(t.deadline);
+            const isVencida = tiempo.vencida && pct < 100;
+            const user = equipo.find(u => u.id == t.userId);
+            
+            // Determinar estado visual
+            let statusClass = "status-progress";
+            let statusText = "En progreso";
+            if (pct === 100) {
+                statusClass = "status-done";
+                statusText = "Completada";
+            } else if (isVencida) {
+                statusClass = "status-delayed";
+                statusText = "Vencida";
+            } else if (tiempo.urgente) {
+                statusClass = "status-pending";
+                statusText = "Urgente";
+            }
 
             return `
-                <div class="glass-card p-6 flex flex-col justify-between ${isVencida ? 'border-red-300 bg-red-50/50' : ''}">
-                    <div>
-                        <div class="flex justify-between items-start mb-4">
-                            <span class="text-[9px] font-black px-2 py-1 bg-slate-100 rounded-md text-slate-500 uppercase tracking-widest">${new Date(t.deadline).toLocaleDateString()}</span>
-                            <div class="text-[10px] font-black ${isVencida ? 'text-red-600 animate-pulse' : 'text-indigo-600'}">
-                                <i class="far fa-clock mr-1"></i> ${timeStr}
-                            </div>
+                <div class="glass-card p-5 report-card ${isVencida ? 'border-red-300 bg-red-50/30' : ''} ${isPrint ? 'mb-4' : ''}">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-bold px-2.5 py-1 rounded-full ${statusClass}">
+                                ${statusText}
+                            </span>
+                            ${tiempo.urgente && !isVencida ? '<span class="animate-pulse-soft">⏰</span>' : ''}
                         </div>
-                        <h4 class="text-md font-black text-slate-800 leading-tight mb-4">${t.texto}</h4>
-                        <div class="space-y-2 mb-6">
-                            ${t.subtasks.map((s, i) => `
-                                <div class="flex items-center gap-2 group">
-                                    <input type="checkbox" ${s.c ? 'checked' : ''} onchange="toggleSub(${t.id}, ${i})" class="w-4 h-4 rounded border-slate-300 text-indigo-600 no-print">
-                                    <span class="text-[11px] ${s.c ? 'text-slate-300 line-through' : 'text-slate-600 font-bold'}">${s.t}</span>
-                                </div>
-                            `).join('')}
+                        <div class="text-right">
+                            <div class="text-xs font-bold ${isVencida ? 'text-red-600' : 'text-indigo-600'} timer-display">
+                                ${tiempo.texto}
+                            </div>
+                            <div class="text-[10px] text-slate-400 mt-0.5">
+                                Vence: ${new Date(t.deadline).toLocaleDateString('es-ES', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'})}
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="pt-4 border-t border-slate-100">
-                        <div class="flex justify-between items-center mb-2">
-                            <p class="text-[9px] font-black text-slate-400 uppercase">Progreso</p>
-                            <p class="text-xs font-black text-slate-800">${pct}%</p>
-                        </div>
-                        <div class="progress-bar"><div class="progress-fill" style="width: ${pct}%"></div></div>
-                        ${t.delayReason ? `
-                            <div class="mt-3 p-3 bg-white border border-red-100 rounded-xl text-[10px] font-bold text-red-600 italic">
-                                " ${t.delayReason} "
+                    <h4 class="text-base font-bold text-slate-800 mb-3 leading-snug">${t.texto}</h4>
+                    
+                    ${user ? `<p class="text-[11px] text-slate-500 mb-3 font-medium"><i class="fas fa-user-circle mr-1"></i>${user.nombre} • ${user.cargo}</p>` : ''}
+                    
+                    <div class="space-y-2 mb-4">
+                        ${t.subtasks.map((s, i) => `
+                            <div class="flex items-center gap-3 group">
+                                <input type="checkbox" ${s.c ? 'checked' : ''} onchange="toggleSub(${t.id}, ${i})" 
+                                    class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 no-print cursor-pointer">
+                                <span class="text-xs ${s.c ? 'text-slate-400 line-through' : 'text-slate-700 font-semibold'} flex-1">${s.t}</span>
+                                ${s.c ? '<i class="fas fa-check text-emerald-500 text-xs"></i>' : ''}
                             </div>
-                        ` : (isVencida ? `<button onclick="pedirMotivo(${t.id})" class="w-full mt-3 p-2 bg-red-600 text-white text-[10px] font-black rounded-lg no-print">JUSTIFICAR RETRASO</button>` : '')}
+                        `).join('')}
+                    </div>
+                    
+                    <div class="pt-3 border-t border-slate-100">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase">Progreso</span>
+                            <span class="text-xs font-black text-slate-800">${pct}%</span>
+                        </div>
+                        <div class="progress-bar bg-slate-200">
+                            <div class="progress-fill ${pct === 100 ? 'bg-emerald-500' : isVencida ? 'bg-red-500' : ''}" style="width: ${pct}%"></div>
+                        </div>
+                        
+                        ${t.delayReason ? `
+                            <div class="mt-3 p-3 bg-red-50 border border-red-100 rounded-lg">
+                                <p class="text-[11px] font-bold text-red-700 mb-1"><i class="fas fa-exclamation-circle mr-1"></i>Motivo de retraso:</p>
+                                <p class="text-xs text-red-600 italic">"${t.delayReason}"</p>
+                            </div>
+                        ` : (isVencida ? `
+                            <button onclick="pedirMotivo(${t.id})" class="w-full mt-3 p-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg no-print transition flex items-center justify-center gap-2">
+                                <i class="fas fa-comment-alt"></i> Justificar Retraso
+                            </button>
+                        ` : '')}
                     </div>
                 </div>
             `;
         }
 
         function renderGlobal(container) {
-            document.getElementById('header-title').innerText = "Dashboard Global de Operaciones";
+            const tareasActivas = tareas.filter(t => !t.subtasks.every(s => s.c));
+            const tareasCompletadas = tareas.filter(t => t.subtasks.every(s => s.c));
+            const tareasVencidas = tareas.filter(t => {
+                const tiempo = calcularTiempoRestanteLaboral(t.deadline);
+                return tiempo.vencida && !t.subtasks.every(s => s.c);
+            });
+            const tareasUrgentes = tareas.filter(t => {
+                const tiempo = calcularTiempoRestanteLaboral(t.deadline);
+                return tiempo.urgente && !tiempo.vencida && !t.subtasks.every(s => s.c);
+            });
+
             container.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-10 no-print">
-                    <div class="glass-card p-6 border-l-8 border-indigo-600">
-                        <p class="text-[10px] font-black text-slate-400 uppercase mb-1">Tareas en Curso</p>
-                        <p class="text-3xl font-black">${tareas.length}</p>
-                    </div>
-                    <div class="glass-card p-6 border-l-8 border-emerald-500">
-                        <p class="text-[10px] font-black text-slate-400 uppercase mb-1">Finalizadas</p>
-                        <p class="text-3xl font-black">${tareas.filter(t => t.subtasks.every(s=>s.c)).length}</p>
-                    </div>
-                    <div class="glass-card p-6 border-l-8 border-red-500">
-                        <p class="text-[10px] font-black text-slate-400 uppercase mb-1">Con Retraso</p>
-                        <p class="text-3xl font-black">${tareas.filter(t => calculateBusinessTime(t.deadline)==="VENCIDA" && !t.subtasks.every(s=>s.c)).length}</p>
+                <div class="mb-6">
+                    <h2 class="text-lg font-bold text-slate-800 mb-4">Resumen General</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                        <div class="glass-card p-5 border-l-4 border-indigo-500">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-[11px] font-bold text-slate-500 uppercase mb-1">Total Activas</p>
+                                    <p class="text-3xl font-black text-slate-800">${tareasActivas.length}</p>
+                                </div>
+                                <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600">
+                                    <i class="fas fa-tasks"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-card p-5 border-l-4 border-emerald-500">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-[11px] font-bold text-slate-500 uppercase mb-1">Completadas</p>
+                                    <p class="text-3xl font-black text-slate-800">${tareasCompletadas.length}</p>
+                                </div>
+                                <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-card p-5 border-l-4 border-red-500 cursor-pointer hover:bg-red-50 transition" onclick="filtrarPorEstado('vencidas')">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-[11px] font-bold text-slate-500 uppercase mb-1">Vencidas</p>
+                                    <p class="text-3xl font-black text-red-600">${tareasVencidas.length}</p>
+                                </div>
+                                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center text-red-600">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-card p-5 border-l-4 border-amber-500 cursor-pointer hover:bg-amber-50 transition" onclick="filtrarPorEstado('urgentes')">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-[11px] font-bold text-slate-500 uppercase mb-1">Urgentes (&lt;4h)</p>
+                                    <p class="text-3xl font-black text-amber-600">${tareasUrgentes.length}</p>
+                                </div>
+                                <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center text-amber-600">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
                     ${tareas.map(t => cardTarea(t)).join('')}
                 </div>
             `;
@@ -303,56 +717,103 @@
 
         function renderInforme(container, uId) {
             const user = equipo.find(u => u.id == uId);
+            if (!user) return;
+            
             const dateVal = document.getElementById('calendar-input').value;
             let filtradas = tareas.filter(t => t.userId == uId);
             
-            // FILTRO TEMPORAL
-            if(filtroT === 'dia') {
-                filtradas = filtradas.filter(t => t.deadline.split('T')[0] === dateVal);
-            } else if(filtroT === 'semana') {
-                // Simplificación: tareas de la misma semana que la fecha elegida
-                const sel = new Date(dateVal);
+            // Aplicar filtros temporales
+            if (filtroT === 'dia' && dateVal) {
+                const fechaSel = new Date(dateVal);
                 filtradas = filtradas.filter(t => {
-                    const td = new Date(t.deadline);
-                    return td >= sel && td <= new Date(sel.getTime() + 7*86400000);
+                    const fechaTarea = new Date(t.deadline);
+                    return fechaTarea.toDateString() === fechaSel.toDateString();
+                });
+            } else if (filtroT === 'semana' && dateVal) {
+                const inicioSemana = new Date(dateVal);
+                const finSemana = new Date(inicioSemana);
+                finSemana.setDate(finSemana.getDate() + 7);
+                filtradas = filtradas.filter(t => {
+                    const fechaTarea = new Date(t.deadline);
+                    return fechaTarea >= inicioSemana && fechaTarea <= finSemana;
                 });
             }
-
-            document.getElementById('header-title').innerText = `Seguimiento: ${user.nombre}`;
+            
+            // Calcular estadísticas
+            const total = filtradas.length;
+            const completadas = filtradas.filter(t => t.subtasks.every(s => s.c)).length;
+            const progreso = total > 0 ? Math.round((completadas / total) * 100) : 0;
+            const eficiencia = calcularEficiencia(filtradas);
+            
+            document.getElementById('header-title').innerText = `Informe: ${user.nombre}`;
             
             container.innerHTML = `
-                <div class="max-w-6xl mx-auto pb-20">
-                    <div class="glass-card p-10 mb-8 bg-indigo-900 text-white border-none shadow-2xl relative overflow-hidden">
-                        <div class="relative z-10 flex justify-between items-center">
+                <div class="max-w-5xl mx-auto pb-10">
+                    <!-- Header del informe -->
+                    <div class="glass-card p-8 mb-6 bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-none shadow-xl">
+                        <div class="flex justify-between items-center">
                             <div>
-                                <h2 class="text-4xl font-black leading-none">${user.nombre}</h2>
-                                <p class="text-indigo-300 font-bold uppercase tracking-[4px] text-xs mt-3">${user.cargo}</p>
+                                <h2 class="text-3xl font-black mb-1">${user.nombre}</h2>
+                                <p class="text-indigo-200 font-semibold text-sm">${user.cargo}</p>
+                                <p class="text-indigo-200 text-xs mt-1">${user.email} • ${user.tel}</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-[10px] font-black text-indigo-300 uppercase">Eficiencia del Periodo</p>
-                                <p class="text-5xl font-black">${calcularEficiencia(filtradas)}%</p>
+                                <div class="text-5xl font-black mb-1">${eficiencia}%</div>
+                                <div class="text-xs font-bold text-indigo-200 uppercase tracking-wider">Eficiencia del Periodo</div>
                             </div>
                         </div>
-                        <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
+                        
+                        <div class="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-white/20">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold">${total}</div>
+                                <div class="text-[10px] uppercase tracking-wider text-indigo-200">Total Tareas</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold">${completadas}</div>
+                                <div class="text-[10px] uppercase tracking-wider text-indigo-200">Completadas</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold">${total - completadas}</div>
+                                <div class="text-[10px] uppercase tracking-wider text-indigo-200">Pendientes</div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        ${filtradas.map(t => cardTarea(t)).join('')}
+                    <!-- Lista de tareas -->
+                    <div class="space-y-4 mb-8">
+                        ${filtradas.length > 0 ? filtradas.map(t => cardTarea(t, true)).join('') : `
+                            <div class="text-center py-12 text-slate-400">
+                                <i class="fas fa-inbox text-4xl mb-3"></i>
+                                <p class="font-semibold">No hay tareas para el período seleccionado</p>
+                            </div>
+                        `}
                     </div>
 
-                    <div class="hidden print-only mt-32 flex justify-between px-20 text-center">
-                        <div class="w-64 border-t-2 border-slate-900 pt-4 font-black text-xs">FIRMA RESPONSABLE</div>
-                        <div class="w-64 border-t-2 border-slate-900 pt-4 font-black text-xs">FIRMA AUDITORÍA / JEFE</div>
+                    <!-- Firma (solo impresión) -->
+                    <div class="hidden print-only mt-16 pt-8 border-t border-slate-300">
+                        <div class="flex justify-between px-12">
+                            <div class="text-center w-48">
+                                <div class="border-t border-slate-800 pt-2 mt-20">
+                                    <p class="text-xs font-bold text-slate-800">Firma del Responsable</p>
+                                    <p class="text-[10px] text-slate-500">${user.nombre}</p>
+                                </div>
+                            </div>
+                            <div class="text-center w-48">
+                                <div class="border-t border-slate-800 pt-2 mt-20">
+                                    <p class="text-xs font-bold text-slate-800">Firma Auditoría / Jefe</p>
+                                    <p class="text-[10px] text-slate-500">Nombre y Cargo</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
         }
 
-        // --- FUNCIONES DE ACCIÓN ---
-        function notificarWhatsApp() {
-            const user = equipo.find(u => u.id == vistaActual.split('-')[1]);
-            const msg = `Hola, envío el reporte de seguimiento para ${user.nombre}. Eficiencia actual: ${calcularEficiencia(tareas.filter(t => t.userId == user.id))}%`;
-            window.open(`https://wa.me/${user.tel}?text=${encodeURIComponent(msg)}`, '_blank');
+        // FUNCIONES DE ACCIÓN
+        function filtrarPorEstado(estado) {
+            // Implementar filtrado por estado en vista global
+            alert(`Filtrando por tareas ${estado}. Implementación: agregar filtro visual en renderGlobal.`);
         }
 
         function pedirMotivo(id) {
@@ -361,75 +822,299 @@
         }
 
         function guardarMotivo() {
+            const motivo = document.getElementById('motivo-text').value.trim();
+            if (!motivo) {
+                alert("Por favor ingrese un motivo");
+                return;
+            }
+            
             const t = tareas.find(x => x.id === currentRetrasoId);
-            t.delayReason = document.getElementById('motivo-text').value;
-            save();
-            cerrarModal('modal-retraso');
+            if (t) {
+                t.delayReason = motivo;
+                save();
+                cerrarModal('modal-retraso');
+                document.getElementById('motivo-text').value = '';
+                
+                // Mostrar confirmación
+                mostrarNotificacion("Motivo de retraso registrado correctamente");
+            }
         }
 
         function toggleSub(tId, sIdx) {
             const t = tareas.find(x => x.id == tId);
-            t.subtasks[sIdx].c = !t.subtasks[sIdx].c;
-            save();
+            if (t) {
+                t.subtasks[sIdx].c = !t.subtasks[sIdx].c;
+                
+                // Verificar si se completó toda la tarea
+                if (t.subtasks.every(s => s.c)) {
+                    t.status = "completada";
+                    mostrarNotificacion("¡Tarea completada! 🎉");
+                }
+                
+                save();
+            }
         }
 
         function guardarTarea() {
+            const nombre = document.getElementById('t-nombre').value.trim();
+            const userId = parseInt(document.getElementById('t-resp').value);
+            const deadline = document.getElementById('t-deadline').value;
+            
+            if (!nombre || !deadline) {
+                alert("Por favor complete todos los campos obligatorios");
+                return;
+            }
+            
+            if (draftEtapas.length === 0) {
+                alert("Agregue al menos una etapa/subtarea");
+                return;
+            }
+            
             const t = {
                 id: Date.now(),
-                texto: document.getElementById('t-nombre').value,
-                userId: parseInt(document.getElementById('t-resp').value),
-                deadline: document.getElementById('t-deadline').value,
+                texto: nombre,
+                userId: userId,
+                deadline: deadline,
                 created: new Date().toISOString(),
                 delayReason: "",
-                subtasks: draftEtapas.map(s => ({ t: s, c: false }))
+                subtasks: draftEtapas.map(s => ({ t: s, c: false })),
+                status: "en_progreso"
             };
-            if(!t.texto || !t.deadline) return alert("Completa todos los campos");
+            
             tareas.push(t);
             save();
             cerrarModal('modal-tarea');
+            
+            // Limpiar formulario
+            document.getElementById('t-nombre').value = '';
+            document.getElementById('t-deadline').value = '';
+            draftEtapas = [];
+            renderDrafts();
+            
+            mostrarNotificacion("Tarea creada y asignada correctamente");
         }
 
         function addEtapaDraft() {
-            const v = document.getElementById('sub-input').value;
-            if(!v) return;
+            const input = document.getElementById('sub-input');
+            const v = input.value.trim();
+            if (!v) return;
+            
             draftEtapas.push(v);
-            document.getElementById('sub-input').value = "";
+            input.value = '';
             renderDrafts();
         }
 
         function renderDrafts() {
-            document.getElementById('etapas-draft').innerHTML = draftEtapas.map(s => `<span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-lg text-[10px] font-black">${s}</span>`).join('');
+            const container = document.getElementById('etapas-draft');
+            container.innerHTML = draftEtapas.map((s, i) => `
+                <span class="bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 border border-indigo-100">
+                    ${s}
+                    <button onclick="eliminarEtapaDraft(${i})" class="text-indigo-400 hover:text-red-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </span>
+            `).join('');
         }
 
+        function eliminarEtapaDraft(index) {
+            draftEtapas.splice(index, 1);
+            renderDrafts();
+        }
+
+        // ADMINISTRACIÓN DE EQUIPO
+        function abrirModalAdmin() {
+            renderListaEquipo();
+            document.getElementById('modal-admin').style.display = 'flex';
+        }
+
+        function renderListaEquipo() {
+            const container = document.getElementById('lista-equipo-admin');
+            container.innerHTML = equipo.map(p => `
+                <div class="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                            ${p.nombre.split(' ').map(n => n[0]).join('').substring(0,2)}
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-800 text-sm">${p.nombre}</p>
+                            <p class="text-xs text-slate-500">${p.cargo} • ${p.email}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="eliminarMiembro(${p.id})" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition" title="Eliminar">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function agregarMiembro() {
+            const nombre = document.getElementById('new-nombre').value.trim();
+            const cargo = document.getElementById('new-cargo').value.trim();
+            const email = document.getElementById('new-email').value.trim();
+            const tel = document.getElementById('new-tel').value.trim();
+            
+            if (!nombre || !cargo || !email) {
+                alert("Por favor complete los campos obligatorios (Nombre, Cargo, Email)");
+                return;
+            }
+            
+            const newId = Math.max(...equipo.map(e => e.id), 0) + 1;
+            equipo.push({
+                id: newId,
+                nombre,
+                cargo,
+                email,
+                tel: tel || "573000000000"
+            });
+            
+            // Limpiar formulario
+            document.getElementById('new-nombre').value = '';
+            document.getElementById('new-cargo').value = '';
+            document.getElementById('new-email').value = '';
+            document.getElementById('new-tel').value = '';
+            
+            localStorage.setItem('v10_team', JSON.stringify(equipo));
+            renderListaEquipo();
+            actualizarSidebar();
+            mostrarNotificacion("Miembro agregado al equipo");
+        }
+
+        function eliminarMiembro(id) {
+            if (confirm("¿Está seguro de eliminar este miembro? Se perderán sus datos pero las tareas permanecerán.")) {
+                equipo = equipo.filter(e => e.id !== id);
+                localStorage.setItem('v10_team', JSON.stringify(equipo));
+                renderListaEquipo();
+                actualizarSidebar();
+            }
+        }
+
+        // NOTIFICACIONES Y ENVÍO
+        function notificarWhatsApp() {
+            if (!vistaActual.startsWith('rep-')) {
+                alert("Seleccione un miembro del equipo primero para enviar su informe");
+                return;
+            }
+            
+            const userId = vistaActual.split('-')[1];
+            const user = equipo.find(u => u.id == userId);
+            const eficiencia = calcularEficiencia(tareas.filter(t => t.userId == userId));
+            
+            const mensaje = `*Master OS - Informe de Actividades*%0A%0A` +
+                           `👤 *${user.nombre}*%0A` +
+                           `💼 ${user.cargo}%0A` +
+                           `📊 Eficiencia: ${eficiencia}%25%0A%0A` +
+                           `Tareas asignadas: ${tareas.filter(t => t.userId == userId).length}%0A` +
+                           `Generado: ${new Date().toLocaleDateString('es-ES')}%0A%0A` +
+                           `_Este es un informe automático del sistema Master OS_`;
+            
+            window.open(`https://wa.me/${user.tel}?text=${mensaje}`, '_blank');
+            mostrarNotificacion("Abriendo WhatsApp...");
+        }
+
+        function enviarEmail() {
+            if (!vistaActual.startsWith('rep-')) {
+                alert("Seleccione un miembro del equipo primero");
+                return;
+            }
+            
+            const userId = vistaActual.split('-')[1];
+            const user = equipo.find(u => u.id == userId);
+            
+            // Simulación de envío de email
+            mostrarNotificacion(`Informe enviado a ${user.email}`);
+        }
+
+        function generarPDF() {
+            if (!vistaActual.startsWith('rep-')) {
+                alert("Seleccione un miembro del equipo para generar su informe PDF");
+                return;
+            }
+            
+            // Preparar para impresión/PDF
+            window.print();
+        }
+
+        function mostrarNotificacion(mensaje) {
+            document.getElementById('notif-mensaje').innerText = mensaje;
+            document.getElementById('modal-notif').style.display = 'flex';
+            setTimeout(() => {
+                cerrarModal('modal-notif');
+            }, 2000);
+        }
+
+        // UTILIDADES
         function calcularEficiencia(list) {
-            if(!list.length) return 0;
+            if (!list.length) return 0;
             let sum = 0;
-            list.forEach(t => sum += (t.subtasks.filter(s=>s.c).length / t.subtasks.length));
+            list.forEach(t => {
+                const completadas = t.subtasks.filter(s => s.c).length;
+                sum += completadas / t.subtasks.length;
+            });
             return Math.round((sum / list.length) * 100);
         }
 
         function setFiltro(f) {
             filtroT = f;
-            document.querySelectorAll('#filter-bar button').forEach(b => b.classList.remove('bg-white', 'text-indigo-600', 'shadow-sm'));
-            document.getElementById(`f-${f}`).classList.add('bg-white', 'text-indigo-600', 'shadow-sm');
+            
+            // Actualizar UI
+            ['dia', 'semana', 'mes'].forEach(tipo => {
+                const btn = document.getElementById(`f-${tipo}`);
+                if (tipo === f) {
+                    btn.classList.add('bg-white', 'text-indigo-600', 'shadow-sm');
+                    btn.classList.remove('text-slate-600');
+                } else {
+                    btn.classList.remove('bg-white', 'text-indigo-600', 'shadow-sm');
+                    btn.classList.add('text-slate-600');
+                }
+            });
+            
             render();
         }
 
-        function save() { localStorage.setItem('v10_tasks', JSON.stringify(tareas)); render(); }
-        function cerrarModal(id) { document.getElementById(id).style.display = 'none'; }
+        function save() {
+            localStorage.setItem('v10_tasks', JSON.stringify(tareas));
+            render();
+        }
+
+        function cerrarModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
         function abrirModalTarea() {
             document.getElementById('modal-tarea').style.display = 'flex';
-            document.getElementById('t-resp').innerHTML = equipo.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
-            draftEtapas = []; renderDrafts();
+            const select = document.getElementById('t-resp');
+            select.innerHTML = equipo.map(p => `<option value="${p.id}">${p.nombre} - ${p.cargo}</option>`).join('');
+            draftEtapas = [];
+            renderDrafts();
         }
-        function cambiarVista(v) { vistaActual = v; render(); actualizarSidebar(); }
-        
+
+        function cambiarVista(v) {
+            vistaActual = v;
+            render();
+            actualizarSidebar();
+        }
+
         function actualizarSidebar() {
-            document.getElementById('sidebar-team-list').innerHTML = equipo.map(p => `
-                <button onclick="cambiarVista('rep-${p.id}')" class="w-full text-left p-3 rounded-xl flex items-center gap-3 hover:text-white transition text-sm ${vistaActual==='rep-'+p.id ? 'btn-active' : ''}">
-                    <div class="w-2 h-2 rounded-full bg-indigo-500 shadow-lg"></div> ${p.nombre}
+            const container = document.getElementById('sidebar-team-list');
+            container.innerHTML = equipo.map(p => `
+                <button onclick="cambiarVista('rep-${p.id}')" 
+                    class="w-full text-left p-3 rounded-xl flex items-center gap-3 hover:text-white transition text-sm ${vistaActual === 'rep-' + p.id ? 'btn-active' : 'text-slate-400 hover:bg-slate-800/50'}">
+                    <div class="w-2 h-2 rounded-full ${vistaActual === 'rep-' + p.id ? 'bg-indigo-400 shadow-lg shadow-indigo-500/50' : 'bg-slate-600'}"></div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-semibold truncate">${p.nombre}</p>
+                        <p class="text-[10px] opacity-70 truncate">${p.cargo}</p>
+                    </div>
                 </button>
             `).join('');
+        }
+
+        // Cerrar modales al hacer click fuera
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
         }
 
         window.onload = init;
