@@ -3,117 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskFlow Pro - Gestión Simple</title>
+    <title>Supervisor Pro - Control de Personal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         
-        body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; }
         
         .card-hover { transition: all 0.2s; }
-        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(0,0,0,0.12); }
         
-        .btn-primary { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .btn-action { 
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             transition: all 0.2s;
         }
-        .btn-primary:hover { transform: scale(1.05); filter: brightness(1.1); }
+        .btn-action:hover { transform: scale(1.02); filter: brightness(1.1); }
         
-        .status-badge {
-            animation: fadeIn 0.3s ease-out;
+        .status-pill { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        
+        .urgent-pulse { animation: urgentPulse 2s infinite; }
+        @keyframes urgentPulse { 
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 50; align-items: center; justify-content: center; padding: 20px; }
+        .modal.active { display: flex; }
         
-        .pulse-ring {
-            position: relative;
-        }
-        .pulse-ring::after {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border-radius: 50%;
-            border: 2px solid #10b981;
-            animation: pulse 2s infinite;
-        }
+        .progress-ring { transform: rotate(-90deg); }
         
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(1.3); opacity: 0; }
-        }
-        
-        .drag-ghost { opacity: 0.5; transform: rotate(3deg); }
-        .drop-zone { border: 2px dashed #cbd5e1; background: rgba(99,102,241,0.05); }
-        
-        /* Print styles */
         @media print {
             .no-print { display: none !important; }
             body { background: white; }
             .print-only { display: block !important; }
         }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-            z-index: 50;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .modal.active { display: flex; }
-        
-        .progress-bar { height: 6px; border-radius: 10px; background: #e2e8f0; overflow: hidden; }
-        .progress-fill { height: 100%; transition: width 0.5s ease; border-radius: 10px; }
     </style>
 </head>
 <body class="h-screen flex overflow-hidden">
 
-    <!-- SIDEBAR SIMPLE -->
-    <aside class="w-64 bg-slate-900 text-white flex flex-col no-print">
+    <!-- SIDEBAR -->
+    <aside class="w-72 bg-slate-900 text-white flex flex-col no-print">
         <div class="p-6 border-b border-slate-700">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-layer-group text-lg"></i>
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-user-tie text-lg"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg leading-tight">TaskFlow</h1>
-                    <p class="text-xs text-slate-400">Pro v2.0</p>
+                    <h1 class="font-bold text-lg">Supervisor Pro</h1>
+                    <p class="text-xs text-slate-400">Control de Personal</p>
                 </div>
             </div>
         </div>
 
-        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-            <button onclick="mostrarVista('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10 text-white font-medium transition">
-                <i class="fas fa-home w-5"></i> Dashboard
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+            <button onclick="mostrarVista('panel')" id="nav-panel" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10 text-white font-medium transition">
+                <i class="fas fa-chart-line w-5"></i> Panel Principal
             </button>
             
-            <button onclick="mostrarVista('equipo')" id="nav-equipo" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition">
-                <i class="fas fa-users w-5"></i> Mi Equipo
+            <button onclick="mostrarVista('trabajadores')" id="nav-trabajadores" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition">
+                <i class="fas fa-users w-5"></i> Mis Trabajadores
             </button>
             
-            <button onclick="mostrarVista('reportes')" id="nav-reportes" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition">
-                <i class="fas fa-chart-pie w-5"></i> Reportes
+            <button onclick="mostrarVista('recordatorios')" id="nav-recordatorios" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition">
+                <i class="fas fa-bell w-5"></i> Recordatorios
+                <span id="badge-recordatorios" class="ml-auto bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full hidden">0</span>
+            </button>
+            
+            <button onclick="mostrarVista('informes')" id="nav-informes" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition">
+                <i class="fas fa-file-alt w-5"></i> Generar Informes
             </button>
 
             <div class="pt-4 mt-4 border-t border-slate-700">
-                <p class="px-4 text-xs font-bold text-slate-500 uppercase mb-2">Miembros</p>
-                <div id="lista-equipo-sidebar" class="space-y-1"></div>
+                <p class="px-4 text-xs font-bold text-slate-500 uppercase mb-2">Mi Equipo</p>
+                <div id="lista-trabajadores-sidebar" class="space-y-1"></div>
             </div>
         </nav>
 
         <div class="p-4 border-t border-slate-700">
-            <div class="flex items-center gap-2 text-xs text-slate-400">
-                <div class="w-2 h-2 bg-emerald-400 rounded-full pulse-ring"></div>
-                <span>Sistema activo</span>
+            <div class="bg-slate-800 rounded-xl p-4">
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <span class="text-xs font-semibold text-emerald-400">Sistema Activo</span>
+                </div>
+                <p class="text-[10px] text-slate-400">Horario: L-V 7AM-6PM | S 7AM-1PM</p>
             </div>
-            <p class="text-[10px] text-slate-500 mt-1">Horario: L-V 7AM-6PM | S 7AM-1PM</p>
         </div>
     </aside>
 
@@ -123,145 +98,134 @@
         <!-- Header -->
         <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between no-print">
             <div>
-                <h2 id="titulo-vista" class="text-xl font-bold text-slate-800">Dashboard</h2>
-                <p id="subtitulo-vista" class="text-sm text-slate-500">Resumen de actividades</p>
+                <h2 id="titulo-vista" class="text-xl font-bold text-slate-800">Panel Principal</h2>
+                <p id="subtitulo-vista" class="text-sm text-slate-500">Vista general de tu equipo</p>
             </div>
             
             <div class="flex items-center gap-3">
-                <div class="relative">
-                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                    <input type="text" id="buscador" placeholder="Buscar tarea..." 
-                        class="pl-9 pr-4 py-2 bg-slate-100 border-none rounded-lg text-sm w-64 focus:ring-2 focus:ring-violet-500 outline-none"
-                        oninput="buscarTarea(this.value)">
-                </div>
-                
-                <button onclick="abrirModalTarea()" class="btn-primary text-white px-5 py-2.5 rounded-xl font-semibold text-sm flex items-center gap-2 shadow-lg shadow-violet-200">
-                    <i class="fas fa-plus"></i> Nueva Tarea
+                <button onclick="abrirModalTarea()" class="btn-action text-white px-5 py-2.5 rounded-xl font-semibold text-sm flex items-center gap-2 shadow-lg shadow-blue-200">
+                    <i class="fas fa-plus"></i> Asignar Tarea
+                </button>
+                <button onclick="abrirModalTrabajador()" class="bg-slate-800 hover:bg-slate-900 text-white px-5 py-2.5 rounded-xl font-semibold text-sm flex items-center gap-2 transition">
+                    <i class="fas fa-user-plus"></i> Agregar Trabajador
                 </button>
             </div>
         </header>
-
-        <!-- Filtros (aparecen solo en reportes) -->
-        <div id="barra-filtros" class="bg-white border-b border-slate-200 px-6 py-3 flex items-center gap-3 no-print hidden">
-            <div class="flex bg-slate-100 rounded-lg p-1">
-                <button onclick="setFiltro('todas')" id="filtro-todas" class="px-4 py-1.5 rounded-md text-xs font-bold bg-white text-violet-600 shadow-sm">Todas</button>
-                <button onclick="setFiltro('hoy')" id="filtro-hoy" class="px-4 py-1.5 rounded-md text-xs font-bold text-slate-600 hover:text-slate-900">Hoy</button>
-                <button onclick="setFiltro('semana')" id="filtro-semana" class="px-4 py-1.5 rounded-md text-xs font-bold text-slate-600 hover:text-slate-900">Esta Semana</button>
-                <button onclick="setFiltro('vencidas')" id="filtro-vencidas" class="px-4 py-1.5 rounded-md text-xs font-bold text-slate-600 hover:text-slate-900 text-red-600">Vencidas</button>
-            </div>
-            
-            <div class="ml-auto flex gap-2">
-                <button onclick="enviarWhatsApp()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition">
-                    <i class="fab fa-whatsapp"></i> WhatsApp
-                </button>
-                <button onclick="descargarPDF()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition">
-                    <i class="fas fa-file-pdf"></i> PDF
-                </button>
-            </div>
-        </div>
 
         <!-- Contenido -->
         <div id="contenido" class="flex-1 overflow-y-auto p-6 bg-slate-50"></div>
     </main>
 
-    <!-- MODAL: Nueva Tarea -->
+    <!-- MODAL: Asignar Tarea -->
     <div id="modal-tarea" class="modal">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-violet-50 to-fuchsia-50">
-                <h3 class="text-lg font-bold text-slate-800">✨ Nueva Tarea</h3>
-                <button onclick="cerrarModal('modal-tarea')" class="text-slate-400 hover:text-slate-600 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white transition">
-                    <i class="fas fa-times"></i>
-                </button>
+            <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-blue-50 to-indigo-50">
+                <h3 class="text-lg font-bold text-slate-800">📝 Asignar Nueva Tarea</h3>
+                <p class="text-sm text-slate-500">Crea una tarea y asígnala a un trabajador</p>
             </div>
             
             <div class="p-6 space-y-4">
                 <div>
-                    <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Nombre de la tarea</label>
-                    <input type="text" id="t-nombre" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-violet-500 font-medium" placeholder="Ej: Revisar informes mensuales">
+                    <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Nombre de la tarea *</label>
+                    <input type="text" id="t-nombre" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-medium" placeholder="Ej: Revisar inventario de bodega">
                 </div>
                 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Asignar a</label>
-                        <select id="t-persona" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-violet-500 font-medium bg-white"></select>
+                        <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Trabajador *</label>
+                        <select id="t-trabajador" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-medium bg-white"></select>
                     </div>
                     <div>
                         <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Prioridad</label>
-                        <select id="t-prioridad" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-violet-500 font-medium bg-white">
-                            <option value="baja">🟢 Baja</option>
-                            <option value="media" selected>🟡 Media</option>
-                            <option value="alta">🔴 Alta</option>
+                        <select id="t-prioridad" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-medium bg-white">
+                            <option value="normal">⚪ Normal</option>
+                            <option value="importante">🟡 Importante</option>
+                            <option value="urgente">🔴 Urgente</option>
                         </select>
                     </div>
                 </div>
                 
                 <div>
-                    <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Fecha límite</label>
-                    <input type="datetime-local" id="t-fecha" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-violet-500 font-medium">
+                    <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Fecha límite *</label>
+                    <input type="datetime-local" id="t-fecha" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-medium">
                 </div>
                 
                 <div>
-                    <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Etapas (checklist)</label>
+                    <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Pasos a seguir (checklist)</label>
                     <div class="flex gap-2 mb-2">
-                        <input type="text" id="t-etapa" class="flex-1 p-2.5 border border-slate-200 rounded-lg outline-none focus:border-violet-500 text-sm" placeholder="Ej: Revisión inicial" onkeypress="if(event.key==='Enter') agregarEtapa()">
-                        <button onclick="agregarEtapa()" class="bg-slate-800 text-white px-4 rounded-lg font-bold text-sm hover:bg-slate-700 transition">+</button>
+                        <input type="text" id="t-paso" class="flex-1 p-2.5 border border-slate-200 rounded-lg outline-none focus:border-blue-500 text-sm" placeholder="Ej: Revisar stock físico" onkeypress="if(event.key==='Enter') agregarPaso()">
+                        <button onclick="agregarPaso()" class="bg-slate-800 text-white px-4 rounded-lg font-bold hover:bg-slate-700 transition">+</button>
                     </div>
-                    <div id="lista-etapas" class="space-y-2"></div>
+                    <div id="lista-pasos" class="space-y-1"></div>
                 </div>
             </div>
             
             <div class="p-6 border-t border-slate-100 bg-slate-50 flex gap-3">
                 <button onclick="cerrarModal('modal-tarea')" class="flex-1 py-2.5 text-slate-600 font-semibold hover:bg-slate-100 rounded-xl transition">Cancelar</button>
-                <button onclick="guardarTarea()" class="flex-1 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl transition shadow-lg shadow-violet-200">Crear Tarea</button>
+                <button onclick="guardarTarea()" class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition shadow-lg shadow-blue-200">Asignar Tarea</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: Ver/Editar Tarea -->
-    <div id="modal-ver" class="modal">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden" id="ver-contenido"></div>
-    </div>
-
-    <!-- MODAL: Justificar Retraso -->
-    <div id="modal-retraso" class="modal">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
-            <div class="text-center mb-4">
-                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center text-red-500 mx-auto mb-3">
-                    <i class="fas fa-exclamation-circle text-2xl"></i>
-                </div>
-                <h3 class="text-lg font-bold text-slate-800">Tarea Vencida</h3>
-                <p class="text-sm text-slate-500">Esta tarea superó la fecha límite</p>
-            </div>
-            
-            <textarea id="r-motivo" class="w-full p-3 border border-red-200 rounded-xl h-24 outline-none focus:ring-2 focus:ring-red-500 text-sm resize-none mb-4" placeholder="¿Por qué se retrasó? (ej: esperando aprobación del cliente)"></textarea>
-            
-            <div class="flex gap-3">
-                <button onclick="cerrarModal('modal-retraso')" class="flex-1 py-2.5 text-slate-600 font-semibold hover:bg-slate-50 rounded-xl transition">Cancelar</button>
-                <button onclick="guardarRetraso()" class="flex-1 py-2.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition">Guardar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: Equipo -->
-    <div id="modal-equipo" class="modal">
+    <!-- MODAL: Agregar Trabajador -->
+    <div id="modal-trabajador" class="modal">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-            <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-blue-50 to-indigo-50">
-                <h3 class="text-lg font-bold text-slate-800">👥 Administrar Equipo</h3>
+            <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-emerald-50 to-teal-50">
+                <h3 class="text-lg font-bold text-slate-800">👤 Nuevo Trabajador</h3>
             </div>
+            
             <div class="p-6 space-y-4">
-                <div class="grid grid-cols-2 gap-3">
-                    <input type="text" id="e-nombre" placeholder="Nombre" class="p-2.5 border border-slate-200 rounded-lg outline-none focus:border-blue-500 text-sm">
-                    <input type="text" id="e-cargo" placeholder="Cargo" class="p-2.5 border border-slate-200 rounded-lg outline-none focus:border-blue-500 text-sm">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <input type="email" id="e-email" placeholder="Email" class="p-2.5 border border-slate-200 rounded-lg outline-none focus:border-blue-500 text-sm">
-                    <input type="tel" id="e-telefono" placeholder="WhatsApp" class="p-2.5 border border-slate-200 rounded-lg outline-none focus:border-blue-500 text-sm">
-                </div>
-                <button onclick="agregarPersona()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition">
-                    <i class="fas fa-user-plus mr-2"></i>Agregar Persona
+                <input type="text" id="w-nombre" placeholder="Nombre completo *" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+                <input type="text" id="w-cargo" placeholder="Cargo / Puesto *" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+                <input type="email" id="w-email" placeholder="Correo electrónico" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+                <input type="tel" id="w-whatsapp" placeholder="WhatsApp (ej: 573001234567) *" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+            </div>
+            
+            <div class="p-6 border-t border-slate-100 bg-slate-50 flex gap-3">
+                <button onclick="cerrarModal('modal-trabajador')" class="flex-1 py-2.5 text-slate-600 font-semibold hover:bg-slate-100 rounded-xl transition">Cancelar</button>
+                <button onclick="guardarTrabajador()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition shadow-lg shadow-emerald-200">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Enviar Recordatorio -->
+    <div id="modal-recordatorio" class="modal">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-amber-50 to-orange-50">
+                <h3 class="text-lg font-bold text-slate-800">📱 Enviar Recordatorio</h3>
+                <p class="text-sm text-slate-500">Notifica al trabajador sobre sus pendientes</p>
+            </div>
+            
+            <div class="p-6 space-y-4" id="recordatorio-contenido"></div>
+            
+            <div class="p-6 border-t border-slate-100 bg-slate-50 flex gap-3">
+                <button onclick="cerrarModal('modal-recordatorio')" class="flex-1 py-2.5 text-slate-600 font-semibold hover:bg-slate-100 rounded-xl transition">Cerrar</button>
+                <button onclick="enviarWhatsAppRecordatorio()" class="flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition shadow-lg shadow-emerald-200">
+                    <i class="fab fa-whatsapp mr-2"></i>Enviar WhatsApp
                 </button>
-                
-                <div id="lista-personas-modal" class="space-y-2 mt-4 max-h-60 overflow-y-auto"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Informe Generado -->
+    <div id="modal-informe" class="modal">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-blue-50 to-indigo-50 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-slate-800">📊 Informe Generado</h3>
+                <button onclick="cerrarModal('modal-informe')" class="text-slate-400 hover:text-slate-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-6" id="informe-contenido"></div>
+            
+            <div class="p-6 border-t border-slate-100 bg-slate-50 flex gap-3 no-print">
+                <button onclick="imprimirInforme()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-xl transition">
+                    <i class="fas fa-print mr-2"></i>Imprimir / PDF
+                </button>
+                <button onclick="enviarInformeWhatsApp()" class="flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition shadow-lg shadow-emerald-200">
+                    <i class="fab fa-whatsapp mr-2"></i>Enviar por WhatsApp
+                </button>
             </div>
         </div>
     </div>
@@ -273,77 +237,58 @@
     </div>
 
     <script>
-        // DATOS INICIALES
-        let personas = JSON.parse(localStorage.getItem('tf_personas')) || [
-            { id: 1, nombre: "Carlos Ruiz", cargo: "Director", email: "carlos@empresa.com", telefono: "573001234567" },
-            { id: 2, nombre: "Ana López", cargo: "Gerente", email: "ana@empresa.com", telefono: "573112345678" },
-            { id: 3, nombre: "Luis Torres", cargo: "Analista", email: "luis@empresa.com", telefono: "573223456789" }
+        // ===== DATOS =====
+        let trabajadores = JSON.parse(localStorage.getItem('sp_trabajadores')) || [
+            { id: 1, nombre: "Carlos Rodríguez", cargo: "Operario de Bodega", email: "carlos@empresa.com", whatsapp: "573001234567" },
+            { id: 2, nombre: "Ana Martínez", cargo: "Auxiliar Administrativa", email: "ana@empresa.com", whatsapp: "573112345678" },
+            { id: 3, nombre: "Luis Gómez", cargo: "Conductor", email: "luis@empresa.com", whatsapp: "573223456789" }
         ];
 
-        let tareas = JSON.parse(localStorage.getItem('tf_tareas')) || [];
-        let vistaActual = 'dashboard';
-        let filtroActual = 'todas';
-        let tareaEditando = null;
-        let etapasTemp = [];
+        let tareas = JSON.parse(localStorage.getItem('sp_tareas')) || [];
+        let pasosTemp = [];
+        let trabajadorSeleccionado = null;
+        let informeActual = null;
 
-        // HORARIO LABORAL
-        const HORARIO = { inicio: 7, finLV: 18, finS: 13 };
-
-        // INICIALIZAR
+        // ===== INICIALIZAR =====
         function init() {
             if (tareas.length === 0) crearDatosDemo();
             actualizarSidebar();
-            mostrarVista('dashboard');
-            setInterval(actualizarTiempos, 60000); // Actualizar cada minuto
+            mostrarVista('panel');
+            setInterval(verificarVencimientos, 60000); // Verificar cada minuto
         }
 
         function crearDatosDemo() {
-            const nombresTareas = [
-                "Revisión de inventario", "Informe mensual de ventas", "Capacitación del equipo",
-                "Actualización de base de datos", "Reunión con proveedores", "Auditoría interna",
-                "Desarrollo de campaña marketing", "Mantenimiento de servidores", "Revisión de contratos",
-                "Optimización de procesos", "Análisis de competencia", "Preparación de presupuesto",
-                "Diseño de nuevo logo", "Testing de aplicación", "Documentación técnica",
-                "Entrevistas de personal", "Revisión de seguridad", "Planificación Q3",
-                "Actualización de políticas", "Investigación de mercado"
+            const tareasDemo = [
+                { texto: "Revisar inventario de materia prima", trabajadorId: 1, dias: 1, prioridad: "urgente", pasos: ["Contar stock físico", "Comparar con sistema", "Reportar diferencias"] },
+                { texto: "Entregar documentación al cliente", trabajadorId: 2, dias: 2, prioridad: "importante", pasos: ["Revisar contratos", "Imprimir copias", "Organizar carpeta"] },
+                { texto: "Mantenimiento preventivo vehículo", trabajadorId: 3, dias: -1, prioridad: "normal", pasos: ["Revisar aceite", "Chequear llantas", "Lavar unidad"] },
+                { texto: "Organizar archivo de facturas", trabajadorId: 2, dias: 5, prioridad: "normal", pasos: ["Clasificar por fecha", "Digitalizar documentos", "Archivar físicamente"] },
+                { texto: "Pedido especial cliente VIP", trabajadorId: 1, dias: 0, prioridad: "urgente", pasos: ["Preparar mercancía", "Verificar calidad", "Empacar especial"] }
             ];
 
-            personas.forEach((p, idx) => {
-                for (let i = 0; i < 5; i++) {
-                    const dias = Math.floor(Math.random() * 10) - 2; // Algunas vencidas, otras futuras
-                    const fecha = new Date();
-                    fecha.setDate(fecha.getDate() + dias);
-                    fecha.setHours(9 + Math.floor(Math.random() * 8), 0, 0);
+            tareasDemo.forEach((t, i) => {
+                const fecha = new Date();
+                fecha.setDate(fecha.getDate() + t.dias);
+                fecha.setHours(17, 0, 0, 0);
 
-                    const numEtapas = 3 + Math.floor(Math.random() * 3);
-                    const etapas = [];
-                    for (let e = 0; e < numEtapas; e++) {
-                        etapas.push({
-                            texto: `Etapa ${e + 1}: ${['Análisis', 'Desarrollo', 'Revisión', 'Testing', 'Entrega'][e] || 'Paso ' + (e+1)}`,
-                            completada: Math.random() > 0.6 && dias > 0
-                        });
-                    }
-
-                    tareas.push({
-                        id: Date.now() + Math.random(),
-                        texto: nombresTareas[idx * 5 + i] || `Tarea ${i + 1}`,
-                        personaId: p.id,
-                        prioridad: ['alta', 'media', 'baja'][Math.floor(Math.random() * 3)],
-                        fechaLimite: fecha.toISOString(),
-                        etapas: etapas,
-                        retrasoMotivo: "",
-                        creada: new Date().toISOString()
-                    });
-                }
+                tareas.push({
+                    id: Date.now() + i,
+                    texto: t.texto,
+                    trabajadorId: t.trabajadorId,
+                    prioridad: t.prioridad,
+                    fechaLimite: fecha.toISOString(),
+                    pasos: t.pasos.map(p => ({ texto: p, completado: Math.random() > 0.7 })),
+                    retrasoMotivo: t.dias < 0 ? "Esperando repuestos del proveedor" : "",
+                    creada: new Date().toISOString(),
+                    recordatoriosEnviados: 0
+                });
             });
             guardar();
         }
 
-        // VISTAS
+        // ===== VISTAS =====
         function mostrarVista(vista) {
-            vistaActual = vista;
-            
-            // Actualizar navegación
+            // Actualizar nav
             document.querySelectorAll('nav button').forEach(b => {
                 b.classList.remove('bg-white/10', 'text-white');
                 b.classList.add('text-slate-400');
@@ -356,58 +301,55 @@
             }
 
             const contenido = document.getElementById('contenido');
-            const filtros = document.getElementById('barra-filtros');
             
-            filtros.classList.add('hidden');
-
             switch(vista) {
-                case 'dashboard':
-                    document.getElementById('titulo-vista').innerText = 'Dashboard';
-                    document.getElementById('subtitulo-vista').innerText = 'Resumen general de actividades';
-                    renderDashboard(contenido);
+                case 'panel':
+                    document.getElementById('titulo-vista').innerText = 'Panel Principal';
+                    document.getElementById('subtitulo-vista').innerText = 'Control general de tu equipo';
+                    renderPanel(contenido);
                     break;
-                    
-                case 'equipo':
-                    document.getElementById('titulo-vista').innerText = 'Mi Equipo';
-                    document.getElementById('subtitulo-vista').innerText = 'Gestiona tus colaboradores';
-                    abrirModalEquipo();
-                    mostrarVista('dashboard'); // Volver a dashboard pero mostrar modal
+                case 'trabajadores':
+                    document.getElementById('titulo-vista').innerText = 'Mis Trabajadores';
+                    document.getElementById('subtitulo-vista').innerText = 'Gestiona tu equipo';
+                    renderTrabajadores(contenido);
                     break;
-                    
-                case 'reportes':
-                    document.getElementById('titulo-vista').innerText = 'Reportes';
-                    document.getElementById('subtitulo-vista').innerText = 'Filtra y exporta información';
-                    filtros.classList.remove('hidden');
-                    renderReportes(contenido);
+                case 'recordatorios':
+                    document.getElementById('titulo-vista').innerText = 'Recordatorios';
+                    document.getElementById('subtitulo-vista').innerText = 'Envía alertas de tareas pendientes';
+                    renderRecordatorios(contenido);
                     break;
-                    
+                case 'informes':
+                    document.getElementById('titulo-vista').innerText = 'Generar Informes';
+                    document.getElementById('subtitulo-vista').innerText = 'Crea reportes periódicos';
+                    renderInformes(contenido);
+                    break;
                 default:
-                    if (vista.startsWith('persona-')) {
-                        const personaId = parseInt(vista.split('-')[1]);
-                        const persona = personas.find(p => p.id === personaId);
-                        document.getElementById('titulo-vista').innerText = persona.nombre;
-                        document.getElementById('subtitulo-vista').innerText = persona.cargo;
-                        filtros.classList.remove('hidden');
-                        renderTareasPersona(contenido, personaId);
+                    if (vista.startsWith('trabajador-')) {
+                        const id = parseInt(vista.split('-')[1]);
+                        const t = trabajadores.find(x => x.id === id);
+                        document.getElementById('titulo-vista').innerText = t.nombre;
+                        document.getElementById('subtitulo-vista').innerText = t.cargo;
+                        renderDetalleTrabajador(contenido, id);
                     }
             }
         }
 
-        function renderDashboard(container) {
+        // ===== RENDER: PANEL =====
+        function renderPanel(container) {
             const stats = calcularStats();
             
             container.innerHTML = `
                 <div class="space-y-6">
-                    <!-- Stats Cards -->
+                    <!-- Stats -->
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 card-hover">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <p class="text-xs font-bold text-slate-400 uppercase">Total Tareas</p>
-                                    <p class="text-3xl font-black text-slate-800 mt-1">${stats.total}</p>
+                                    <p class="text-xs font-bold text-slate-400 uppercase">Total Trabajadores</p>
+                                    <p class="text-3xl font-black text-slate-800 mt-1">${trabajadores.length}</p>
                                 </div>
-                                <div class="w-10 h-10 bg-violet-100 rounded-xl flex items-center justify-center text-violet-600">
-                                    <i class="fas fa-tasks"></i>
+                                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                                    <i class="fas fa-users text-xl"></i>
                                 </div>
                             </div>
                         </div>
@@ -415,530 +357,661 @@
                         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 card-hover">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <p class="text-xs font-bold text-slate-400 uppercase">Completadas</p>
-                                    <p class="text-3xl font-black text-emerald-600 mt-1">${stats.completadas}</p>
+                                    <p class="text-xs font-bold text-slate-400 uppercase">Tareas Activas</p>
+                                    <p class="text-3xl font-black text-blue-600 mt-1">${stats.activas}</p>
                                 </div>
-                                <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600">
-                                    <i class="fas fa-check-circle"></i>
+                                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                                    <i class="fas fa-tasks text-xl"></i>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 card-hover cursor-pointer" onclick="mostrarVista('reportes'); setFiltro('vencidas')">
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 card-hover cursor-pointer" onclick="mostrarVista('recordatorios')">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-xs font-bold text-slate-400 uppercase">Por Vencer</p>
+                                    <p class="text-3xl font-black text-amber-600 mt-1">${stats.porVencer}</p>
+                                </div>
+                                <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600">
+                                    <i class="fas fa-clock text-xl"></i>
+                                </div>
+                            </div>
+                            ${stats.porVencer > 0 ? '<div class="mt-2 text-xs text-amber-600 font-semibold"><i class="fas fa-exclamation-triangle mr-1"></i>Requieren atención</div>' : ''}
+                        </div>
+                        
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 card-hover cursor-pointer" onclick="mostrarVista('recordatorios')">
                             <div class="flex justify-between items-start">
                                 <div>
                                     <p class="text-xs font-bold text-slate-400 uppercase">Vencidas</p>
                                     <p class="text-3xl font-black text-red-600 mt-1">${stats.vencidas}</p>
                                 </div>
-                                <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center text-red-600">
-                                    <i class="fas fa-exclamation-triangle"></i>
+                                <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center text-red-600">
+                                    <i class="fas fa-exclamation-circle text-xl"></i>
                                 </div>
                             </div>
+                            ${stats.vencidas > 0 ? '<div class="mt-2 text-xs text-red-600 font-semibold">Necesitan seguimiento</div>' : ''}
                         </div>
-                        
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 card-hover">
-                            <div class="flex justify-between items-start">
+                    </div>
+
+                    <!-- Alertas Urgentes -->
+                    ${stats.vencidas > 0 || stats.porVencer > 0 ? `
+                        <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-5">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center text-white">
+                                    <i class="fas fa-bell"></i>
+                                </div>
                                 <div>
-                                    <p class="text-xs font-bold text-slate-400 uppercase">En Progreso</p>
-                                    <p class="text-3xl font-black text-amber-600 mt-1">${stats.progreso}</p>
+                                    <h3 class="font-bold text-slate-800">Alertas del Día</h3>
+                                    <p class="text-sm text-slate-500">Tareas que requieren tu atención inmediata</p>
                                 </div>
-                                <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600">
-                                    <i class="fas fa-clock"></i>
-                                </div>
+                                <button onclick="mostrarVista('recordatorios')" class="ml-auto bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition">
+                                    Ver Todas
+                                </button>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Tareas recientes -->
-                    <div>
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-bold text-slate-800 text-lg">Tareas Recientes</h3>
-                            <button onclick="mostrarVista('reportes')" class="text-sm font-semibold text-violet-600 hover:text-violet-700">Ver todas →</button>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-                            ${tareas.slice(0, 6).map(t => cardTarea(t)).join('')}
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderReportes(container) {
-            const tareasFiltradas = filtrarTareas();
-            
-            container.innerHTML = `
-                <div class="space-y-4">
-                    <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-slate-800 text-lg">${tareasFiltradas.length} tareas encontradas</h3>
-                    </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-                        ${tareasFiltradas.map(t => cardTarea(t)).join('')}
-                    </div>
-                    ${tareasFiltradas.length === 0 ? `
-                        <div class="text-center py-12 text-slate-400">
-                            <i class="fas fa-inbox text-4xl mb-3"></i>
-                            <p class="font-semibold">No hay tareas para mostrar</p>
+                            <div class="space-y-2">
+                                ${tareas.filter(t => {
+                                    const tiempo = calcularTiempo(t.fechaLimite);
+                                    return (tiempo.vencida || tiempo.urgente) && !t.pasos.every(p => p.completado);
+                                }).slice(0, 3).map(t => {
+                                    const trabajador = trabajadores.find(w => w.id === t.trabajadorId);
+                                    const tiempo = calcularTiempo(t.fechaLimite);
+                                    return `
+                                        <div class="flex items-center justify-between p-3 bg-white/80 rounded-xl">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-2 h-2 rounded-full ${tiempo.vencida ? 'bg-red-500' : 'bg-amber-500'} ${tiempo.vencida ? '' : 'animate-pulse'}"></div>
+                                                <div>
+                                                    <p class="text-sm font-semibold text-slate-800">${t.texto}</p>
+                                                    <p class="text-xs text-slate-500">${trabajador?.nombre || 'N/A'} • ${tiempo.texto}</p>
+                                                </div>
+                                            </div>
+                                            <button onclick="abrirRecordatorio(${t.trabajadorId})" class="text-emerald-600 hover:bg-emerald-50 p-2 rounded-lg transition" title="Enviar recordatorio">
+                                                <i class="fab fa-whatsapp text-lg"></i>
+                                            </button>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
                         </div>
                     ` : ''}
+
+                    <!-- Resumen por Trabajador -->
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-4">Resumen por Trabajador</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            ${trabajadores.map(w => {
+                                const tareasW = tareas.filter(t => t.trabajadorId === w.id);
+                                const completadas = tareasW.filter(t => t.pasos.every(p => p.completado)).length;
+                                const vencidas = tareasW.filter(t => calcularTiempo(t.fechaLimite).vencida && !t.pasos.every(p => p.completado)).length;
+                                const progreso = tareasW.length > 0 ? Math.round((completadas / tareasW.length) * 100) : 0;
+                                
+                                return `
+                                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 card-hover cursor-pointer" onclick="mostrarVista('trabajador-${w.id}')">
+                                        <div class="flex items-center gap-3 mb-4">
+                                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-lg">
+                                                ${w.nombre.split(' ').map(n => n[0]).join('')}
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <h4 class="font-bold text-slate-800 truncate">${w.nombre}</h4>
+                                                <p class="text-xs text-slate-500">${w.cargo}</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="flex justify-between text-center mb-3">
+                                            <div>
+                                                <p class="text-lg font-black text-slate-800">${tareasW.length}</p>
+                                                <p class="text-[10px] text-slate-400 uppercase font-bold">Tareas</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-lg font-black text-emerald-600">${completadas}</p>
+                                                <p class="text-[10px] text-slate-400 uppercase font-bold">Listas</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-lg font-black text-red-600">${vencidas}</p>
+                                                <p class="text-[10px] text-slate-400 uppercase font-bold">Vencidas</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="flex items-center gap-2">
+                                            <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full bg-blue-500 rounded-full transition-all" style="width: ${progreso}%"></div>
+                                            </div>
+                                            <span class="text-xs font-bold text-slate-600">${progreso}%</span>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
                 </div>
             `;
         }
 
-        function renderTareasPersona(container, personaId) {
-            const persona = personas.find(p => p.id === personaId);
-            const tareasPersona = filtrarTareas().filter(t => t.personaId === personaId);
-            const stats = calcularStats(tareasPersona);
+        // ===== RENDER: TRABAJADORES =====
+        function renderTrabajadores(container) {
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    ${trabajadores.map(w => {
+                        const tareasW = tareas.filter(t => t.trabajadorId === w.id);
+                        const pendientes = tareasW.filter(t => !t.pasos.every(p => p.completado)).length;
+                        
+                        return `
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 card-hover">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-xl">
+                                            ${w.nombre.split(' ').map(n => n[0]).join('')}
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-slate-800">${w.nombre}</h4>
+                                            <p class="text-sm text-slate-500">${w.cargo}</p>
+                                        </div>
+                                    </div>
+                                    ${pendientes > 0 ? `<span class="bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded-full">${pendientes} pendientes</span>` : ''}
+                                </div>
+                                
+                                <div class="space-y-2 text-sm text-slate-600 mb-4">
+                                    <p><i class="fas fa-envelope w-5 text-slate-400"></i> ${w.email || 'No registrado'}</p>
+                                    <p><i class="fab fa-whatsapp w-5 text-slate-400"></i> ${w.whatsapp || 'No registrado'}</p>
+                                </div>
+                                
+                                <div class="flex gap-2">
+                                    <button onclick="mostrarVista('trabajador-${w.id}')" class="flex-1 py-2 bg-blue-50 text-blue-600 rounded-lg font-semibold text-sm hover:bg-blue-100 transition">
+                                        Ver Tareas
+                                    </button>
+                                    <button onclick="abrirRecordatorio(${w.id})" class="flex-1 py-2 bg-emerald-50 text-emerald-600 rounded-lg font-semibold text-sm hover:bg-emerald-100 transition">
+                                        <i class="fab fa-whatsapp mr-1"></i> Recordar
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        // ===== RENDER: DETALLE TRABAJADOR =====
+        function renderDetalleTrabajador(container, trabajadorId) {
+            const trabajador = trabajadores.find(w => w.id === trabajadorId);
+            const tareasW = tareas.filter(t => t.trabajadorId === trabajadorId);
             
             container.innerHTML = `
                 <div class="space-y-6">
-                    <!-- Header persona -->
-                    <div class="bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-2xl p-6 text-white shadow-xl">
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center gap-4">
-                                <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-2xl font-black backdrop-blur border border-white/30">
-                                    ${persona.nombre.split(' ').map(n => n[0]).join('')}
-                                </div>
-                                <div>
-                                    <h3 class="text-2xl font-black">${persona.nombre}</h3>
-                                    <p class="text-violet-200">${persona.cargo}</p>
+                    <!-- Header -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-2xl">
+                                ${trabajador.nombre.split(' ').map(n => n[0]).join('')}
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-black text-slate-800">${trabajador.nombre}</h2>
+                                <p class="text-slate-500">${trabajador.cargo}</p>
+                                <div class="flex gap-4 mt-2 text-sm text-slate-500">
+                                    <span><i class="fas fa-envelope mr-1"></i>${trabajador.email}</span>
+                                    <span><i class="fab fa-whatsapp mr-1"></i>${trabajador.whatsapp}</span>
                                 </div>
                             </div>
-                            <div class="text-right">
-                                <p class="text-4xl font-black">${stats.eficiencia}%</p>
-                                <p class="text-xs font-bold text-violet-200 uppercase">Eficiencia</p>
+                            <div class="ml-auto">
+                                <button onclick="abrirRecordatorio(${trabajador.id})" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl font-semibold text-sm transition shadow-lg shadow-emerald-200">
+                                    <i class="fab fa-whatsapp mr-2"></i>Enviar Recordatorio
+                                </button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Tareas -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        ${tareasPersona.map(t => cardTarea(t)).join('')}
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-4">Tareas Asignadas (${tareasW.length})</h3>
+                        <div class="space-y-3">
+                            ${tareasW.map(t => cardTareaDetallada(t)).join('')}
+                        </div>
                     </div>
                 </div>
             `;
         }
 
-        function cardTarea(t) {
-            const completadas = t.etapas.filter(e => e.completada).length;
-            const total = t.etapas.length;
+        function cardTareaDetallada(t) {
+            const completadas = t.pasos.filter(p => p.completado).length;
+            const total = t.pasos.length;
             const porcentaje = Math.round((completadas / total) * 100);
-            const tiempo = calcularTiempoRestante(t.fechaLimite);
-            const persona = personas.find(p => p.id === t.personaId);
+            const tiempo = calcularTiempo(t.fechaLimite);
             
-            let colorBarra = 'bg-violet-500';
-            if (porcentaje === 100) colorBarra = 'bg-emerald-500';
-            else if (tiempo.vencida) colorBarra = 'bg-red-500';
-            else if (tiempo.urgente) colorBarra = 'bg-amber-500';
+            let colorPrioridad = 'bg-slate-100 text-slate-600';
+            if (t.prioridad === 'urgente') colorPrioridad = 'bg-red-100 text-red-700';
+            else if (t.prioridad === 'importante') colorPrioridad = 'bg-amber-100 text-amber-700';
             
-            let badgePrioridad = '';
-            if (t.prioridad === 'alta') badgePrioridad = '<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold">ALTA</span>';
-            else if (t.prioridad === 'media') badgePrioridad = '<span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold">MEDIA</span>';
-            else badgePrioridad = '<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold">BAJA</span>';
-
             return `
-                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 card-hover ${tiempo.vencida && porcentaje < 100 ? 'border-red-200 bg-red-50/30' : ''}" onclick="verTarea(${t.id})">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border ${tiempo.vencida && porcentaje < 100 ? 'border-red-200 bg-red-50/30' : 'border-slate-100'} card-hover">
                     <div class="flex justify-between items-start mb-3">
-                        <div class="flex gap-2 items-center">
-                            ${badgePrioridad}
-                            ${tiempo.urgente && !tiempo.vencida ? '<span class="text-amber-500 animate-pulse"><i class="fas fa-clock"></i></span>' : ''}
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold px-2 py-1 rounded-lg uppercase ${colorPrioridad}">${t.prioridad}</span>
+                            ${tiempo.vencida ? '<span class="text-xs font-bold text-red-600 bg-red-100 px-2 py-1 rounded-lg">VENCIDA</span>' : ''}
+                            ${tiempo.urgente ? '<span class="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-1 rounded-lg animate-pulse">POR VENCER</span>' : ''}
                         </div>
-                        <span class="text-xs font-bold ${tiempo.vencida ? 'text-red-600' : 'text-violet-600'}">${tiempo.texto}</span>
+                        <span class="text-xs font-bold ${tiempo.vencida ? 'text-red-600' : 'text-blue-600'}">${tiempo.texto}</span>
                     </div>
                     
-                    <h4 class="font-bold text-slate-800 mb-2 line-clamp-2">${t.texto}</h4>
+                    <h4 class="font-bold text-slate-800 mb-3">${t.texto}</h4>
                     
-                    <div class="flex items-center gap-2 mb-3">
-                        <div class="w-6 h-6 rounded-full bg-gradient-to-br from-violet-400 to-fuchsia-400 text-white flex items-center justify-center text-[10px] font-bold">
-                            ${persona?.nombre.charAt(0) || '?'}
-                        </div>
-                        <span class="text-xs text-slate-500 font-medium">${persona?.nombre || 'Sin asignar'}</span>
-                    </div>
-                    
-                    <div class="space-y-1.5 mb-3">
-                        ${t.etapas.slice(0, 3).map((e, i) => `
-                            <div class="flex items-center gap-2">
-                                <div class="w-4 h-4 rounded border-2 ${e.completada ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300'} flex items-center justify-center transition" onclick="event.stopPropagation(); toggleEtapa(${t.id}, ${i})">
-                                    ${e.completada ? '<i class="fas fa-check text-white text-[10px]"></i>' : ''}
+                    <div class="space-y-2 mb-4">
+                        ${t.pasos.map((p, i) => `
+                            <div class="flex items-center gap-3">
+                                <div class="w-5 h-5 rounded border-2 ${p.completado ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300'} flex items-center justify-center cursor-pointer transition hover:border-blue-500" onclick="togglePaso(${t.id}, ${i})">
+                                    ${p.completado ? '<i class="fas fa-check text-white text-xs"></i>' : ''}
                                 </div>
-                                <span class="text-xs ${e.completada ? 'text-slate-400 line-through' : 'text-slate-700'}">${e.texto}</span>
+                                <span class="text-sm ${p.completado ? 'text-slate-400 line-through' : 'text-slate-700'}">${p.texto}</span>
                             </div>
                         `).join('')}
-                        ${t.etapas.length > 3 ? `<p class="text-xs text-slate-400 pl-6">+${t.etapas.length - 3} más...</p>` : ''}
                     </div>
                     
-                    <div class="pt-3 border-t border-slate-100">
-                        <div class="flex justify-between items-center mb-1.5">
-                            <span class="text-[10px] font-bold text-slate-400">Progreso</span>
-                            <span class="text-xs font-bold text-slate-700">${porcentaje}%</span>
+                    <div class="flex items-center gap-3 pt-3 border-t border-slate-100">
+                        <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full ${porcentaje === 100 ? 'bg-emerald-500' : tiempo.vencida ? 'bg-red-500' : 'bg-blue-500'} rounded-full transition-all" style="width: ${porcentaje}%"></div>
                         </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill ${colorBarra}" style="width: ${porcentaje}%"></div>
-                        </div>
+                        <span class="text-xs font-bold text-slate-600">${porcentaje}%</span>
                     </div>
                     
                     ${t.retrasoMotivo ? `
-                        <div class="mt-3 p-2 bg-red-50 border border-red-100 rounded-lg">
-                            <p class="text-[10px] text-red-600 font-medium"><i class="fas fa-info-circle mr-1"></i>${t.retrasoMotivo}</p>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-        }
-
-        // FUNCIONES DE TAREAS
-        function toggleEtapa(tareaId, etapaIndex) {
-            const tarea = tareas.find(t => t.id === tareaId);
-            if (!tarea) return;
-            
-            tarea.etapas[etapaIndex].completada = !tarea.etapas[etapaIndex].completada;
-            
-            // Si se completó toda la tarea
-            if (tarea.etapas.every(e => e.completada)) {
-                mostrarToast('🎉 ¡Tarea completada!', 'success');
-            }
-            
-            guardar();
-            renderActual();
-        }
-
-        function verTarea(id) {
-            const t = tareas.find(x => x.id === id);
-            if (!t) return;
-            
-            const persona = personas.find(p => p.id === t.personaId);
-            const completadas = t.etapas.filter(e => e.completada).length;
-            const porcentaje = Math.round((completadas / t.etapas.length) * 100);
-            const tiempo = calcularTiempoRestante(t.fechaLimite);
-            
-            document.getElementById('ver-contenido').innerHTML = `
-                <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-violet-50 to-fuchsia-50 flex justify-between items-center">
-                    <div>
-                        <div class="flex gap-2 mb-1">
-                            <span class="bg-white/80 px-2 py-0.5 rounded text-[10px] font-bold text-violet-700 uppercase">${t.prioridad}</span>
-                            ${tiempo.vencida ? '<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold">VENCIDA</span>' : ''}
-                        </div>
-                        <h3 class="text-lg font-bold text-slate-800">${t.texto}</h3>
-                    </div>
-                    <button onclick="cerrarModal('modal-ver')" class="text-slate-400 hover:text-slate-600">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                
-                <div class="p-6 space-y-4">
-                    <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-violet-400 to-fuchsia-400 text-white flex items-center justify-center font-bold">
-                            ${persona?.nombre.charAt(0) || '?'}
-                        </div>
-                        <div>
-                            <p class="font-semibold text-slate-800">${persona?.nombre || 'Sin asignar'}</p>
-                            <p class="text-xs text-slate-500">${persona?.cargo || ''} • ${persona?.email || ''}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="p-3 bg-slate-50 rounded-xl">
-                            <p class="text-[10px] font-bold text-slate-400 uppercase">Fecha Límite</p>
-                            <p class="text-sm font-bold text-slate-700">${new Date(t.fechaLimite).toLocaleString('es-ES')}</p>
-                            <p class="text-xs ${tiempo.vencida ? 'text-red-500' : 'text-violet-600'} mt-1">${tiempo.texto}</p>
-                        </div>
-                        <div class="p-3 bg-slate-50 rounded-xl">
-                            <p class="text-[10px] font-bold text-slate-400 uppercase">Progreso</p>
-                            <p class="text-sm font-bold text-slate-700">${porcentaje}% completado</p>
-                            <div class="progress-bar mt-2">
-                                <div class="progress-fill ${porcentaje === 100 ? 'bg-emerald-500' : tiempo.vencida ? 'bg-red-500' : 'bg-violet-500'}" style="width: ${porcentaje}%"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <p class="text-xs font-bold text-slate-500 uppercase mb-2">Checklist</p>
-                        <div class="space-y-2">
-                            ${t.etapas.map((e, i) => `
-                                <div class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-lg transition cursor-pointer" onclick="toggleEtapa(${t.id}, ${i}); verTarea(${t.id})">
-                                    <div class="w-5 h-5 rounded border-2 ${e.completada ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300'} flex items-center justify-center transition">
-                                        ${e.completada ? '<i class="fas fa-check text-white text-xs"></i>' : ''}
-                                    </div>
-                                    <span class="text-sm ${e.completada ? 'text-slate-400 line-through' : 'text-slate-700'}">${e.texto}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                    
-                    ${t.retrasoMotivo ? `
-                        <div class="p-3 bg-red-50 border border-red-100 rounded-xl">
-                            <p class="text-xs font-bold text-red-700 mb-1"><i class="fas fa-exclamation-circle mr-1"></i>Motivo de retraso</p>
-                            <p class="text-sm text-red-600">${t.retrasoMotivo}</p>
+                        <div class="mt-3 p-3 bg-red-50 border border-red-100 rounded-lg">
+                            <p class="text-xs text-red-600"><i class="fas fa-exclamation-circle mr-1"></i><strong>Motivo de retraso:</strong> ${t.retrasoMotivo}</p>
                         </div>
                     ` : (tiempo.vencida && porcentaje < 100 ? `
-                        <button onclick="cerrarModal('modal-ver'); pedirRetraso(${t.id})" class="w-full p-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold text-sm transition">
-                            <i class="fas fa-comment-alt mr-2"></i>Justificar Retraso
+                        <button onclick="pedirRetraso(${t.id})" class="mt-3 w-full py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition">
+                            Justificar Retraso
                         </button>
                     ` : '')}
                 </div>
+            `;
+        }
+
+        // ===== RENDER: RECORDATORIOS =====
+        function renderRecordatorios(container) {
+            const tareasPendientes = tareas.filter(t => {
+                const tiempo = calcularTiempo(t.fechaLimite);
+                return !t.pasos.every(p => p.completado) && (tiempo.vencida || tiempo.urgente);
+            });
+
+            // Actualizar badge
+            const badge = document.getElementById('badge-recordatorios');
+            badge.innerText = tareasPendientes.length;
+            badge.classList.toggle('hidden', tareasPendientes.length === 0);
+
+            container.innerHTML = `
+                <div class="space-y-6">
+                    <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6">
+                        <h3 class="font-bold text-slate-800 text-lg mb-2">📱 Centro de Recordatorios</h3>
+                        <p class="text-sm text-slate-600 mb-4">Envía mensajes automáticos a tus trabajadores sobre sus tareas pendientes o próximas a vencer.</p>
+                        
+                        <div class="flex gap-3">
+                            <button onclick="enviarRecordatoriosMasivos('urgentes')" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold text-sm transition shadow-lg shadow-red-200">
+                                <i class="fab fa-whatsapp mr-2"></i>Recordar Urgentes
+                            </button>
+                            <button onclick="enviarRecordatoriosMasivos('todas')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold text-sm transition shadow-lg shadow-blue-200">
+                                <i class="fab fa-whatsapp mr-2"></i>Recordar Todas
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-slate-800">Tareas que Requieren Atención (${tareasPendientes.length})</h4>
+                        ${tareasPendientes.map(t => {
+                            const trabajador = trabajadores.find(w => w.id === t.trabajadorId);
+                            const tiempo = calcularTiempo(t.fechaLimite);
+                            
+                            return `
+                                <div class="bg-white p-4 rounded-2xl shadow-sm border ${tiempo.vencida ? 'border-red-200' : 'border-amber-200'} flex items-center justify-between">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold">
+                                            ${trabajador?.nombre.charAt(0) || '?'}
+                                        </div>
+                                        <div>
+                                            <p class="font-semibold text-slate-800">${t.texto}</p>
+                                            <p class="text-xs text-slate-500">${trabajador?.nombre || 'N/A'} • ${tiempo.texto}</p>
+                                        </div>
+                                    </div>
+                                    <button onclick="abrirRecordatorio(${t.trabajadorId}, ${t.id})" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-semibold text-sm transition flex items-center gap-2">
+                                        <i class="fab fa-whatsapp"></i> Recordar
+                                    </button>
+                                </div>
+                            `;
+                        }).join('')}
+                        
+                        ${tareasPendientes.length === 0 ? `
+                            <div class="text-center py-12 text-slate-400">
+                                <i class="fas fa-check-circle text-4xl mb-3 text-emerald-400"></i>
+                                <p class="font-semibold">¡Todo está bajo control!</p>
+                                <p class="text-sm">No hay tareas urgentes ni vencidas</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // ===== RENDER: INFORMES =====
+        function renderInformes(container) {
+            container.innerHTML = `
+                <div class="max-w-2xl mx-auto space-y-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <h3 class="font-bold text-slate-800 text-lg mb-4">📊 Generador de Informes</h3>
+                        <p class="text-sm text-slate-500 mb-6">Crea reportes periódicos para revisar el desempeño de tu equipo. Puedes imprimirlos o enviarlos por WhatsApp.</p>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Período del Informe</label>
+                                <div class="grid grid-cols-3 gap-3">
+                                    <button onclick="generarInforme('diario')" class="p-4 border-2 border-slate-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition text-center group">
+                                        <i class="fas fa-calendar-day text-2xl text-slate-400 group-hover:text-blue-500 mb-2"></i>
+                                        <p class="font-bold text-slate-700 group-hover:text-blue-700">Diario</p>
+                                        <p class="text-xs text-slate-500">Hoy</p>
+                                    </button>
+                                    <button onclick="generarInforme('semanal')" class="p-4 border-2 border-slate-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition text-center group">
+                                        <i class="fas fa-calendar-week text-2xl text-slate-400 group-hover:text-blue-500 mb-2"></i>
+                                        <p class="font-bold text-slate-700 group-hover:text-blue-700">Semanal</p>
+                                        <p class="text-xs text-slate-500">Últimos 7 días</p>
+                                    </button>
+                                    <button onclick="generarInforme('mensual')" class="p-4 border-2 border-slate-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition text-center group">
+                                        <i class="fas fa-calendar-alt text-2xl text-slate-400 group-hover:text-blue-500 mb-2"></i>
+                                        <p class="font-bold text-slate-700 group-hover:text-blue-700">Mensual</p>
+                                        <p class="text-xs text-slate-500">Este mes</p>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Trabajador (opcional)</label>
+                                <select id="informe-trabajador" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-medium bg-white">
+                                    <option value="todos">Todos los trabajadores</option>
+                                    ${trabajadores.map(w => `<option value="${w.id}">${w.nombre} - ${w.cargo}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ===== FUNCIONES DE ACCIÓN =====
+        function abrirRecordatorio(trabajadorId, tareaId = null) {
+            trabajadorSeleccionado = trabajadorId;
+            const trabajador = trabajadores.find(w => w.id === trabajadorId);
+            
+            let tareasRecordar = tareas.filter(t => t.trabajadorId === trabajadorId && !t.pasos.every(p => p.completado));
+            if (tareaId) tareasRecordar = tareasRecordar.filter(t => t.id === tareaId);
+            
+            const tiempo = tareasRecordar.map(t => calcularTiempo(t.fechaLimite));
+            const hayVencidas = tiempo.some(t => t.vencida);
+            const hayUrgentes = tiempo.some(t => t.urgente);
+            
+            document.getElementById('recordatorio-contenido').innerHTML = `
+                <div class="text-center mb-4">
+                    <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 mx-auto mb-3">
+                        <i class="fab fa-whatsapp text-3xl"></i>
+                    </div>
+                    <h4 class="font-bold text-slate-800">${trabajador.nombre}</h4>
+                    <p class="text-sm text-slate-500">${trabajador.cargo}</p>
+                </div>
                 
-                <div class="p-4 border-t border-slate-100 bg-slate-50 flex gap-2">
-                    <button onclick="duplicarTarea(${t.id})" class="flex-1 py-2 border border-slate-200 text-slate-600 rounded-lg font-semibold text-sm hover:bg-white transition">
-                        <i class="fas fa-copy mr-2"></i>Duplicar
-                    </button>
-                    <button onclick="eliminarTarea(${t.id})" class="flex-1 py-2 border border-red-200 text-red-600 rounded-lg font-semibold text-sm hover:bg-red-50 transition">
-                        <i class="fas fa-trash mr-2"></i>Eliminar
-                    </button>
+                <div class="bg-slate-50 rounded-xl p-4 mb-4">
+                    <p class="text-xs font-bold text-slate-500 uppercase mb-2">Mensaje a enviar:</p>
+                    <div class="bg-white p-3 rounded-lg border border-slate-200 text-sm text-slate-700 space-y-1">
+                        <p>👋 Hola ${trabajador.nombre.split(' ')[0]},</p>
+                        <p>📋 Tienes <strong>${tareasRecordar.length} tarea(s)</strong> pendiente(s):</p>
+                        ${tareasRecordar.slice(0, 5).map(t => {
+                            const t tiempo = calcularTiempo(t.fechaLimite);
+                            return `<p>${tiempo.vencida ? '❌' : tiempo.urgente ? '⏰' : '⏳'} ${t.texto} (${tiempo.texto})</p>`;
+                        }).join('')}
+                        ${tareasRecordar.length > 5 ? `<p>... y ${tareasRecordar.length - 5} más</p>` : ''}
+                        <p class="text-xs text-slate-400 mt-2">_Mensaje automático de Supervisor Pro_</p>
+                    </div>
+                </div>
+                
+                ${hayVencidas ? '<p class="text-xs text-red-600 text-center mb-2"><i class="fas fa-exclamation-circle mr-1"></i>Incluye tareas vencidas</p>' : ''}
+                ${hayUrgentes ? '<p class="text-xs text-amber-600 text-center mb-2"><i class="fas fa-clock mr-1"></i>Incluye tareas por vencer</p>' : ''}
+            `;
+            
+            document.getElementById('modal-recordatorio').classList.add('active');
+        }
+
+        function enviarWhatsAppRecordatorio() {
+            const trabajador = trabajadores.find(w => w.id === trabajadorSeleccionado);
+            const tareasRecordar = tareas.filter(t => t.trabajadorId === trabajadorSeleccionado && !t.pasos.every(p => p.completado));
+            
+            let mensaje = `*👋 Hola ${trabajador.nombre.split(' ')[0]},*\n\n`;
+            mensaje += `*📋 Tienes ${tareasRecordar.length} tarea(s) pendiente(s):*\n\n`;
+            
+            tareasRecordar.forEach(t => {
+                const tiempo = calcularTiempo(t.fechaLimite);
+                const icono = tiempo.vencida ? '❌' : tiempo.urgente ? '⏰' : '⏳';
+                mensaje += `${icono} *${t.texto}*\n`;
+                mensaje += `   ⏱️ ${tiempo.texto}\n\n`;
+            });
+            
+            mensaje += `_*Mensaje automático de Supervisor Pro*_`;
+            
+            // Actualizar contador
+            tareasRecordar.forEach(t => {
+                t.recordatoriosEnviados = (t.recordatoriosEnviados || 0) + 1;
+            });
+            guardar();
+            
+            window.open(`https://wa.me/${trabajador.whatsapp}?text=${encodeURIComponent(mensaje)}`, '_blank');
+            cerrarModal('modal-recordatorio');
+            mostrarToast(`Recordatorio enviado a ${trabajador.nombre}`, 'success');
+        }
+
+        function enviarRecordatoriosMasivos(tipo) {
+            const tareasFiltrar = tipo === 'urgentes' 
+                ? tareas.filter(t => {
+                    const tiempo = calcularTiempo(t.fechaLimite);
+                    return !t.pasos.every(p => p.completado) && (tiempo.vencida || tiempo.urgente);
+                })
+                : tareas.filter(t => !t.pasos.every(p => p.completado));
+            
+            const porTrabajador = {};
+            tareasFiltrar.forEach(t => {
+                if (!porTrabajador[t.trabajadorId]) porTrabajador[t.trabajadorId] = [];
+                porTrabajador[t.trabajadorId].push(t);
+            });
+            
+            let enviados = 0;
+            Object.entries(porTrabajador).forEach(([trabajadorId, tareasW]) => {
+                const trabajador = trabajadores.find(w => w.id === parseInt(trabajadorId));
+                if (!trabajador || !trabajador.whatsapp) return;
+                
+                let mensaje = `*👋 Hola ${trabajador.nombre.split(' ')[0]},*\n\n`;
+                mensaje += `*📋 Tienes ${tareasW.length} tarea(s) pendiente(s):*\n\n`;
+                
+                tareasW.forEach(t => {
+                    const tiempo = calcularTiempo(t.fechaLimite);
+                    const icono = tiempo.vencida ? '❌' : tiempo.urgente ? '⏰' : '⏳';
+                    mensaje += `${icono} *${t.texto}* - ${tiempo.texto}\n`;
+                });
+                
+                mensaje += `\n_*Supervisor Pro*_`;
+                
+                setTimeout(() => {
+                    window.open(`https://wa.me/${trabajador.whatsapp}?text=${encodeURIComponent(mensaje)}`, '_blank');
+                }, enviados * 1000);
+                
+                enviados++;
+            });
+            
+            mostrarToast(`${enviados} recordatorios enviados`, 'success');
+        }
+
+        // ===== GENERAR INFORME =====
+        function generarInforme(periodo) {
+            const trabajadorId = document.getElementById('informe-trabajador')?.value || 'todos';
+            const ahora = new Date();
+            let fechaInicio = new Date();
+            
+            if (periodo === 'diario') fechaInicio.setDate(fechaInicio.getDate() - 1);
+            else if (periodo === 'semanal') fechaInicio.setDate(fechaInicio.getDate() - 7);
+            else if (periodo === 'mensual') fechaInicio.setDate(fechaInicio.getDate() - 30);
+            
+            let tareasInforme = tareas.filter(t => new Date(t.creada) >= fechaInicio);
+            if (trabajadorId !== 'todos') {
+                tareasInforme = tareasInforme.filter(t => t.trabajadorId === parseInt(trabajadorId));
+            }
+            
+            const trabajadoresInforme = trabajadorId === 'todos' ? trabajadores : [trabajadores.find(w => w.id === parseInt(trabajadorId))];
+            
+            informeActual = { periodo, tareas: tareasInforme, fecha: new Date() };
+            
+            const periodoTexto = periodo === 'diario' ? 'Diario' : periodo === 'semanal' ? 'Semanal' : 'Mensual';
+            
+            document.getElementById('informe-contenido').innerHTML = `
+                <div class="print-only mb-8 border-b-2 border-slate-800 pb-4">
+                    <h1 class="text-3xl font-black text-slate-900">INFORME ${periodoTexto.toUpperCase()}</h1>
+                    <p class="text-slate-600">Generado: ${ahora.toLocaleDateString('es-ES', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}</p>
+                </div>
+                
+                <div class="space-y-6">
+                    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 text-white">
+                        <h2 class="text-2xl font-black mb-1">Informe ${periodoTexto}</h2>
+                        <p class="text-blue-200 text-sm">Período: ${fechaInicio.toLocaleDateString('es-ES')} - ${ahora.toLocaleDateString('es-ES')}</p>
+                    </div>
+                    
+                    ${trabajadoresInforme.map(w => {
+                        const tareasW = tareasInforme.filter(t => t.trabajadorId === w.id);
+                        const completadas = tareasW.filter(t => t.pasos.every(p => p.completado)).length;
+                        const vencidas = tareasW.filter(t => calcularTiempo(t.fechaLimite).vencida && !t.pasos.every(p => p.completado)).length;
+                        const progreso = tareasW.length > 0 ? Math.round((completadas / tareasW.length) * 100) : 0;
+                        
+                        return `
+                            <div class="bg-white border border-slate-200 rounded-2xl p-6">
+                                <div class="flex items-center gap-4 mb-4">
+                                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-xl">
+                                        ${w.nombre.split(' ').map(n => n[0]).join('')}
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 text-lg">${w.nombre}</h4>
+                                        <p class="text-sm text-slate-500">${w.cargo}</p>
+                                    </div>
+                                    <div class="ml-auto text-right">
+                                        <p class="text-3xl font-black text-blue-600">${progreso}%</p>
+                                        <p class="text-xs text-slate-500 uppercase font-bold">Eficiencia</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="grid grid-cols-3 gap-4 mb-4">
+                                    <div class="text-center p-3 bg-slate-50 rounded-xl">
+                                        <p class="text-xl font-black text-slate-800">${tareasW.length}</p>
+                                        <p class="text-[10px] text-slate-500 uppercase font-bold">Asignadas</p>
+                                    </div>
+                                    <div class="text-center p-3 bg-emerald-50 rounded-xl">
+                                        <p class="text-xl font-black text-emerald-600">${completadas}</p>
+                                        <p class="text-[10px] text-emerald-600 uppercase font-bold">Completadas</p>
+                                    </div>
+                                    <div class="text-center p-3 ${vencidas > 0 ? 'bg-red-50' : 'bg-slate-50'} rounded-xl">
+                                        <p class="text-xl font-black ${vencidas > 0 ? 'text-red-600' : 'text-slate-800'}">${vencidas}</p>
+                                        <p class="text-[10px] ${vencidas > 0 ? 'text-red-600' : 'text-slate-500'} uppercase font-bold">Vencidas</p>
+                                    </div>
+                                </div>
+                                
+                                ${tareasW.length > 0 ? `
+                                    <div class="space-y-2">
+                                        <p class="text-xs font-bold text-slate-500 uppercase mb-2">Detalle de Tareas</p>
+                                        ${tareasW.map(t => {
+                                            const tiempo = calcularTiempo(t.fechaLimite);
+                                            const pct = Math.round((t.pasos.filter(p => p.completado).length / t.pasos.length) * 100);
+                                            return `
+                                                <div class="flex items-center justify-between p-3 ${tiempo.vencida ? 'bg-red-50 border-red-100' : 'bg-slate-50'} border rounded-lg">
+                                                    <div>
+                                                        <p class="text-sm font-semibold ${tiempo.vencida ? 'text-red-700' : 'text-slate-800'}">${t.texto}</p>
+                                                        <p class="text-xs text-slate-500">${tiempo.texto} • ${t.prioridad}</p>
+                                                    </div>
+                                                    <div class="flex items-center gap-2">
+                                                        <div class="w-20 h-2 bg-slate-200 rounded-full overflow-hidden">
+                                                            <div class="h-full ${pct === 100 ? 'bg-emerald-500' : tiempo.vencida ? 'bg-red-500' : 'bg-blue-500'}" style="width: ${pct}%"></div>
+                                                        </div>
+                                                        <span class="text-xs font-bold w-8 text-right">${pct}%</span>
+                                                    </div>
+                                                </div>
+                                            `;
+                                        }).join('')}
+                                    </div>
+                                ` : '<p class="text-sm text-slate-400 text-center py-4">Sin tareas en este período</p>'}
+                            </div>
+                        `;
+                    }).join('')}
+                    
+                    <div class="print-only mt-12 pt-8 border-t border-slate-300">
+                        <div class="flex justify-between">
+                            <div class="text-center w-48">
+                                <div class="border-t border-slate-800 pt-2 mt-16">
+                                    <p class="text-xs font-bold">Firma del Supervisor</p>
+                                </div>
+                            </div>
+                            <div class="text-center w-48">
+                                <div class="border-t border-slate-800 pt-2 mt-16">
+                                    <p class="text-xs font-bold">Firma de Recibido</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             `;
             
-            document.getElementById('modal-ver').classList.add('active');
+            document.getElementById('modal-informe').classList.add('active');
         }
 
-        function pedirRetraso(id) {
-            tareaEditando = id;
-            document.getElementById('r-motivo').value = '';
-            document.getElementById('modal-retraso').classList.add('active');
+        function imprimirInforme() {
+            window.print();
         }
 
-        function guardarRetraso() {
-            const motivo = document.getElementById('r-motivo').value.trim();
-            if (!motivo) {
-                mostrarToast('Escribe un motivo', 'error');
-                return;
+        function enviarInformeWhatsApp() {
+            if (!informeActual) return;
+            
+            const periodoTexto = informeActual.periodo === 'diario' ? 'Diario' : informeActual.periodo === 'semanal' ? 'Semanal' : 'Mensual';
+            let mensaje = `*📊 Informe ${periodoTexto} - Supervisor Pro*\n\n`;
+            
+            const porTrabajador = {};
+            informeActual.tareas.forEach(t => {
+                if (!porTrabajador[t.trabajadorId]) porTrabajador[t.trabajadorId] = [];
+                porTrabajador[t.trabajadorId].push(t);
+            });
+            
+            Object.entries(porTrabajador).forEach(([wid, tareasW]) => {
+                const w = trabajadores.find(x => x.id === parseInt(wid));
+                if (!w) return;
+                const completadas = tareasW.filter(t => t.pasos.every(p => p.completado)).length;
+                mensaje += `*${w.nombre}:* ${completadas}/${tareasW.length} completadas\n`;
+            });
+            
+            mensaje += `\n_Generado: ${informeActual.fecha.toLocaleDateString('es-ES')}_`;
+            
+            window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, '_blank');
+            mostrarToast('Informe enviado por WhatsApp', 'success');
+        }
+
+        // ===== FUNCIONES AUXILIARES =====
+        function togglePaso(tareaId, pasoIndex) {
+            const tarea = tareas.find(t => t.id === tareaId);
+            if (!tarea) return;
+            
+            tarea.pasos[pasoIndex].completado = !tarea.pasos[pasoIndex].completado;
+            
+            if (tarea.pasos.every(p => p.completado)) {
+                mostrarToast('¡Tarea completada!', 'success');
             }
             
-            const tarea = tareas.find(t => t.id === tareaEditando);
-            if (tarea) {
-                tarea.retrasoMotivo = motivo;
+            guardar();
+            renderActual();
+        }
+
+        function pedirRetraso(tareaId) {
+            const motivo = prompt('¿Por qué se retrasó esta tarea?');
+            if (motivo && motivo.trim()) {
+                const tarea = tareas.find(t => t.id === tareaId);
+                tarea.retrasoMotivo = motivo.trim();
                 guardar();
-                cerrarModal('modal-retraso');
-                mostrarToast('Retraso justificado', 'success');
                 renderActual();
+                mostrarToast('Retraso justificado', 'success');
             }
         }
 
-        // CRUD TAREAS
-        function abrirModalTarea() {
-            document.getElementById('t-nombre').value = '';
-            document.getElementById('t-fecha').value = '';
-            etapasTemp = [];
-            renderEtapasTemp();
-            
-            const select = document.getElementById('t-persona');
-            select.innerHTML = personas.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
-            
-            // Fecha por defecto: mañana a las 9am
-            const manana = new Date();
-            manana.setDate(manana.getDate() + 1);
-            manana.setHours(9, 0, 0, 0);
-            document.getElementById('t-fecha').value = manana.toISOString().slice(0, 16);
-            
-            document.getElementById('modal-tarea').classList.add('active');
-        }
-
-        function agregarEtapa() {
-            const input = document.getElementById('t-etapa');
-            const texto = input.value.trim();
-            if (!texto) return;
-            
-            etapasTemp.push({ texto, completada: false });
-            input.value = '';
-            renderEtapasTemp();
-        }
-
-        function renderEtapasTemp() {
-            const container = document.getElementById('lista-etapas');
-            container.innerHTML = etapasTemp.map((e, i) => `
-                <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
-                    <span class="text-sm text-slate-700">${i + 1}. ${e.texto}</span>
-                    <button onclick="etapasTemp.splice(${i}, 1); renderEtapasTemp()" class="text-red-400 hover:text-red-600">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `).join('');
-        }
-
-        function guardarTarea() {
-            const nombre = document.getElementById('t-nombre').value.trim();
-            const personaId = parseInt(document.getElementById('t-persona').value);
-            const prioridad = document.getElementById('t-prioridad').value;
-            const fecha = document.getElementById('t-fecha').value;
-            
-            if (!nombre || !fecha) {
-                mostrarToast('Completa los campos obligatorios', 'error');
-                return;
-            }
-            
-            if (etapasTemp.length === 0) {
-                mostrarToast('Agrega al menos una etapa', 'error');
-                return;
-            }
-            
-            tareas.push({
-                id: Date.now(),
-                texto: nombre,
-                personaId,
-                prioridad,
-                fechaLimite: fecha,
-                etapas: [...etapasTemp],
-                retrasoMotivo: '',
-                creada: new Date().toISOString()
-            });
-            
-            guardar();
-            cerrarModal('modal-tarea');
-            mostrarToast('Tarea creada exitosamente', 'success');
-            renderActual();
-        }
-
-        function duplicarTarea(id) {
-            const original = tareas.find(t => t.id === id);
-            if (!original) return;
-            
-            tareas.push({
-                ...original,
-                id: Date.now(),
-                texto: original.texto + ' (Copia)',
-                fechaLimite: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-                etapas: original.etapas.map(e => ({ ...e, completada: false })),
-                retrasoMotivo: ''
-            });
-            
-            guardar();
-            cerrarModal('modal-ver');
-            mostrarToast('Tarea duplicada', 'success');
-            renderActual();
-        }
-
-        function eliminarTarea(id) {
-            if (!confirm('¿Eliminar esta tarea?')) return;
-            tareas = tareas.filter(t => t.id !== id);
-            guardar();
-            cerrarModal('modal-ver');
-            mostrarToast('Tarea eliminada', 'success');
-            renderActual();
-        }
-
-        // EQUIPO
-        function abrirModalEquipo() {
-            renderListaEquipo();
-            document.getElementById('modal-equipo').classList.add('active');
-        }
-
-        function renderListaEquipo() {
-            const container = document.getElementById('lista-personas-modal');
-            container.innerHTML = personas.map(p => {
-                const count = tareas.filter(t => t.personaId === p.id).length;
-                return `
-                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-white flex items-center justify-center font-bold text-sm">
-                                ${p.nombre.split(' ').map(n => n[0]).join('')}
-                            </div>
-                            <div>
-                                <p class="font-semibold text-sm text-slate-800">${p.nombre}</p>
-                                <p class="text-xs text-slate-500">${p.cargo} • ${count} tareas</p>
-                            </div>
-                        </div>
-                        <button onclick="eliminarPersona(${p.id})" class="text-red-400 hover:text-red-600 p-2">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function agregarPersona() {
-            const nombre = document.getElementById('e-nombre').value.trim();
-            const cargo = document.getElementById('e-cargo').value.trim();
-            const email = document.getElementById('e-email').value.trim();
-            const telefono = document.getElementById('e-telefono').value.trim();
-            
-            if (!nombre || !cargo) {
-                mostrarToast('Nombre y cargo son obligatorios', 'error');
-                return;
-            }
-            
-            personas.push({
-                id: Date.now(),
-                nombre,
-                cargo,
-                email: email || '',
-                telefono: telefono || ''
-            });
-            
-            document.getElementById('e-nombre').value = '';
-            document.getElementById('e-cargo').value = '';
-            document.getElementById('e-email').value = '';
-            document.getElementById('e-telefono').value = '';
-            
-            guardar();
-            renderListaEquipo();
-            actualizarSidebar();
-            mostrarToast('Persona agregada', 'success');
-        }
-
-        function eliminarPersona(id) {
-            if (!confirm('¿Eliminar esta persona? Sus tareas permanecerán.')) return;
-            personas = personas.filter(p => p.id !== id);
-            guardar();
-            renderListaEquipo();
-            actualizarSidebar();
-        }
-
-        // FILTROS Y BÚSQUEDA
-        function setFiltro(filtro) {
-            filtroActual = filtro;
-            
-            ['todas', 'hoy', 'semana', 'vencidas'].forEach(f => {
-                const btn = document.getElementById(`filtro-${f}`);
-                if (f === filtro) {
-                    btn.classList.add('bg-white', 'text-violet-600', 'shadow-sm');
-                    btn.classList.remove('text-slate-600');
-                } else {
-                    btn.classList.remove('bg-white', 'text-violet-600', 'shadow-sm');
-                    btn.classList.add('text-slate-600');
-                }
-            });
-            
-            renderActual();
-        }
-
-        function filtrarTareas() {
-            let resultado = [...tareas];
-            const ahora = new Date();
-            
-            if (filtroActual === 'hoy') {
-                resultado = resultado.filter(t => {
-                    const f = new Date(t.fechaLimite);
-                    return f.toDateString() === ahora.toDateString();
-                });
-            } else if (filtroActual === 'semana') {
-                const finSemana = new Date(ahora);
-                finSemana.setDate(finSemana.getDate() + 7);
-                resultado = resultado.filter(t => {
-                    const f = new Date(t.fechaLimite);
-                    return f >= ahora && f <= finSemana;
-                });
-            } else if (filtroActual === 'vencidas') {
-                resultado = resultado.filter(t => {
-                    const tiempo = calcularTiempoRestante(t.fechaLimite);
-                    return tiempo.vencida && !t.etapas.every(e => e.completada);
-                });
-            }
-            
-            const busqueda = document.getElementById('buscador')?.value.toLowerCase();
-            if (busqueda) {
-                resultado = resultado.filter(t => 
-                    t.texto.toLowerCase().includes(busqueda) ||
-                    personas.find(p => p.id === t.personaId)?.nombre.toLowerCase().includes(busqueda)
-                );
-            }
-            
-            return resultado;
-        }
-
-        function buscarTarea(valor) {
-            renderActual();
-        }
-
-        // CÁLCULOS
-        function calcularTiempoRestante(fechaLimite) {
+        function calcularTiempo(fechaLimite) {
             const ahora = new Date();
             const limite = new Date(fechaLimite);
             
@@ -954,51 +1027,149 @@
             return { vencida: false, texto: `${horasRest}h`, urgente: true };
         }
 
-        function calcularStats(tareasArray = tareas) {
-            const total = tareasArray.length;
-            const completadas = tareasArray.filter(t => t.etapas.every(e => e.completada)).length;
-            const vencidas = tareasArray.filter(t => {
-                const tiempo = calcularTiempoRestante(t.fechaLimite);
-                return tiempo.vencida && !t.etapas.every(e => e.completada);
+        function calcularStats() {
+            const activas = tareas.filter(t => !t.pasos.every(p => p.completado)).length;
+            const vencidas = tareas.filter(t => calcularTiempo(t.fechaLimite).vencida && !t.pasos.every(p => p.completado)).length;
+            const porVencer = tareas.filter(t => {
+                const tiempo = calcularTiempo(t.fechaLimite);
+                return !tiempo.vencida && tiempo.urgente && !t.pasos.every(p => p.completado);
             }).length;
-            const progreso = total - completadas - vencidas;
-            const eficiencia = total > 0 ? Math.round((completadas / total) * 100) : 0;
             
-            return { total, completadas, vencidas, progreso, eficiencia };
+            return { activas, vencidas, porVencer };
         }
 
-        // EXPORTAR
-        function enviarWhatsApp() {
-            const tareasFiltradas = filtrarTareas();
-            if (tareasFiltradas.length === 0) {
-                mostrarToast('No hay tareas para enviar', 'error');
+        function verificarVencimientos() {
+            const stats = calcularStats();
+            if (stats.vencidas > 0 || stats.porVencer > 0) {
+                mostrarToast(`⚠️ Tienes ${stats.vencidas} vencidas y ${stats.porVencer} por vencer`, 'error');
+            }
+        }
+
+        // ===== CRUD =====
+        function abrirModalTarea() {
+            document.getElementById('t-nombre').value = '';
+            document.getElementById('t-fecha').value = '';
+            pasosTemp = [];
+            renderPasosTemp();
+            
+            const select = document.getElementById('t-trabajador');
+            select.innerHTML = trabajadores.map(w => `<option value="${w.id}">${w.nombre} - ${w.cargo}</option>`).join('');
+            
+            const manana = new Date();
+            manana.setDate(manana.getDate() + 1);
+            manana.setHours(17, 0, 0, 0);
+            document.getElementById('t-fecha').value = manana.toISOString().slice(0, 16);
+            
+            document.getElementById('modal-tarea').classList.add('active');
+        }
+
+        function abrirModalTrabajador() {
+            document.getElementById('w-nombre').value = '';
+            document.getElementById('w-cargo').value = '';
+            document.getElementById('w-email').value = '';
+            document.getElementById('w-whatsapp').value = '';
+            document.getElementById('modal-trabajador').classList.add('active');
+        }
+
+        function agregarPaso() {
+            const input = document.getElementById('t-paso');
+            const texto = input.value.trim();
+            if (!texto) return;
+            
+            pasosTemp.push({ texto, completado: false });
+            input.value = '';
+            renderPasosTemp();
+        }
+
+        function renderPasosTemp() {
+            const container = document.getElementById('lista-pasos');
+            container.innerHTML = pasosTemp.map((p, i) => `
+                <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
+                    <span class="text-sm text-slate-700">${i + 1}. ${p.texto}</span>
+                    <button onclick="pasosTemp.splice(${i}, 1); renderPasosTemp()" class="text-red-400 hover:text-red-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function guardarTarea() {
+            const nombre = document.getElementById('t-nombre').value.trim();
+            const trabajadorId = parseInt(document.getElementById('t-trabajador').value);
+            const prioridad = document.getElementById('t-prioridad').value;
+            const fecha = document.getElementById('t-fecha').value;
+            
+            if (!nombre || !fecha) {
+                mostrarToast('Completa los campos obligatorios', 'error');
                 return;
             }
             
-            let mensaje = '*📊 Reporte TaskFlow*%0A%0A';
-            tareasFiltradas.slice(0, 10).forEach(t => {
-                const p = personas.find(x => x.id === t.personaId);
-                const estado = t.etapas.every(e => e.completada) ? '✅' : calcularTiempoRestante(t.fechaLimite).vencida ? '❌' : '⏳';
-                mensaje += `${estado} *${t.texto}*%0A👤 ${p?.nombre || 'N/A'}%0A%0A`;
+            if (pasosTemp.length === 0) {
+                mostrarToast('Agrega al menos un paso', 'error');
+                return;
+            }
+            
+            tareas.push({
+                id: Date.now(),
+                texto: nombre,
+                trabajadorId,
+                prioridad,
+                fechaLimite: fecha,
+                pasos: [...pasosTemp],
+                retrasoMotivo: '',
+                creada: new Date().toISOString(),
+                recordatoriosEnviados: 0
             });
             
-            window.open(`https://wa.me/?text=${mensaje}`, '_blank');
-            mostrarToast('Abriendo WhatsApp...', 'success');
+            guardar();
+            cerrarModal('modal-tarea');
+            mostrarToast('Tarea asignada correctamente', 'success');
+            renderActual();
         }
 
-        function descargarPDF() {
-            window.print();
+        function guardarTrabajador() {
+            const nombre = document.getElementById('w-nombre').value.trim();
+            const cargo = document.getElementById('w-cargo').value.trim();
+            const email = document.getElementById('w-email').value.trim();
+            const whatsapp = document.getElementById('w-whatsapp').value.trim();
+            
+            if (!nombre || !cargo) {
+                mostrarToast('Nombre y cargo son obligatorios', 'error');
+                return;
+            }
+            
+            trabajadores.push({
+                id: Date.now(),
+                nombre,
+                cargo,
+                email,
+                whatsapp
+            });
+            
+            guardar();
+            cerrarModal('modal-trabajador');
+            actualizarSidebar();
+            mostrarToast('Trabajador agregado', 'success');
+            renderActual();
         }
 
-        // UI HELPERS
+        function eliminarTrabajador(id) {
+            if (!confirm('¿Eliminar este trabajador?')) return;
+            trabajadores = trabajadores.filter(w => w.id !== id);
+            guardar();
+            actualizarSidebar();
+            renderActual();
+        }
+
+        // ===== UI HELPERS =====
         function actualizarSidebar() {
-            const container = document.getElementById('lista-equipo-sidebar');
-            container.innerHTML = personas.map(p => {
-                const pendientes = tareas.filter(t => t.personaId === p.id && !t.etapas.every(e => e.completada)).length;
+            const container = document.getElementById('lista-trabajadores-sidebar');
+            container.innerHTML = trabajadores.map(w => {
+                const pendientes = tareas.filter(t => t.trabajadorId === w.id && !t.pasos.every(p => p.completado)).length;
                 return `
-                    <button onclick="mostrarVista('persona-${p.id}')" class="w-full flex items-center gap-3 px-4 py-2 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition text-sm">
+                    <button onclick="mostrarVista('trabajador-${w.id}')" class="w-full flex items-center gap-3 px-4 py-2 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition text-sm">
                         <div class="w-2 h-2 rounded-full bg-slate-600"></div>
-                        <span class="flex-1 text-left truncate">${p.nombre}</span>
+                        <span class="flex-1 text-left truncate">${w.nombre}</span>
                         ${pendientes > 0 ? `<span class="bg-red-500/20 text-red-400 text-[10px] px-1.5 py-0.5 rounded-full font-bold">${pendientes}</span>` : ''}
                     </button>
                 `;
@@ -1007,13 +1178,11 @@
 
         function renderActual() {
             const contenido = document.getElementById('contenido');
-            if (vistaActual === 'dashboard') renderDashboard(contenido);
-            else if (vistaActual === 'reportes') renderReportes(contenido);
-            else if (vistaActual.startsWith('persona-')) renderTareasPersona(contenido, parseInt(vistaActual.split('-')[1]));
-        }
-
-        function actualizarTiempos() {
-            if (vistaActual !== 'dashboard') renderActual();
+            if (vistaActual === 'panel') renderPanel(contenido);
+            else if (vistaActual === 'trabajadores') renderTrabajadores(contenido);
+            else if (vistaActual === 'recordatorios') renderRecordatorios(contenido);
+            else if (vistaActual === 'informes') renderInformes(contenido);
+            else if (vistaActual.startsWith('trabajador-')) renderDetalleTrabajador(contenido, parseInt(vistaActual.split('-')[1]));
         }
 
         function mostrarToast(mensaje, tipo = 'success') {
@@ -1025,10 +1194,7 @@
             icon.className = tipo === 'error' ? 'fas fa-exclamation-circle text-red-400' : 'fas fa-check-circle text-emerald-400';
             
             toast.classList.remove('translate-y-20', 'opacity-0');
-            
-            setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
         }
 
         function cerrarModal(id) {
@@ -1036,18 +1202,17 @@
         }
 
         function guardar() {
-            localStorage.setItem('tf_personas', JSON.stringify(personas));
-            localStorage.setItem('tf_tareas', JSON.stringify(tareas));
+            localStorage.setItem('sp_trabajadores', JSON.stringify(trabajadores));
+            localStorage.setItem('sp_tareas', JSON.stringify(tareas));
         }
 
-        // Cerrar modales al hacer click fuera
+        // Cerrar modales al click fuera
         document.querySelectorAll('.modal').forEach(modal => {
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) modal.classList.remove('active');
             });
         });
 
-        // Iniciar
         window.onload = init;
     </script>
 </body>
