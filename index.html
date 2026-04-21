@@ -1,1396 +1,303 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acta de Entrega de Puesto - IPS Interconsultas</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background: #f8fafc; 
-            color: #1e293b;
-            overflow-x: hidden;
-        }
-
-        /* Header */
-        .header-banner {
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f766e 100%);
-            padding: 40px 24px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header-banner::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
-            background-size: 30px 30px;
-            opacity: 0.3;
-        }
-
-        .header-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Progress Ring */
-        .progress-ring-container {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin: 30px 0;
-            flex-wrap: wrap;
-        }
-
-        .progress-ring {
-            position: relative;
-            width: 120px;
-            height: 120px;
-        }
-
-        .progress-ring svg {
-            transform: rotate(-90deg);
-        }
-
-        .progress-ring-bg {
-            fill: none;
-            stroke: rgba(255,255,255,0.15);
-            stroke-width: 8;
-        }
-
-        .progress-ring-fill {
-            fill: none;
-            stroke: #22d3ee;
-            stroke-width: 8;
-            stroke-linecap: round;
-            transition: stroke-dashoffset 0.8s ease;
-        }
-
-        .progress-ring-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: white;
-        }
-
-        .progress-ring-value {
-            font-size: 28px;
-            font-weight: 800;
-        }
-
-        .progress-ring-label {
-            font-size: 11px;
-            opacity: 0.8;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Category Cards */
-        .category-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-            overflow: hidden;
-            transition: all 0.3s ease;
-            border: 1px solid #e2e8f0;
-        }
-
-        .category-card:hover {
-            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.12);
-            transform: translateY(-4px);
-            border-color: #cbd5e1;
-        }
-
-        .category-header {
-            padding: 20px 24px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            cursor: pointer;
-            border-bottom: 1px solid #f1f5f9;
-            transition: background 0.2s;
-        }
-
-        .category-header:hover {
-            background: #f8fafc;
-        }
-
-        .category-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            flex-shrink: 0;
-        }
-
-        .category-info {
-            flex: 1;
-        }
-
-        .category-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 4px;
-        }
-
-        .category-subtitle {
-            font-size: 13px;
-            color: #64748b;
-        }
-
-        .category-progress {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .category-progress-bar {
-            width: 80px;
-            height: 6px;
-            background: #e2e8f0;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .category-progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #0d9488, #14b8a6);
-            border-radius: 3px;
-            transition: width 0.5s ease;
-        }
-
-        .category-progress-text {
-            font-size: 13px;
-            font-weight: 700;
-            color: #0d9488;
-            min-width: 36px;
-        }
-
-        .category-toggle {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: #f1f5f9;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #64748b;
-            transition: all 0.3s;
-            flex-shrink: 0;
-        }
-
-        .category-toggle:hover {
-            background: #e2e8f0;
-            color: #0d9488;
-        }
-
-        .category-toggle.rotated {
-            transform: rotate(180deg);
-            background: #ccfbf1;
-            color: #0d9488;
-        }
-
-        /* Task Items */
-        .tasks-container {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease, padding 0.3s ease;
-        }
-
-        .tasks-container.open {
-            max-height: 2000px;
-            padding: 16px 24px 24px;
-        }
-
-        .task-item {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 14px 16px;
-            background: #f8fafc;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            transition: all 0.2s;
-            cursor: pointer;
-            border: 2px solid transparent;
-        }
-
-        .task-item:hover {
-            background: #f1f5f9;
-            border-color: #e2e8f0;
-        }
-
-        .task-item.completed {
-            background: #ecfdf5;
-            border-color: #a7f3d0;
-        }
-
-        .task-item.completed .task-text {
-            text-decoration: line-through;
-            color: #059669;
-        }
-
-        .task-checkbox {
-            width: 24px;
-            height: 24px;
-            border: 2px solid #cbd5e1;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            flex-shrink: 0;
-            background: white;
-        }
-
-        .task-checkbox:hover {
-            border-color: #0d9488;
-        }
-
-        .task-checkbox.checked {
-            background: #0d9488;
-            border-color: #0d9488;
-            color: white;
-        }
-
-        .task-text {
-            flex: 1;
-            font-size: 14px;
-            color: #334155;
-            line-height: 1.5;
-        }
-
-        .task-badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            flex-shrink: 0;
-        }
-
-        .badge-pending { background: #fef3c7; color: #92400e; }
-        .badge-done { background: #d1fae5; color: #065f46; }
-
-        /* Info Card */
-        .info-card {
-            background: white;
-            border-radius: 20px;
-            padding: 32px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-            border: 1px solid #e2e8f0;
-        }
-
-        .info-row {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 14px 0;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .info-row:last-child {
-            border-bottom: none;
-        }
-
-        .info-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            background: #f0fdfa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #0d9488;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-
-        .info-content {
-            flex: 1;
-        }
-
-        .info-label {
-            font-size: 12px;
-            color: #94a3b8;
-            text-transform: uppercase;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            margin-bottom: 2px;
-        }
-
-        .info-value {
-            font-size: 15px;
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        /* Signature Section */
-        .signature-card {
-            background: linear-gradient(135deg, #0f172a, #1e3a5f);
-            border-radius: 20px;
-            padding: 32px;
-            color: white;
-        }
-
-        .signature-field {
-            background: rgba(255,255,255,0.1);
-            border: 2px dashed rgba(255,255,255,0.2);
-            border-radius: 12px;
-            padding: 16px;
-            margin-top: 8px;
-            color: rgba(255,255,255,0.6);
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-
-        .signature-field:hover {
-            border-color: rgba(255,255,255,0.4);
-            background: rgba(255,255,255,0.15);
-        }
-
-        /* Toast */
-        .toast-container {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 300;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .toast {
-            padding: 16px 24px;
-            border-radius: 14px;
-            color: white;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15);
-            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            max-width: 380px;
-            backdrop-filter: blur(10px);
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(120%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        /* Buttons */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: none;
-            outline: none;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #0d9488, #14b8a6);
-            color: white;
-            box-shadow: 0 4px 14px rgba(13,148,136,0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(13,148,136,0.4);
-        }
-
-        .btn-secondary {
-            background: #f1f5f9;
-            color: #475569;
-        }
-
-        .btn-secondary:hover {
-            background: #e2e8f0;
-        }
-
-        /* Observations */
-        .obs-card {
-            background: #fffbeb;
-            border: 1px solid #fef3c7;
-            border-radius: 16px;
-            padding: 24px;
-        }
-
-        .obs-item {
-            display: flex;
-            align-items: start;
-            gap: 12px;
-            padding: 10px 0;
-            color: #78350f;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .obs-icon {
-            color: #f59e0b;
-            margin-top: 2px;
-            flex-shrink: 0;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .progress-ring-container { gap: 20px; }
-            .progress-ring { width: 100px; height: 100px; }
-            .progress-ring-value { font-size: 24px; }
-            .category-header { padding: 16px; }
-            .category-icon { width: 44px; height: 44px; font-size: 18px; }
-            .info-card, .signature-card { padding: 20px; }
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-in {
-            animation: fadeInUp 0.5s ease forwards;
-        }
-
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-        .delay-4 { animation-delay: 0.4s; }
-
-        /* Search */
-        .search-box {
-            position: relative;
-            max-width: 400px;
-            margin: 0 auto 30px;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 14px 20px 14px 48px;
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 14px;
-            background: rgba(255,255,255,0.1);
-            color: white;
-            font-size: 15px;
-            outline: none;
-            transition: all 0.2s;
-        }
-
-        .search-input::placeholder {
-            color: rgba(255,255,255,0.5);
-        }
-
-        .search-input:focus {
-            border-color: rgba(255,255,255,0.4);
-            background: rgba(255,255,255,0.15);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: rgba(255,255,255,0.5);
-            font-size: 18px;
-        }
-
-        /* Floating action */
-        .fab {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #0d9488, #14b8a6);
-            color: white;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            box-shadow: 0 8px 25px rgba(13,148,136,0.4);
-            transition: all 0.3s;
-            z-index: 100;
-        }
-
-        .fab:hover {
-            transform: scale(1.1) rotate(90deg);
-        }
-
-        /* Status bar */
-        .status-bar {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px 24px;
-            background: #ecfdf5;
-            border-radius: 30px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #059669;
-            margin: 20px auto;
-            width: fit-content;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-
-        /* Section title */
-        .section-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .section-title h2 {
-            font-size: 22px;
-            font-weight: 800;
-            color: #1e293b;
-        }
-
-        .section-line {
-            flex: 1;
-            height: 2px;
-            background: linear-gradient(90deg, #e2e8f0, transparent);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acta Entrega - IPS Interconsultas</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #1e293b; }
+.header { background: linear-gradient(135deg, #0f172a, #1e3a5f); padding: 32px 20px; text-align: center; color: white; }
+.header h1 { font-size: 26px; font-weight: 800; }
+.header p { opacity: 0.7; font-size: 14px; margin-top: 4px; }
+.stats { display: flex; justify-content: center; gap: 24px; margin-top: 20px; flex-wrap: wrap; }
+.stat { text-align: center; }
+.stat-num { font-size: 32px; font-weight: 800; color: #5eead4; }
+.stat-label { font-size: 11px; text-transform: uppercase; opacity: 0.7; letter-spacing: 0.5px; }
+.container { max-width: 800px; margin: 0 auto; padding: 24px 16px; }
+.info-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.info-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+.info-row:last-child { border-bottom: none; }
+.info-icon { width: 36px; height: 36px; border-radius: 10px; background: #f0fdfa; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 14px; flex-shrink: 0; }
+.info-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 600; }
+.info-value { font-size: 14px; font-weight: 600; }
+.cat-card { background: white; border-radius: 16px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.cat-header { display: flex; align-items: center; gap: 14px; padding: 16px 20px; cursor: pointer; border-bottom: 1px solid #f1f5f9; transition: background 0.2s; }
+.cat-header:hover { background: #f8fafc; }
+.cat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.cat-info { flex: 1; }
+.cat-title { font-size: 15px; font-weight: 700; }
+.cat-sub { font-size: 12px; color: #64748b; margin-top: 2px; }
+.cat-count { font-size: 13px; font-weight: 700; color: #0d9488; min-width: 50px; text-align: right; }
+.cat-arrow { width: 32px; height: 32px; border-radius: 8px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #64748b; transition: all 0.3s; flex-shrink: 0; }
+.cat-arrow.open { transform: rotate(180deg); background: #ccfbf1; color: #0d9488; }
+.tasks { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+.tasks.open { max-height: 3000px; }
+.task { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #f8fafc; transition: all 0.2s; }
+.task:hover { background: #f8fafc; }
+.task-check { width: 22px; height: 22px; border: 2px solid #cbd5e1; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; background: white; transition: all 0.2s; }
+.task-check.done { background: #0d9488; border-color: #0d9488; color: white; }
+.task-text { flex: 1; font-size: 14px; color: #334155; cursor: text; padding: 4px 8px; border-radius: 6px; border: 1px solid transparent; outline: none; }
+.task-text:focus { border-color: #0d9488; background: #f0fdfa; }
+.task-text.done { text-decoration: line-through; color: #94a3b8; }
+.task-del { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #cbd5e1; cursor: pointer; opacity: 0; transition: all 0.2s; flex-shrink: 0; }
+.task:hover .task-del { opacity: 1; }
+.task-del:hover { color: #ef4444; background: #fef2f2; }
+.add-task { display: flex; align-items: center; gap: 10px; padding: 12px 20px; color: #0d9488; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.add-task:hover { background: #f0fdfa; }
+.add-task i { font-size: 12px; }
+.add-input { display: none; padding: 10px 20px; }
+.add-input input { width: 100%; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 14px; outline: none; }
+.add-input input:focus { border-color: #0d9488; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; border: none; transition: all 0.2s; }
+.btn-primary { background: #0d9488; color: white; }
+.btn-primary:hover { background: #0f766e; }
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+.obs-card { background: #fffbeb; border: 1px solid #fef3c7; border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+.obs-item { display: flex; align-items: start; gap: 10px; padding: 8px 0; color: #78350f; font-size: 13px; }
+.obs-item i { color: #f59e0b; margin-top: 2px; flex-shrink: 0; }
+.sig-card { background: linear-gradient(135deg, #0f172a, #1e3a5f); border-radius: 16px; padding: 24px; color: white; }
+.sig-field { background: rgba(255,255,255,0.1); border: 2px dashed rgba(255,255,255,0.2); border-radius: 10px; padding: 12px; margin-top: 6px; font-size: 13px; color: rgba(255,255,255,0.6); outline: none; }
+.sig-field:focus { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.15); }
+.toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 300; display: flex; flex-direction: column; gap: 8px; }
+.toast { padding: 14px 20px; border-radius: 12px; color: white; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); animation: slideIn 0.3s ease; }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.fab { position: fixed; bottom: 20px; right: 20px; width: 52px; height: 52px; border-radius: 50%; background: #0d9488; color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 4px 15px rgba(13,148,136,0.4); z-index: 100; }
+.fab:hover { transform: scale(1.05); }
+@media print { .task-del, .add-task, .add-input, .fab { display: none !important; } .tasks { max-height: none !important; } }
+</style>
 <base target="_blank">
 </head>
 <body>
 
-    <!-- Header -->
-    <header class="header-banner">
-        <div class="header-content">
-            <div style="display: inline-flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.1); padding: 8px 20px; border-radius: 30px; margin-bottom: 20px; backdrop-filter: blur(10px);">
-                <i class="fas fa-hospital" style="color: #5eead4;"></i>
-                <span style="color: rgba(255,255,255,0.9); font-size: 13px; font-weight: 600;">IPS Interconsultas</span>
-            </div>
+<div class="header">
+  <h1>📋 Acta de Entrega de Puesto</h1>
+  <p>IPS Interconsultas — Juan Manuel Correa</p>
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="s-total">0</div><div class="stat-label">Total</div></div>
+    <div class="stat"><div class="stat-num" id="s-done">0</div><div class="stat-label">Hechas</div></div>
+    <div class="stat"><div class="stat-num" id="s-pend">0</div><div class="stat-label">Pendientes</div></div>
+  </div>
+</div>
 
-            <h1 style="font-size: 36px; font-weight: 800; color: white; margin-bottom: 8px; letter-spacing: -0.5px;">
-                📋 Acta de Entrega de Puesto
-            </h1>
-            <p style="color: rgba(255,255,255,0.7); font-size: 16px; max-width: 500px; margin: 0 auto; line-height: 1.6;">
-                Área Biomédica y Soporte Técnico<br>
-                <span style="color: #5eead4; font-weight: 600;">Juan Manuel Correa</span> — Soporte Técnico / Biomédico
-            </p>
+<div class="container">
 
-            <!-- Search -->
-            <div class="search-box">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" class="search-input" placeholder="Buscar tarea o función..." onkeyup="app.buscar(this.value)">
-            </div>
+  <!-- Info -->
+  <div class="info-card">
+    <div class="info-row"><div class="info-icon"><i class="fas fa-user"></i></div><div><div class="info-label">Nombre</div><div class="info-value">Juan Manuel Correa</div></div></div>
+    <div class="info-row"><div class="info-icon"><i class="fas fa-briefcase"></i></div><div><div class="info-label">Cargo</div><div class="info-value">Soporte Técnico / Biomédico</div></div></div>
+    <div class="info-row"><div class="info-icon"><i class="fas fa-building"></i></div><div><div class="info-label">Empresa</div><div class="info-value">IPS Interconsultas</div></div></div>
+    <div class="info-row"><div class="info-icon"><i class="fas fa-calendar"></i></div><div><div class="info-label">Fecha</div><div class="info-value" id="fecha-val" style="color:#0d9488;cursor:pointer;" onclick="app.editFecha()"><i class="far fa-edit" style="font-size:11px;margin-right:4px;"></i><span id="fecha-text">Establecer fecha</span></div></div></div>
+  </div>
 
-            <!-- Progress Rings -->
-            <div class="progress-ring-container">
-                <div class="progress-ring">
-                    <svg width="120" height="120">
-                        <circle class="progress-ring-bg" cx="60" cy="60" r="52"/>
-                        <circle class="progress-ring-fill" id="ring-total" cx="60" cy="60" r="52" 
-                            stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
-                    </svg>
-                    <div class="progress-ring-text">
-                        <div class="progress-ring-value" id="val-total">0</div>
-                        <div class="progress-ring-label">Tareas</div>
-                    </div>
-                </div>
+  <!-- Categorías -->
+  <div id="cats"></div>
 
-                <div class="progress-ring">
-                    <svg width="120" height="120">
-                        <circle class="progress-ring-bg" cx="60" cy="60" r="52"/>
-                        <circle class="progress-ring-fill" id="ring-done" cx="60" cy="60" r="52" 
-                            stroke-dasharray="326.73" stroke-dashoffset="326.73" style="stroke: #34d399;"/>
-                    </svg>
-                    <div class="progress-ring-text">
-                        <div class="progress-ring-value" id="val-done">0</div>
-                        <div class="progress-ring-label">Completadas</div>
-                    </div>
-                </div>
+  <!-- Observaciones -->
+  <div class="obs-card">
+    <div style="font-weight:700;margin-bottom:12px;"><i class="fas fa-exclamation-triangle" style="color:#f59e0b;margin-right:8px;"></i>Observaciones</div>
+    <div class="obs-item"><i class="fas fa-check-circle"></i><span>Inventario actualizado a la fecha</span></div>
+    <div class="obs-item"><i class="fas fa-check-circle"></i><span>Trazabilidad de equipos y activos garantizada</span></div>
+    <div class="obs-item"><i class="fas fa-check-circle"></i><span>Documentación organizada física y digitalmente</span></div>
+    <div class="obs-item"><i class="fas fa-lightbulb"></i><span>Continuar con cronogramas de mantenimiento</span></div>
+    <div class="obs-item"><i class="fas fa-clipboard-list"></i><span><b>Equipos pendientes:</b> <span contenteditable="true" style="border-bottom:1px dashed #f59e0b;outline:none;" onblur="app.saveObs(this)">Haz clic para agregar...</span></span></div>
+  </div>
 
-                <div class="progress-ring">
-                    <svg width="120" height="120">
-                        <circle class="progress-ring-bg" cx="60" cy="60" r="52"/>
-                        <circle class="progress-ring-fill" id="ring-pending" cx="60" cy="60" r="52" 
-                            stroke-dasharray="326.73" stroke-dashoffset="326.73" style="stroke: #fbbf24;"/>
-                    </svg>
-                    <div class="progress-ring-text">
-                        <div class="progress-ring-value" id="val-pending">0</div>
-                        <div class="progress-ring-label">Pendientes</div>
-                    </div>
-                </div>
-            </div>
+  <!-- Indicadores -->
+  <div class="info-card">
+    <div style="font-weight:700;margin-bottom:12px;font-size:15px;"><i class="fas fa-chart-line" style="color:#6366f1;margin-right:8px;"></i>Indicadores</div>
+    <div class="info-row"><div class="info-icon" style="background:#eef2ff;color:#6366f1;"><i class="fas fa-desktop"></i></div><div><div class="info-label">Equipos gestionados</div><div class="info-value" contenteditable="true" style="border-bottom:1px dashed #cbd5e1;outline:none;min-width:60px;display:inline-block;" onblur="app.saveInd('equipos',this)">___</div></div></div>
+    <div class="info-row"><div class="info-icon" style="background:#ecfdf5;color:#059669;"><i class="fas fa-percentage"></i></div><div><div class="info-label">% Cumplimiento mantenimientos</div><div class="info-value" contenteditable="true" style="border-bottom:1px dashed #cbd5e1;outline:none;min-width:60px;display:inline-block;" onblur="app.saveInd('cumplimiento',this)">___</div></div></div>
+    <div class="info-row"><div class="info-icon" style="background:#fef2f2;color:#dc2626;"><i class="fas fa-clock"></i></div><div><div class="info-label">Tiempo respuesta promedio</div><div class="info-value" contenteditable="true" style="border-bottom:1px dashed #cbd5e1;outline:none;min-width:60px;display:inline-block;" onblur="app.saveInd('tiempo',this)">___</div></div></div>
+  </div>
 
-            <div class="status-bar">
-                <div class="status-dot"></div>
-                <span>Progreso General: <span id="progress-general">0%</span></span>
-            </div>
+  <!-- Firmas -->
+  <div class="sig-card">
+    <div style="font-weight:700;margin-bottom:16px;"><i class="fas fa-file-signature" style="margin-right:8px;"></i>Entrega Formal</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div><div style="font-size:11px;opacity:0.6;margin-bottom:4px;">ENTREGA</div><div class="sig-field" contenteditable="true" onblur="app.saveFirma('entrega',this)">Nombre quien entrega</div></div>
+      <div><div style="font-size:11px;opacity:0.6;margin-bottom:4px;">RECIBE</div><div class="sig-field" contenteditable="true" onblur="app.saveFirma('recibe',this)">Nombre quien recibe</div></div>
+    </div>
+    <div style="margin-top:16px;text-align:center;"><div style="font-size:11px;opacity:0.6;margin-bottom:4px;">FECHA FIRMA</div><div class="sig-field" style="max-width:200px;margin:0 auto;" contenteditable="true" onblur="app.saveFirma('fecha',this)">DD / MM / AAAA</div></div>
+  </div>
+
+  <div style="text-align:center;margin-top:32px;color:#94a3b8;font-size:12px;">
+    <p>Acta de Entrega — IPS Interconsultas</p>
+    <div style="display:inline-flex;align-items:center;gap:6px;background:#f1f5f9;padding:6px 14px;border-radius:20px;margin-top:8px;">
+      <div style="width:6px;height:6px;background:#10b981;border-radius:50%;"></div><span style="font-weight:600;">Auto-guardado</span>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toasts"></div>
+<button class="fab" onclick="window.print()" title="Imprimir"><i class="fas fa-print"></i></button>
+
+<script>
+const app = {
+  data: { cats: [], fecha: null, obs: {}, ind: {}, firmas: {} },
+
+  baseCats() { return [
+    {id:'eq_tec',tit:'Equipos Tecnológicos',sub:'Computo, hardware, software, impresoras',icon:'fa-laptop',color:'#3b82f6',bg:'#eff6ff',
+      tasks:['Revisión y estado de equipos de cómputo','Mantenimiento básico de hardware y software','Gestión de impresoras','Soporte a usuarios']},
+    {id:'eq_elec',tit:'Equipos Eléctricos y Electrónicos',sub:'Diagnóstico y seguimiento de fallas',icon:'fa-bolt',color:'#f59e0b',bg:'#fffbeb',
+      tasks:['Revisión de equipos eléctricos y electrónicos','Diagnóstico básico de fallas','Seguimiento a mantenimientos']},
+    {id:'gest_info',tit:'Gestión de Información y Plataformas',sub:'Drive, links y plataformas',icon:'fa-cloud',color:'#8b5cf6',bg:'#f5f3ff',
+      tasks:['Manejo de links de salud oral','Administración de Google Drive','Control de archivos en uso','Documentación de procesos','Manejo de links institucionales','Garantía de acceso a plataformas']},
+    {id:'eq_apoyo',tit:'Equipos de Apoyo e Infraestructura',sub:'Camilleras, ascensores, planta eléctrica',icon:'fa-hospital',color:'#10b981',bg:'#ecfdf5',
+      tasks:['Plataforma camillera','Salva escaleras','Ascensor','Tanques de reserva','Planta eléctrica','Compresores','UPS','Rack de comunicaciones']},
+    {id:'admin_op',tit:'Administración Operativa',sub:'Llaves y control de accesos',icon:'fa-key',color:'#ef4444',bg:'#fef2f2',
+      tasks:['Manejo y control de llaves de sedes','Control de accesos físicos']},
+    {id:'sis_elec',tit:'Sistemas Eléctricos y Seguridad',sub:'Tableros, alarmas, emergencia',icon:'fa-shield-alt',color:'#dc2626',bg:'#fef2f2',
+      tasks:['Manejo de tableros eléctricos','Verificación de funcionamiento','Manejo de alarmas de evacuación','Validación de sistemas de emergencia']},
+    {id:'invent',tit:'Inventarios y Mantenimiento',sub:'Inventarios, calibraciones, hojas de vida',icon:'fa-clipboard-list',color:'#0d9488',bg:'#f0fdfa',
+      tasks:['Inventario institucional actualizado','Inventario equipos biomédicos y tecnológicos','Programación mantenimiento preventivo','Control de calibraciones','Hojas de vida de equipos']},
+    {id:'prov',tit:'Proveedores',sub:'Gestión, correo y celular corporativo',icon:'fa-handshake',color:'#6366f1',bg:'#eef2ff',
+      tasks:['Gestión de proveedores','Manejo de correo corporativo','Manejo de celular corporativo','Coordinación servicios externos']},
+    {id:'gest_doc',tit:'Gestión Documental',sub:'Formatos, guías y documentación técnica',icon:'fa-folder-open',color:'#d97706',bg:'#fffbeb',
+      tasks:['Organización de formatos institucionales','Guías rápidas de equipos','Documentación técnica']},
+    {id:'org_fis',tit:'Organización Física',sub:'Carpetas físicas y clasificación',icon:'fa-archive',color:'#78716c',bg:'#fafaf9',
+      tasks:['Organización de carpetas físicas','Clasificación documental por áreas','Depuración de archivos obsoletos']},
+    {id:'depur',tit:'Depuración de Equipos',sub:'Equipos dados de baja y disposición',icon:'fa-trash-alt',color:'#991b1b',bg:'#fef2f2',
+      tasks:['Identificación equipos dados de baja','Clasificación funcionales / no funcionales','Registro para disposición final','Actualización de inventarios']},
+    {id:'valid',tit:'Validación Equipos de Medición',sub:'Termómetros, termohigrómetros, calibraciones',icon:'fa-thermometer-half',color:'#c2410c',bg:'#fff7ed',
+      tasks:['Validación de termómetros','Validación de termohigrómetros','Verificación rangos de operación','Registro de resultados','Seguimiento a calibraciones']},
+    {id:'activos',tit:'Gestión de Activos',sub:'Altas, bajas y trazabilidad',icon:'fa-exchange-alt',color:'#4338ca',bg:'#eef2ff',
+      tasks:['Manejo de activos dados de baja','Movimiento de activos entre sedes','Registro de nuevos equipos','Asignación de responsables','Control de trazabilidad']},
+    {id:'fichas',tit:'Fichas Técnicas y Documentación',sub:'Fichas biomédicas e historial',icon:'fa-file-medical-alt',color:'#059669',bg:'#ecfdf5',
+      tasks:['Creación fichas técnicas equipos biomédicos','Elaboración hojas de vida','Registro marca, modelo, serie','Registro ubicación, estado, fecha ingreso','Control de historial técnico']},
+    {id:'vacun',tit:'Aplicativos Vacunación',sub:'Aplicativos, usuarios y soporte',icon:'fa-syringe',color:'#db2777',bg:'#fdf2f8',
+      tasks:['Manejo de aplicativos institucionales','Gestión de usuarios y accesos','Soporte al personal','Verificación de funcionamiento']},
+    {id:'seg_info',tit:'Seguridad de la Información',sub:'Credenciales, accesos y políticas',icon:'fa-lock',color:'#1e293b',bg:'#f8fafc',
+      tasks:['Manejo de usuarios y credenciales','Control de accesos','Cumplimiento políticas de seguridad','Entrega segura información confidencial']},
+    {id:'sedes',tit:'Reconocimiento de Sedes',sub:'Recorrido, bodegas, puntos críticos',icon:'fa-map-marked-alt',color:'#0891b2',bg:'#ecfeff',
+      tasks:['Recorrido por sedes institucionales','Identificación de bodegas','Ubicación recámaras de desagüe','Identificación puntos críticos','Evaluación infraestructura']},
+    {id:'plan',tit:'Planeación',sub:'Cronogramas y control de pendientes',icon:'fa-calendar-check',color:'#7c3aed',bg:'#f5f3ff',
+      tasks:['Cronogramas de mantenimiento','Seguimiento de actividades','Control de pendientes']}
+  ];},
+
+  init() {
+    this.load();
+    this.render();
+    this.updateStats();
+    setInterval(()=>this.save(),10000);
+    if(this.data.fecha) this.showFecha();
+  },
+
+  load() {
+    const s = localStorage.getItem('acta_ips');
+    const base = this.baseCats();
+    if(s) {
+      const p = JSON.parse(s);
+      this.data.cats = base.map(c=>{ const g=p.cats?.find(x=>x.id===c.id); return {...c, done:g?.done||[], open:g?.open||false, tasks:g?.tasks||c.tasks}; });
+      this.data.fecha = p.fecha||null; this.data.obs = p.obs||{}; this.data.ind = p.ind||{}; this.data.firmas = p.firmas||{};
+    } else {
+      this.data.cats = base.map(c=>({...c,done:[],open:false}));
+    }
+  },
+
+  save() { localStorage.setItem('acta_ips',JSON.stringify(this.data)); },
+
+  render() {
+    document.getElementById('cats').innerHTML = this.data.cats.map((c,i)=>{
+      const done=c.done.length, total=c.tasks.length, pct=Math.round(done/total*100);
+      return `<div class="cat-card">
+        <div class="cat-header" onclick="app.toggleCat('${c.id}')">
+          <div class="cat-icon" style="background:${c.bg};color:${c.color}"><i class="fas ${c.icon}"></i></div>
+          <div class="cat-info"><div class="cat-title">${c.tit}</div><div class="cat-sub">${c.sub}</div></div>
+          <div class="cat-count" style="${done===total?'color:#10b981':''}">${done}/${total}</div>
+          <div class="cat-arrow ${c.open?'open':''}" id="arr-${c.id}"><i class="fas fa-chevron-down"></i></div>
         </div>
-    </header>
-
-    <!-- Main Content -->
-    <main style="max-width: 900px; margin: 0 auto; padding: 40px 20px;">
-
-        <!-- Información General -->
-        <div class="section-title animate-in">
-            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #0d9488, #14b8a6); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">
-                <i class="fas fa-id-card"></i>
-            </div>
-            <h2>Información General</h2>
-            <div class="section-line"></div>
+        <div class="tasks ${c.open?'open':''}" id="tsk-${c.id}">
+          ${c.tasks.map((t,j)=>`<div class="task">
+            <div class="task-check ${c.done.includes(j)?'done':''}" onclick="event.stopPropagation();app.toggleTask('${c.id}',${j})">${c.done.includes(j)?'<i class="fas fa-check" style="font-size:10px;"></i>':''}</div>
+            <div class="task-text ${c.done.includes(j)?'done':''}" contenteditable="true" onblur="app.editTask('${c.id}',${j},this)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">${t}</div>
+            <div class="task-del" onclick="event.stopPropagation();app.delTask('${c.id}',${j})"><i class="fas fa-times"></i></div>
+          </div>`).join('')}
+          <div class="add-task" onclick="app.showAdd('${c.id}')"><i class="fas fa-plus"></i> Agregar tarea</div>
+          <div class="add-input" id="add-${c.id}"><input type="text" placeholder="Escribe la nueva tarea..." onkeydown="if(event.key==='Enter')app.addTask('${c.id}',this)" onblur="if(!this.value)app.hideAdd('${c.id}')"></div>
         </div>
+      </div>`;
+    }).join('');
+  },
 
-        <div class="info-card animate-in delay-1" style="margin-bottom: 40px;">
-            <div class="info-row">
-                <div class="info-icon"><i class="fas fa-user"></i></div>
-                <div class="info-content">
-                    <div class="info-label">Nombre Completo</div>
-                    <div class="info-value">Juan Manuel Correa</div>
-                </div>
-            </div>
-            <div class="info-row">
-                <div class="info-icon"><i class="fas fa-briefcase"></i></div>
-                <div class="info-content">
-                    <div class="info-label">Cargo</div>
-                    <div class="info-value">Soporte Técnico / Biomédico</div>
-                </div>
-            </div>
-            <div class="info-row">
-                <div class="info-icon"><i class="fas fa-building"></i></div>
-                <div class="info-content">
-                    <div class="info-label">Empresa</div>
-                    <div class="info-value">IPS Interconsultas</div>
-                </div>
-            </div>
-            <div class="info-row">
-                <div class="info-icon"><i class="fas fa-calendar-alt"></i></div>
-                <div class="info-content">
-                    <div class="info-label">Fecha de Entrega</div>
-                    <div class="info-value" id="fecha-entrega" style="color: #0d9488; cursor: pointer;" onclick="app.editarFecha()">
-                        <i class="far fa-edit" style="margin-right: 6px; font-size: 12px;"></i>
-                        <span id="fecha-texto">Haz clic para establecer fecha</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+  toggleCat(id) {
+    const c=this.data.cats.find(x=>x.id===id); c.open=!c.open; this.save();
+    document.getElementById(`tsk-${id}`).classList.toggle('open');
+    document.getElementById(`arr-${id}`).classList.toggle('open');
+  },
 
-        <!-- Funciones y Tareas -->
-        <div class="section-title animate-in delay-2">
-            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #0d9488, #14b8a6); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">
-                <i class="fas fa-tasks"></i>
-            </div>
-            <h2>Funciones e Ítems Entregados</h2>
-            <div class="section-line"></div>
-        </div>
+  toggleTask(cid,idx) {
+    const c=this.data.cats.find(x=>x.id===cid);
+    const i=c.done.indexOf(idx);
+    if(i>-1) c.done.splice(i,1); else c.done.push(idx);
+    this.save(); this.render(); this.updateStats();
+    this.toast(i>-1?'Tarea pendiente':'✓ Tarea completada', i>-1?'info':'success');
+  },
 
-        <p style="color: #64748b; font-size: 14px; margin-bottom: 24px; line-height: 1.6;">
-            <i class="fas fa-info-circle" style="color: #0d9488; margin-right: 6px;"></i>
-            Haz clic en cada categoría para expandir y marcar las tareas completadas. El progreso se guarda automáticamente.
-        </p>
+  editTask(cid,idx,el) {
+    const c=this.data.cats.find(x=>x.id===cid);
+    c.tasks[idx]=el.textContent.trim()||c.tasks[idx];
+    this.save();
+  },
 
-        <div id="categorias-container">
-            <!-- Se genera dinámicamente -->
-        </div>
+  delTask(cid,idx) {
+    if(!confirm('¿Eliminar esta tarea?')) return;
+    const c=this.data.cats.find(x=>x.id===cid);
+    c.tasks.splice(idx,1);
+    c.done=c.done.filter(d=>d!==idx).map(d=>d>idx?d-1:d);
+    this.save(); this.render(); this.updateStats();
+    this.toast('Tarea eliminada','info');
+  },
 
-        <!-- Observaciones -->
-        <div class="section-title animate-in" style="margin-top: 40px;">
-            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #f59e0b, #fbbf24); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">
-                <i class="fas fa-exclamation-triangle"></i>
-            </div>
-            <h2>Observaciones Importantes</h2>
-            <div class="section-line"></div>
-        </div>
+  showAdd(id) { document.getElementById(`add-${id}`).style.display='block'; document.querySelector(`#add-${id} input`).focus(); },
+  hideAdd(id) { document.getElementById(`add-${id}`).style.display='none'; },
 
-        <div class="obs-card animate-in delay-1" style="margin-bottom: 40px;">
-            <div class="obs-item">
-                <i class="fas fa-check-circle obs-icon"></i>
-                <span>Se deja inventario actualizado a la fecha</span>
-            </div>
-            <div class="obs-item">
-                <i class="fas fa-check-circle obs-icon"></i>
-                <span>Se garantiza trazabilidad de equipos y activos</span>
-            </div>
-            <div class="obs-item">
-                <i class="fas fa-check-circle obs-icon"></i>
-                <span>Se entrega documentación organizada física y digitalmente</span>
-            </div>
-            <div class="obs-item">
-                <i class="fas fa-lightbulb obs-icon"></i>
-                <span>Se recomienda continuar con cronogramas de mantenimiento</span>
-            </div>
-            <div class="obs-item">
-                <i class="fas fa-shield-alt obs-icon"></i>
-                <span>Información sensible se entrega por canal seguro</span>
-            </div>
-            <div class="obs-item" style="border-top: 1px dashed #fde68a; margin-top: 8px; padding-top: 16px;">
-                <i class="fas fa-clipboard-list obs-icon"></i>
-                <span><strong>Equipos pendientes:</strong> <span style="border-bottom: 2px dashed #f59e0b; padding: 0 4px; cursor: text;" contenteditable="true" onblur="app.guardarObservacion(this)">Haz clic para agregar...</span></span>
-            </div>
-        </div>
+  addTask(cid,el) {
+    const t=el.value.trim(); if(!t) return;
+    const c=this.data.cats.find(x=>x.id===cid);
+    c.tasks.push(t); this.save(); this.render(); this.updateStats();
+    this.toast('Tarea agregada','success');
+  },
 
-        <!-- Indicadores -->
-        <div class="section-title animate-in">
-            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">
-                <i class="fas fa-chart-line"></i>
-            </div>
-            <h2>Indicadores del Área</h2>
-            <div class="section-line"></div>
-        </div>
+  updateStats() {
+    let t=0,d=0;
+    this.data.cats.forEach(c=>{t+=c.tasks.length;d+=c.done.length;});
+    document.getElementById('s-total').textContent=t;
+    document.getElementById('s-done').textContent=d;
+    document.getElementById('s-pend').textContent=t-d;
+  },
 
-        <div class="info-card animate-in delay-1" style="margin-bottom: 40px;">
-            <div class="info-row">
-                <div class="info-icon" style="background: #eef2ff; color: #6366f1;"><i class="fas fa-desktop"></i></div>
-                <div class="info-content">
-                    <div class="info-label">Número de equipos gestionados</div>
-                    <div class="info-value" style="border-bottom: 2px dashed #cbd5e1; display: inline-block; min-width: 80px; cursor: text;" contenteditable="true" onblur="app.guardarIndicador('equipos', this)">___</div>
-                </div>
-            </div>
-            <div class="info-row">
-                <div class="info-icon" style="background: #ecfdf5; color: #059669;"><i class="fas fa-percentage"></i></div>
-                <div class="info-content">
-                    <div class="info-label">% Cumplimiento mantenimientos</div>
-                    <div class="info-value" style="border-bottom: 2px dashed #cbd5e1; display: inline-block; min-width: 80px; cursor: text;" contenteditable="true" onblur="app.guardarIndicador('cumplimiento', this)">___</div>
-                </div>
-            </div>
-            <div class="info-row">
-                <div class="info-icon" style="background: #fef2f2; color: #dc2626;"><i class="fas fa-clock"></i></div>
-                <div class="info-content">
-                    <div class="info-label">Tiempo de respuesta promedio</div>
-                    <div class="info-value" style="border-bottom: 2px dashed #cbd5e1; display: inline-block; min-width: 80px; cursor: text;" contenteditable="true" onblur="app.guardarIndicador('tiempo', this)">___</div>
-                </div>
-            </div>
-        </div>
+  editFecha() {
+    const f=prompt('Fecha de entrega (DD/MM/AAAA):');
+    if(f&&f.match(/^\d{2}\/\d{2}\/\d{4}$/)){
+      const p=f.split('/'); this.data.fecha=new Date(p[2],p[1]-1,p[0]).toISOString();
+      this.save(); this.showFecha(); this.toast('Fecha guardada','success');
+    }
+  },
 
-        <!-- Entrega Formal -->
-        <div class="section-title animate-in">
-            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #0f172a, #1e3a5f); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">
-                <i class="fas fa-file-signature"></i>
-            </div>
-            <h2>Entrega Formal</h2>
-            <div class="section-line"></div>
-        </div>
+  showFecha() {
+    document.getElementById('fecha-text').textContent=new Date(this.data.fecha).toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  },
 
-        <div class="signature-card animate-in delay-1">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px;">
-                <div>
-                    <label style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; margin-bottom: 6px; display: block;">Entrega</label>
-                    <div class="signature-field" contenteditable="true" onblur="app.guardarFirma('entrega', this)">Nombre de quien entrega</div>
-                    <div style="margin-top: 8px; font-size: 12px; opacity: 0.5;">Firma: ___________________</div>
-                </div>
-                <div>
-                    <label style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; margin-bottom: 6px; display: block;">Recibe</label>
-                    <div class="signature-field" contenteditable="true" onblur="app.guardarFirma('recibe', this)">Nombre de quien recibe</div>
-                    <div style="margin-top: 8px; font-size: 12px; opacity: 0.5;">Firma: ___________________</div>
-                </div>
-            </div>
-            <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
-                <div style="font-size: 12px; opacity: 0.5; margin-bottom: 8px;">Fecha de firma</div>
-                <div class="signature-field" style="max-width: 200px; margin: 0 auto;" contenteditable="true" onblur="app.guardarFirma('fecha', this)">DD / MM / AAAA</div>
-            </div>
-        </div>
+  saveObs(el){this.data.obs.pendientes=el.textContent;this.save();},
+  saveInd(k,el){this.data.ind[k]=el.textContent;this.save();},
+  saveFirma(k,el){this.data.firmas[k]=el.textContent;this.save();},
 
-        <!-- Footer -->
-        <div style="text-align: center; margin-top: 60px; padding: 24px; color: #94a3b8; font-size: 13px;">
-            <p>📋 Acta de Entrega de Puesto — IPS Interconsultas</p>
-            <p style="margin-top: 4px;">Área Biomédica y Soporte Técnico</p>
-            <div style="margin-top: 12px; display: inline-flex; align-items: center; gap: 8px; background: #f1f5f9; padding: 8px 16px; border-radius: 20px;">
-                <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></div>
-                <span style="font-size: 12px; font-weight: 600;">Guardado automáticamente</span>
-            </div>
-        </div>
-    </main>
+  toast(msg,type='info'){
+    const d=document.createElement('div');
+    d.className='toast';
+    const colors={success:'#059669',error:'#dc2626',info:'#0d9488',warning:'#d97706'};
+    d.style.background=colors[type];
+    d.innerHTML=`<i class="fas fa-${type==='success'?'check-circle':type==='error'?'exclamation-circle':'info-circle'}"></i> ${msg}`;
+    document.getElementById('toasts').appendChild(d);
+    setTimeout(()=>{d.style.opacity='0';d.style.transform='translateX(120%)';setTimeout(()=>d.remove(),300);},2500);
+  }
+};
 
-    <!-- Toast Container -->
-    <div class="toast-container" id="toasts"></div>
-
-    <!-- Floating Action Button -->
-    <button class="fab" onclick="app.exportarPDF()" title="Exportar / Imprimir">
-        <i class="fas fa-print"></i>
-    </button>
-
-    <script>
-    // ==========================================
-    // ACTA DE ENTREGA INTERACTIVA - IPS INTERCONSULTAS
-    // ==========================================
-
-    const app = {
-        data: {
-            categorias: [],
-            fechaEntrega: null,
-            observaciones: {},
-            indicadores: {},
-            firmas: {}
-        },
-
-        init() {
-            this.cargarDatos();
-            this.renderCategorias();
-            this.actualizarProgreso();
-            this.iniciarAutoGuardado();
-
-            // Cargar fecha si existe
-            if (this.data.fechaEntrega) {
-                document.getElementById('fecha-texto').textContent = new Date(this.data.fechaEntrega).toLocaleDateString('es-ES', {
-                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-                });
-            }
-        },
-
-        // Definición de todas las categorías y tareas del acta
-        definirCategorias() {
-            return [
-                {
-                    id: 'equipos_tec',
-                    titulo: 'Equipos Tecnológicos',
-                    subtitulo: 'Computo, hardware, software e impresoras',
-                    icono: 'fa-laptop',
-                    color: '#3b82f6',
-                    bgColor: '#eff6ff',
-                    tareas: [
-                        'Revisión y estado de equipos de cómputo',
-                        'Mantenimiento básico de hardware y software',
-                        'Gestión de impresoras',
-                        'Soporte a usuarios'
-                    ]
-                },
-                {
-                    id: 'equipos_elec',
-                    titulo: 'Equipos Eléctricos y Electrónicos',
-                    subtitulo: 'Diagnóstico y seguimiento de fallas',
-                    icono: 'fa-bolt',
-                    color: '#f59e0b',
-                    bgColor: '#fffbeb',
-                    tareas: [
-                        'Revisión de equipos eléctricos y electrónicos',
-                        'Diagnóstico básico de fallas',
-                        'Seguimiento a mantenimientos'
-                    ]
-                },
-                {
-                    id: 'gestion_info',
-                    titulo: 'Gestión de Información y Plataformas',
-                    subtitulo: 'Drive, links y plataformas institucionales',
-                    icono: 'fa-cloud',
-                    color: '#8b5cf6',
-                    bgColor: '#f5f3ff',
-                    tareas: [
-                        'Manejo de links de salud oral',
-                        'Administración de Google Drive (organización de carpetas)',
-                        'Control de archivos en uso',
-                        'Documentación de procesos',
-                        'Manejo de links institucionales de uso diario',
-                        'Garantía de acceso y funcionamiento de plataformas'
-                    ]
-                },
-                {
-                    id: 'equipos_apoyo',
-                    titulo: 'Equipos de Apoyo e Infraestructura',
-                    subtitulo: 'Camilleras, ascensores, planta eléctrica y más',
-                    icono: 'fa-hospital',
-                    color: '#10b981',
-                    bgColor: '#ecfdf5',
-                    tareas: [
-                        'Plataforma camillera',
-                        'Salva escaleras',
-                        'Ascensor',
-                        'Tanques de reserva',
-                        'Planta eléctrica',
-                        'Compresores',
-                        'UPS',
-                        'Rack de comunicaciones'
-                    ]
-                },
-                {
-                    id: 'admin_operativa',
-                    titulo: 'Administración Operativa',
-                    subtitulo: 'Llaves de sedes y control de accesos',
-                    icono: 'fa-key',
-                    color: '#ef4444',
-                    bgColor: '#fef2f2',
-                    tareas: [
-                        'Manejo y control de llaves de sedes',
-                        'Control de accesos físicos'
-                    ]
-                },
-                {
-                    id: 'sistemas_elec',
-                    titulo: 'Sistemas Eléctricos y Seguridad',
-                    subtitulo: 'Tableros, alarmas y sistemas de emergencia',
-                    icono: 'fa-shield-alt',
-                    color: '#dc2626',
-                    bgColor: '#fef2f2',
-                    tareas: [
-                        'Manejo de tableros eléctricos',
-                        'Verificación de funcionamiento',
-                        'Manejo de alarmas de evacuación',
-                        'Validación de sistemas de emergencia'
-                    ]
-                },
-                {
-                    id: 'inventarios',
-                    titulo: 'Inventarios y Mantenimiento',
-                    subtitulo: 'Inventarios, calibraciones y hojas de vida',
-                    icono: 'fa-clipboard-list',
-                    color: '#0d9488',
-                    bgColor: '#f0fdfa',
-                    tareas: [
-                        'Inventario institucional actualizado',
-                        'Inventario de equipos biomédicos y tecnológicos',
-                        'Programación de mantenimiento preventivo',
-                        'Control de calibraciones',
-                        'Hojas de vida de equipos'
-                    ]
-                },
-                {
-                    id: 'proveedores',
-                    titulo: 'Proveedores',
-                    subtitulo: 'Gestión de proveedores y correo corporativo',
-                    icono: 'fa-handshake',
-                    color: '#6366f1',
-                    bgColor: '#eef2ff',
-                    tareas: [
-                        'Gestión de proveedores',
-                        'Manejo de correo corporativo',
-                        'Manejo de celular corporativo',
-                        'Coordinación de servicios externos'
-                    ]
-                },
-                {
-                    id: 'gestion_doc',
-                    titulo: 'Gestión Documental',
-                    subtitulo: 'Formatos, guías y documentación técnica',
-                    icono: 'fa-folder-open',
-                    color: '#d97706',
-                    bgColor: '#fffbeb',
-                    tareas: [
-                        'Organización de formatos institucionales',
-                        'Guías rápidas de equipos',
-                        'Documentación técnica'
-                    ]
-                },
-                {
-                    id: 'org_fisica',
-                    titulo: 'Organización Física',
-                    subtitulo: 'Carpetas físicas y clasificación documental',
-                    icono: 'fa-archive',
-                    color: '#78716c',
-                    bgColor: '#fafaf9',
-                    tareas: [
-                        'Organización de carpetas físicas',
-                        'Clasificación documental por áreas',
-                        'Depuración de archivos obsoletos'
-                    ]
-                },
-                {
-                    id: 'depuracion',
-                    titulo: 'Depuración de Equipos',
-                    subtitulo: 'Equipos dados de baja y disposición final',
-                    icono: 'fa-trash-alt',
-                    color: '#991b1b',
-                    bgColor: '#fef2f2',
-                    tareas: [
-                        'Identificación de equipos dados de baja',
-                        'Clasificación de equipos funcionales y no funcionales',
-                        'Registro para disposición final',
-                        'Actualización de inventarios'
-                    ]
-                },
-                {
-                    id: 'validacion',
-                    titulo: 'Validación de Equipos de Medición',
-                    subtitulo: 'Termómetros, termohigrómetros y calibraciones',
-                    icono: 'fa-thermometer-half',
-                    color: '#c2410c',
-                    bgColor: '#fff7ed',
-                    tareas: [
-                        'Validación de termómetros',
-                        'Validación de termohigrómetros',
-                        'Verificación de rangos de operación',
-                        'Registro de resultados',
-                        'Seguimiento a calibraciones'
-                    ]
-                },
-                {
-                    id: 'activos',
-                    titulo: 'Gestión de Activos (Altas y Bajas)',
-                    subtitulo: 'Movimiento de activos y control de trazabilidad',
-                    icono: 'fa-exchange-alt',
-                    color: '#4338ca',
-                    bgColor: '#eef2ff',
-                    tareas: [
-                        'Manejo de activos dados de baja',
-                        'Movimiento de activos entre sedes',
-                        'Registro de nuevos equipos',
-                        'Asignación de responsables',
-                        'Control de trazabilidad'
-                    ]
-                },
-                {
-                    id: 'fichas',
-                    titulo: 'Fichas Técnicas y Documentación',
-                    subtitulo: 'Fichas biomédicas, hojas de vida e historial',
-                    icono: 'fa-file-medical-alt',
-                    color: '#059669',
-                    bgColor: '#ecfdf5',
-                    tareas: [
-                        'Creación de fichas técnicas de equipos biomédicos',
-                        'Elaboración de hojas de vida',
-                        'Registro de marca, modelo y serie',
-                        'Registro de ubicación, estado y fecha de ingreso',
-                        'Control de historial técnico'
-                    ]
-                },
-                {
-                    id: 'vacunacion',
-                    titulo: 'Aplicativos Área de Vacunación',
-                    subtitulo: 'Aplicativos institucionales y gestión de usuarios',
-                    icono: 'fa-syringe',
-                    color: '#db2777',
-                    bgColor: '#fdf2f8',
-                    tareas: [
-                        'Manejo de aplicativos institucionales',
-                        'Gestión de usuarios y accesos',
-                        'Soporte al personal',
-                        'Verificación de funcionamiento'
-                    ]
-                },
-                {
-                    id: 'seguridad',
-                    titulo: 'Seguridad de la Información',
-                    subtitulo: 'Credenciales, accesos y políticas de seguridad',
-                    icono: 'fa-lock',
-                    color: '#1e293b',
-                    bgColor: '#f8fafc',
-                    tareas: [
-                        'Manejo de usuarios y credenciales',
-                        'Control de accesos',
-                        'Cumplimiento de políticas de seguridad',
-                        'Entrega segura de información confidencial'
-                    ]
-                },
-                {
-                    id: 'sedes',
-                    titulo: 'Reconocimiento de Sedes',
-                    subtitulo: 'Recorrido, bodegas y puntos críticos',
-                    icono: 'fa-map-marked-alt',
-                    color: '#0891b2',
-                    bgColor: '#ecfeff',
-                    tareas: [
-                        'Recorrido por sedes institucionales',
-                        'Identificación de bodegas',
-                        'Ubicación de recámaras de desagüe',
-                        'Identificación de puntos críticos',
-                        'Evaluación básica de infraestructura'
-                    ]
-                },
-                {
-                    id: 'planeacion',
-                    titulo: 'Planeación',
-                    subtitulo: 'Cronogramas, seguimiento y control de pendientes',
-                    icono: 'fa-calendar-check',
-                    color: '#7c3aed',
-                    bgColor: '#f5f3ff',
-                    tareas: [
-                        'Cronogramas de mantenimiento',
-                        'Seguimiento de actividades',
-                        'Control de pendientes'
-                    ]
-                }
-            ];
-        },
-
-        cargarDatos() {
-            const guardado = localStorage.getItem('acta_entrega_ips');
-            const categoriasBase = this.definirCategorias();
-
-            if (guardado) {
-                const parsed = JSON.parse(guardado);
-                // Fusionar datos guardados con estructura base
-                this.data.categorias = categoriasBase.map(cat => {
-                    const guardada = parsed.categorias?.find(c => c.id === cat.id);
-                    if (guardada) {
-                        return {
-                            ...cat,
-                            tareasCompletadas: guardada.tareasCompletadas || [],
-                            abierta: guardada.abierta || false
-                        };
-                    }
-                    return { ...cat, tareasCompletadas: [], abierta: false };
-                });
-                this.data.fechaEntrega = parsed.fechaEntrega || null;
-                this.data.observaciones = parsed.observaciones || {};
-                this.data.indicadores = parsed.indicadores || {};
-                this.data.firmas = parsed.firmas || {};
-            } else {
-                this.data.categorias = categoriasBase.map(cat => ({
-                    ...cat,
-                    tareasCompletadas: [],
-                    abierta: false
-                }));
-            }
-        },
-
-        guardar() {
-            localStorage.setItem('acta_entrega_ips', JSON.stringify(this.data));
-        },
-
-        iniciarAutoGuardado() {
-            setInterval(() => this.guardar(), 10000); // Cada 10 segundos
-        },
-
-        renderCategorias() {
-            const container = document.getElementById('categorias-container');
-            container.innerHTML = this.data.categorias.map((cat, index) => {
-                const completadas = cat.tareasCompletadas.length;
-                const total = cat.tareas.length;
-                const porcentaje = Math.round((completadas / total) * 100);
-                const todasHechas = completadas === total;
-
-                return `
-                    <div class="category-card animate-in delay-${(index % 4) + 1}" style="margin-bottom: 16px;">
-                        <div class="category-header" onclick="app.toggleCategoria('${cat.id}')">
-                            <div class="category-icon" style="background: ${cat.bgColor}; color: ${cat.color};">
-                                <i class="fas ${cat.icono}"></i>
-                            </div>
-                            <div class="category-info">
-                                <div class="category-title">${cat.titulo}</div>
-                                <div class="category-subtitle">${cat.subtitulo}</div>
-                            </div>
-                            <div class="category-progress">
-                                <div class="category-progress-bar">
-                                    <div class="category-progress-fill" style="width: ${porcentaje}%; ${todasHechas ? 'background: #10b981;' : ''}"></div>
-                                </div>
-                                <span class="category-progress-text" style="${todasHechas ? 'color: #10b981;' : ''}">${completadas}/${total}</span>
-                            </div>
-                            <div class="category-toggle ${cat.abierta ? 'rotated' : ''}" id="toggle-${cat.id}">
-                                <i class="fas fa-chevron-down"></i>
-                            </div>
-                        </div>
-                        <div class="tasks-container ${cat.abierta ? 'open' : ''}" id="tasks-${cat.id}">
-                            ${cat.tareas.map((tarea, i) => {
-                                const hecha = cat.tareasCompletadas.includes(i);
-                                return `
-                                    <div class="task-item ${hecha ? 'completed' : ''}" onclick="app.toggleTarea('${cat.id}', ${i})">
-                                        <div class="task-checkbox ${hecha ? 'checked' : ''}">
-                                            ${hecha ? '<i class="fas fa-check" style="font-size: 12px;"></i>' : ''}
-                                        </div>
-                                        <span class="task-text">${tarea}</span>
-                                        <span class="task-badge ${hecha ? 'badge-done' : 'badge-pending'}">
-                                            ${hecha ? '✓ Hecho' : 'Pendiente'}
-                                        </span>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        },
-
-        toggleCategoria(id) {
-            const cat = this.data.categorias.find(c => c.id === id);
-            if (!cat) return;
-
-            cat.abierta = !cat.abierta;
-            this.guardar();
-
-            const tasksContainer = document.getElementById(`tasks-${id}`);
-            const toggle = document.getElementById(`toggle-${id}`);
-
-            if (cat.abierta) {
-                tasksContainer.classList.add('open');
-                toggle.classList.add('rotated');
-            } else {
-                tasksContainer.classList.remove('open');
-                toggle.classList.remove('rotated');
-            }
-        },
-
-        toggleTarea(catId, tareaIndex) {
-            const cat = this.data.categorias.find(c => c.id === catId);
-            if (!cat) return;
-
-            const idx = cat.tareasCompletadas.indexOf(tareaIndex);
-            if (idx > -1) {
-                cat.tareasCompletadas.splice(idx, 1);
-            } else {
-                cat.tareasCompletadas.push(tareaIndex);
-            }
-
-            this.guardar();
-            this.renderCategorias();
-            this.actualizarProgreso();
-
-            const mensaje = idx > -1 ? 'Tarea marcada como pendiente' : '¡Tarea completada!';
-            const tipo = idx > -1 ? 'info' : 'success';
-            this.mostrarToast(mensaje, tipo);
-        },
-
-        actualizarProgreso() {
-            let totalTareas = 0;
-            let totalCompletadas = 0;
-
-            this.data.categorias.forEach(cat => {
-                totalTareas += cat.tareas.length;
-                totalCompletadas += cat.tareasCompletadas.length;
-            });
-
-            const totalPendientes = totalTareas - totalCompletadas;
-            const porcentajeGeneral = totalTareas > 0 ? Math.round((totalCompletadas / totalTareas) * 100) : 0;
-
-            // Actualizar rings
-            this.actualizarRing('ring-total', 'val-total', totalTareas, totalTareas);
-            this.actualizarRing('ring-done', 'val-done', totalCompletadas, totalTareas);
-            this.actualizarRing('ring-pending', 'val-pending', totalPendientes, totalTareas);
-
-            document.getElementById('progress-general').textContent = porcentajeGeneral + '%';
-        },
-
-        actualizarRing(ringId, valId, valor, total) {
-            const ring = document.getElementById(ringId);
-            const val = document.getElementById(valId);
-            const circumference = 2 * Math.PI * 52; // r=52
-            const offset = circumference - (valor / (total || 1)) * circumference;
-
-            ring.style.strokeDashoffset = offset;
-            val.textContent = valor;
-        },
-
-        editarFecha() {
-            const fecha = prompt('Ingresa la fecha de entrega (DD/MM/AAAA):');
-            if (fecha) {
-                const partes = fecha.split('/');
-                if (partes.length === 3) {
-                    const fechaObj = new Date(partes[2], partes[1] - 1, partes[0]);
-                    this.data.fechaEntrega = fechaObj.toISOString();
-                    this.guardar();
-                    document.getElementById('fecha-texto').textContent = fechaObj.toLocaleDateString('es-ES', {
-                        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-                    });
-                    this.mostrarToast('Fecha guardada', 'success');
-                }
-            }
-        },
-
-        guardarObservacion(el) {
-            this.data.observaciones.pendientes = el.textContent;
-            this.guardar();
-        },
-
-        guardarIndicador(tipo, el) {
-            this.data.indicadores[tipo] = el.textContent;
-            this.guardar();
-        },
-
-        guardarFirma(tipo, el) {
-            this.data.firmas[tipo] = el.textContent;
-            this.guardar();
-        },
-
-        buscar(query) {
-            if (!query) {
-                this.renderCategorias();
-                return;
-            }
-
-            const q = query.toLowerCase();
-            const cards = document.querySelectorAll('.category-card');
-
-            cards.forEach((card, index) => {
-                const cat = this.data.categorias[index];
-                const match = cat.titulo.toLowerCase().includes(q) || 
-                             cat.subtitulo.toLowerCase().includes(q) ||
-                             cat.tareas.some(t => t.toLowerCase().includes(q));
-
-                card.style.display = match ? 'block' : 'none';
-
-                if (match && q.length > 2) {
-                    // Auto-expandir si hay coincidencia en tareas
-                    const tareaMatch = cat.tareas.some(t => t.toLowerCase().includes(q));
-                    if (tareaMatch && !cat.abierta) {
-                        this.toggleCategoria(cat.id);
-                    }
-                }
-            });
-        },
-
-        exportarPDF() {
-            window.print();
-            this.mostrarToast('Preparando para imprimir...', 'info');
-        },
-
-        mostrarToast(mensaje, tipo = 'info') {
-            const container = document.getElementById('toasts');
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-
-            const colores = {
-                success: 'background: linear-gradient(135deg, #059669, #10b981);',
-                error: 'background: linear-gradient(135deg, #dc2626, #ef4444);',
-                warning: 'background: linear-gradient(135deg, #d97706, #f59e0b);',
-                info: 'background: linear-gradient(135deg, #0d9488, #14b8a6);'
-            };
-
-            const iconos = {
-                success: 'fa-check-circle',
-                error: 'fa-exclamation-circle',
-                warning: 'fa-exclamation-triangle',
-                info: 'fa-info-circle'
-            };
-
-            toast.style.cssText = colores[tipo];
-            toast.innerHTML = `<i class="fas ${iconos[tipo]}"></i> ${mensaje}`;
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(120%)';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-    };
-
-    // Iniciar
-    document.addEventListener('DOMContentLoaded', () => {
-        app.init();
-    });
-    </script>
+document.addEventListener('DOMContentLoaded',()=>app.init());
+</script>
 </body>
 </html>
