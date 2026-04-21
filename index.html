@@ -3,171 +3,467 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Acta de Entrega Digital - IPS Interconsultas</title>
+<title>Acta Entrega - IPS Interconsultas</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: #0f172a; color: #f1f5f9; min-height: 100vh; }
-    
-    .header { background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); padding: 40px 20px; text-align: center; border-bottom: 1px solid #334155; }
-    .header h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; color: white; }
-    
-    .stats { display: flex; justify-content: center; gap: 20px; margin-top: 25px; }
-    .stat-circle { width: 100px; height: 100px; border-radius: 50%; border: 4px solid #334155; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #1e293b; }
-    .stat-circle.active { border-color: #0d9488; box-shadow: 0 0 15px rgba(13, 148, 136, 0.3); }
-    .stat-num { font-size: 24px; font-weight: 800; color: white; }
-    .stat-label { font-size: 10px; text-transform: uppercase; color: #94a3b8; font-weight: 700; }
-
-    .container { max-width: 700px; margin: 0 auto; padding: 20px; }
-    
-    .card { background: #1e293b; border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #334155; transition: all 0.3s ease; }
-    .card:hover { border-color: #475569; }
-
-    .task-row { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 12px; margin-bottom: 4px; background: rgba(15, 23, 42, 0.5); }
-    .checkbox { width: 22px; height: 22px; border: 2px solid #475569; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-    .checkbox.checked { background: #0d9488; border-color: #0d9488; }
-    
-    .status-badge { display: inline-flex; align-items: center; gap: 6px; background: #064e3b; color: #34d399; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-bottom: 20px; }
-    
-    .cat-title { font-weight: 700; font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
-    .cat-icon { color: #0d9488; }
-
-    .btn-print { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: #0d9488; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); cursor: pointer; border: none; z-index: 100; }
-    
-    @media print { .btn-print, .status-badge { display: none; } body { background: white; color: black; } .card { border: 1px solid #eee; break-inside: avoid; } }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #1e293b; }
+.header { background: linear-gradient(135deg, #0f172a, #1e3a5f); padding: 32px 20px; text-align: center; color: white; }
+.header h1 { font-size: 26px; font-weight: 800; }
+.header p { opacity: 0.7; font-size: 14px; margin-top: 4px; }
+.stats { display: flex; justify-content: center; gap: 24px; margin-top: 20px; flex-wrap: wrap; }
+.stat { text-align: center; }
+.stat-num { font-size: 32px; font-weight: 800; color: #5eead4; }
+.stat-label { font-size: 11px; text-transform: uppercase; opacity: 0.7; letter-spacing: 0.5px; }
+.container { max-width: 800px; margin: 0 auto; padding: 24px 16px; }
+.info-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.info-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+.info-row:last-child { border-bottom: none; }
+.info-icon { width: 36px; height: 36px; border-radius: 10px; background: #f0fdfa; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 14px; flex-shrink: 0; }
+.info-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 600; }
+.info-value { font-size: 14px; font-weight: 600; }
+.cat-card { background: white; border-radius: 16px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.cat-header { display: flex; align-items: center; gap: 14px; padding: 16px 20px; cursor: pointer; border-bottom: 1px solid #f1f5f9; transition: background 0.2s; }
+.cat-header:hover { background: #f8fafc; }
+.cat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.cat-info { flex: 1; }
+.cat-title { font-size: 15px; font-weight: 700; }
+.cat-sub { font-size: 12px; color: #64748b; margin-top: 2px; }
+.cat-count { font-size: 13px; font-weight: 700; color: #0d9488; min-width: 50px; text-align: right; }
+.cat-arrow { width: 32px; height: 32px; border-radius: 8px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #64748b; transition: all 0.3s; flex-shrink: 0; }
+.cat-arrow.open { transform: rotate(180deg); background: #ccfbf1; color: #0d9488; }
+.tasks { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+.tasks.open { max-height: 3000px; }
+.task { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #f8fafc; transition: all 0.2s; }
+.task:hover { background: #f8fafc; }
+.task-check { width: 22px; height: 22px; border: 2px solid #cbd5e1; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; background: white; transition: all 0.2s; }
+.task-check.done { background: #0d9488; border-color: #0d9488; color: white; }
+.task-text { flex: 1; font-size: 14px; color: #334155; cursor: text; padding: 4px 8px; border-radius: 6px; border: 1px solid transparent; outline: none; }
+.task-text:focus { border-color: #0d9488; background: #f0fdfa; }
+.task-text.done { color: #059669; font-weight: 600; }
+.task-del { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #cbd5e1; cursor: pointer; opacity: 0; transition: all 0.2s; flex-shrink: 0; }
+.task:hover .task-del { opacity: 1; }
+.task-del:hover { color: #ef4444; background: #fef2f2; }
+.add-task { display: flex; align-items: center; gap: 10px; padding: 12px 20px; color: #0d9488; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.add-task:hover { background: #f0fdfa; }
+.add-task i { font-size: 12px; }
+.add-input { display: none; padding: 10px 20px; }
+.add-input input { width: 100%; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 14px; outline: none; }
+.add-input input:focus { border-color: #0d9488; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; border: none; transition: all 0.2s; }
+.btn-primary { background: #0d9488; color: white; }
+.btn-primary:hover { background: #0f766e; }
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+.obs-card { background: #fffbeb; border: 1px solid #fef3c7; border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+.obs-item { display: flex; align-items: start; gap: 10px; padding: 8px 0; color: #78350f; font-size: 13px; }
+.obs-item i { color: #f59e0b; margin-top: 2px; flex-shrink: 0; }
+.sig-card { background: linear-gradient(135deg, #0f172a, #1e3a5f); border-radius: 16px; padding: 24px; color: white; }
+.sig-field { background: rgba(255,255,255,0.1); border: 2px dashed rgba(255,255,255,0.2); border-radius: 10px; padding: 12px; margin-top: 6px; font-size: 13px; color: rgba(255,255,255,0.6); outline: none; }
+.sig-field:focus { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.15); }
+.toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 300; display: flex; flex-direction: column; gap: 8px; }
+.toast { padding: 14px 20px; border-radius: 12px; color: white; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); animation: slideIn 0.3s ease; }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.fab { position: fixed; bottom: 20px; right: 20px; width: 52px; height: 52px; border-radius: 50%; background: #0d9488; color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 4px 15px rgba(13,148,136,0.4); z-index: 100; }
+.fab:hover { transform: scale(1.05); }
+.sync-badge { display: inline-flex; align-items: center; gap: 6px; background: #f0fdfa; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; color: #0d9488; margin-left: 10px; }
+.sync-badge.offline { background: #fef2f2; color: #dc2626; }
+.sync-badge i { font-size: 10px; }
+.config-box { background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+.config-box input { width: 100%; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 13px; margin-top: 6px; outline: none; }
+.config-box input:focus { border-color: #0d9488; }
+@media print { .task-del, .add-task, .add-input, .fab, .config-box { display: none !important; } .tasks { max-height: none !important; } }
 </style>
+<base target="_blank">
 </head>
 <body>
 
 <div class="header">
-    <div class="status-badge" id="sync-status">
-        <i class="fas fa-sync-alt fa-spin"></i> SINCRONIZANDO NUBE
-    </div>
-    <h1>Acta de Entrega de Puesto</h1>
-    <p style="color: #94a3b8; font-size: 14px; margin-top: 5px;">Área Biomédica y Soporte Técnico</p>
-    
-    <div class="stats">
-        <div class="stat-circle"><div class="stat-num" id="s-total">0</div><div class="stat-label">Tareas</div></div>
-        <div class="stat-circle active"><div class="stat-num" id="s-pend">0</div><div class="stat-label">Pendientes</div></div>
-        <div class="stat-circle"><div class="stat-num" id="s-pct">0%</div><div class="stat-label">Progreso</div></div>
-    </div>
+  <h1>📋 Acta de Entrega de Puesto</h1>
+  <p>IPS Interconsultas — Juan Manuel Correa</p>
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="s-total">0</div><div class="stat-label">Total</div></div>
+    <div class="stat"><div class="stat-num" id="s-done">0</div><div class="stat-label">Hechas</div></div>
+    <div class="stat"><div class="stat-num" id="s-pend">0</div><div class="stat-label">Pendientes</div></div>
+  </div>
 </div>
 
 <div class="container">
-    <div class="card" style="border-left: 4px solid #0d9488;">
-        <div class="cat-title"><i class="fas fa-user-tie cat-icon"></i> Responsable</div>
-        <div style="font-size: 18px; font-weight: 700;">Juan Manuel Correa</div>
-        <div style="color: #94a3b8; font-size: 13px;">Soporte Técnico / Biomédico</div>
-    </div>
 
-    <div id="categorias-cont">
-        </div>
+  <!-- Firebase Config -->
+  <div class="config-box" id="config-box">
+    <div style="font-weight:700;font-size:14px;margin-bottom:8px;"><i class="fas fa-cloud" style="color:#0d9488;margin-right:8px;"></i>Configuración Firebase (solo una vez)</div>
+    <p style="font-size:12px;color:#64748b;margin-bottom:12px;">Pega aquí la URL de tu base de datos de Firebase para sincronizar entre dispositivos. <a href="#" onclick="app.mostrarAyuda();return false;" style="color:#0d9488;">¿Cómo obtenerla?</a></p>
+    <input type="text" id="db-url" placeholder="https://tu-proyecto-default-rtdb.firebaseio.com" onblur="app.guardarDBUrl(this.value)">
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button class="btn btn-primary btn-sm" onclick="app.conectarFirebase()"><i class="fas fa-plug"></i> Conectar</button>
+      <button class="btn btn-secondary btn-sm" onclick="app.usarLocal()"><i class="fas fa-hdd"></i> Solo local</button>
+    </div>
+  </div>
+
+  <!-- Info -->
+  <div class="info-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div style="font-weight:700;font-size:15px;"><i class="fas fa-id-card" style="color:#0d9488;margin-right:8px;"></i>Información General</div>
+      <div class="sync-badge" id="sync-status"><i class="fas fa-circle"></i> <span>Local</span></div>
+    </div>
+    <div class="info-row"><div class="info-icon"><i class="fas fa-user"></i></div><div><div class="info-label">Nombre</div><div class="info-value">Juan Manuel Correa</div></div></div>
+    <div class="info-row"><div class="info-icon"><i class="fas fa-briefcase"></i></div><div><div class="info-label">Cargo</div><div class="info-value">Soporte Técnico / Biomédico</div></div></div>
+    <div class="info-row"><div class="info-icon"><i class="fas fa-building"></i></div><div><div class="info-label">Empresa</div><div class="info-value">IPS Interconsultas</div></div></div>
+    <div class="info-row"><div class="info-icon"><i class="fas fa-calendar"></i></div><div><div class="info-label">Fecha</div><div class="info-value" id="fecha-val" style="color:#0d9488;cursor:pointer;" onclick="app.editFecha()"><i class="far fa-edit" style="font-size:11px;margin-right:4px;"></i><span id="fecha-text">Establecer fecha</span></div></div></div>
+  </div>
+
+  <!-- Categorías -->
+  <div id="cats"></div>
+
+  <!-- Observaciones -->
+  <div class="obs-card">
+    <div style="font-weight:700;margin-bottom:12px;"><i class="fas fa-exclamation-triangle" style="color:#f59e0b;margin-right:8px;"></i>Observaciones</div>
+    <div class="obs-item"><i class="fas fa-check-circle"></i><span>Inventario actualizado a la fecha</span></div>
+    <div class="obs-item"><i class="fas fa-check-circle"></i><span>Trazabilidad de equipos y activos garantizada</span></div>
+    <div class="obs-item"><i class="fas fa-check-circle"></i><span>Documentación organizada física y digitalmente</span></div>
+    <div class="obs-item"><i class="fas fa-lightbulb"></i><span>Continuar con cronogramas de mantenimiento</span></div>
+    <div class="obs-item"><i class="fas fa-clipboard-list"></i><span><b>Equipos pendientes:</b> <span contenteditable="true" style="border-bottom:1px dashed #f59e0b;outline:none;" onblur="app.saveObs(this)">Haz clic para agregar...</span></span></div>
+  </div>
+
+  <!-- Indicadores -->
+  <div class="info-card">
+    <div style="font-weight:700;margin-bottom:12px;font-size:15px;"><i class="fas fa-chart-line" style="color:#6366f1;margin-right:8px;"></i>Indicadores</div>
+    <div class="info-row"><div class="info-icon" style="background:#eef2ff;color:#6366f1;"><i class="fas fa-desktop"></i></div><div><div class="info-label">Equipos gestionados</div><div class="info-value" contenteditable="true" style="border-bottom:1px dashed #cbd5e1;outline:none;min-width:60px;display:inline-block;" onblur="app.saveInd('equipos',this)">___</div></div></div>
+    <div class="info-row"><div class="info-icon" style="background:#ecfdf5;color:#059669;"><i class="fas fa-percentage"></i></div><div><div class="info-label">% Cumplimiento mantenimientos</div><div class="info-value" contenteditable="true" style="border-bottom:1px dashed #cbd5e1;outline:none;min-width:60px;display:inline-block;" onblur="app.saveInd('cumplimiento',this)">___</div></div></div>
+    <div class="info-row"><div class="info-icon" style="background:#fef2f2;color:#dc2626;"><i class="fas fa-clock"></i></div><div><div class="info-label">Tiempo respuesta promedio</div><div class="info-value" contenteditable="true" style="border-bottom:1px dashed #cbd5e1;outline:none;min-width:60px;display:inline-block;" onblur="app.saveInd('tiempo',this)">___</div></div></div>
+  </div>
+
+  <!-- Firmas -->
+  <div class="sig-card">
+    <div style="font-weight:700;margin-bottom:16px;"><i class="fas fa-file-signature" style="margin-right:8px;"></i>Entrega Formal</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div><div style="font-size:11px;opacity:0.6;margin-bottom:4px;">ENTREGA</div><div class="sig-field" contenteditable="true" onblur="app.saveFirma('entrega',this)">Nombre quien entrega</div></div>
+      <div><div style="font-size:11px;opacity:0.6;margin-bottom:4px;">RECIBE</div><div class="sig-field" contenteditable="true" onblur="app.saveFirma('recibe',this)">Nombre quien recibe</div></div>
+    </div>
+    <div style="margin-top:16px;text-align:center;"><div style="font-size:11px;opacity:0.6;margin-bottom:4px;">FECHA FIRMA</div><div class="sig-field" style="max-width:200px;margin:0 auto;" contenteditable="true" onblur="app.saveFirma('fecha',this)">DD / MM / AAAA</div></div>
+  </div>
+
+  <div style="text-align:center;margin-top:32px;color:#94a3b8;font-size:12px;">
+    <p>Acta de Entrega — IPS Interconsultas</p>
+    <div style="display:inline-flex;align-items:center;gap:6px;background:#f1f5f9;padding:6px 14px;border-radius:20px;margin-top:8px;">
+      <div style="width:6px;height:6px;background:#10b981;border-radius:50%;"></div><span style="font-weight:600;">Auto-guardado</span>
+    </div>
+  </div>
 </div>
 
-<button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i></button>
+<div class="toast-container" id="toasts"></div>
+<button class="fab" onclick="window.print()" title="Imprimir"><i class="fas fa-print"></i></button>
 
 <script>
-const DB_URL = "https://acta-ips-interconsultas-default-rtdb.firebaseio.com/acta.json";
+const app = {
+  data: { cats: [], fecha: null, obs: {}, ind: {}, firmas: {}, dbUrl: '', modo: 'local' },
+  dbUrl: '',
+  deviceId: 'device_' + Math.random().toString(36).substr(2, 9),
 
-const CONFIG = {
-    categorias: [
-        { id: 'biom', title: 'Gestión Biomédica', icon: 'fa-heartbeat', tasks: ['Cronograma de mantenimientos 2026', 'Hojas de vida actualizadas', 'Inventario de repuestos', 'Certificados de calibración'] },
-        { id: 'sop', title: 'Soporte Técnico IT', icon: 'fa-laptop-medical', tasks: ['Revisión de redes y racks', 'Inventario de equipos de cómputo', 'Accesos a servidores', 'Cuentas de correo corporativo'] },
-        { id: 'inf', title: 'Infraestructura y Apoyo', icon: 'fa-tools', tasks: ['Planta eléctrica y UPS', 'Sistemas de vacío y aire', 'Ascensores y plataformas', 'Tanques de agua'] }
-    ]
+  baseCats() { return [
+    {id:'eq_tec',tit:'Equipos Tecnológicos',sub:'Computo, hardware, software, impresoras',icon:'fa-laptop',color:'#3b82f6',bg:'#eff6ff',
+      tasks:['Revisión y estado de equipos de cómputo','Mantenimiento básico de hardware y software','Gestión de impresoras','Soporte a usuarios']},
+    {id:'eq_elec',tit:'Equipos Eléctricos y Electrónicos',sub:'Diagnóstico y seguimiento de fallas',icon:'fa-bolt',color:'#f59e0b',bg:'#fffbeb',
+      tasks:['Revisión de equipos eléctricos y electrónicos','Diagnóstico básico de fallas','Seguimiento a mantenimientos']},
+    {id:'gest_info',tit:'Gestión de Información y Plataformas',sub:'Drive, links y plataformas',icon:'fa-cloud',color:'#8b5cf6',bg:'#f5f3ff',
+      tasks:['Manejo de links de salud oral','Administración de Google Drive','Control de archivos en uso','Documentación de procesos','Manejo de links institucionales','Garantía de acceso a plataformas']},
+    {id:'eq_apoyo',tit:'Equipos de Apoyo e Infraestructura',sub:'Camilleras, ascensores, planta eléctrica',icon:'fa-hospital',color:'#10b981',bg:'#ecfdf5',
+      tasks:['Plataforma camillera','Salva escaleras','Ascensor','Tanques de reserva','Planta eléctrica','Compresores','UPS','Rack de comunicaciones']},
+    {id:'admin_op',tit:'Administración Operativa',sub:'Llaves y control de accesos',icon:'fa-key',color:'#ef4444',bg:'#fef2f2',
+      tasks:['Manejo y control de llaves de sedes','Control de accesos físicos']},
+    {id:'sis_elec',tit:'Sistemas Eléctricos y Seguridad',sub:'Tableros, alarmas, emergencia',icon:'fa-shield-alt',color:'#dc2626',bg:'#fef2f2',
+      tasks:['Manejo de tableros eléctricos','Verificación de funcionamiento','Manejo de alarmas de evacuación','Validación de sistemas de emergencia']},
+    {id:'invent',tit:'Inventarios y Mantenimiento',sub:'Inventarios, calibraciones, hojas de vida',icon:'fa-clipboard-list',color:'#0d9488',bg:'#f0fdfa',
+      tasks:['Inventario institucional actualizado','Inventario equipos biomédicos y tecnológicos','Programación mantenimiento preventivo','Control de calibraciones','Hojas de vida de equipos']},
+    {id:'prov',tit:'Proveedores',sub:'Gestión, correo y celular corporativo',icon:'fa-handshake',color:'#6366f1',bg:'#eef2ff',
+      tasks:['Gestión de proveedores','Manejo de correo corporativo','Manejo de celular corporativo','Coordinación servicios externos']},
+    {id:'gest_doc',tit:'Gestión Documental',sub:'Formatos, guías y documentación técnica',icon:'fa-folder-open',color:'#d97706',bg:'#fffbeb',
+      tasks:['Organización de formatos institucionales','Guías rápidas de equipos','Documentación técnica']},
+    {id:'org_fis',tit:'Organización Física',sub:'Carpetas físicas y clasificación',icon:'fa-archive',color:'#78716c',bg:'#fafaf9',
+      tasks:['Organización de carpetas físicas','Clasificación documental por áreas','Depuración de archivos obsoletos']},
+    {id:'depur',tit:'Depuración de Equipos',sub:'Equipos dados de baja y disposición',icon:'fa-trash-alt',color:'#991b1b',bg:'#fef2f2',
+      tasks:['Identificación equipos dados de baja','Clasificación funcionales / no funcionales','Registro para disposición final','Actualización de inventarios']},
+    {id:'valid',tit:'Validación Equipos de Medición',sub:'Termómetros, termohigrómetros, calibraciones',icon:'fa-thermometer-half',color:'#c2410c',bg:'#fff7ed',
+      tasks:['Validación de termómetros','Validación de termohigrómetros','Verificación rangos de operación','Registro de resultados','Seguimiento a calibraciones']},
+    {id:'activos',tit:'Gestión de Activos',sub:'Altas, bajas y trazabilidad',icon:'fa-exchange-alt',color:'#4338ca',bg:'#eef2ff',
+      tasks:['Manejo de activos dados de baja','Movimiento de activos entre sedes','Registro de nuevos equipos','Asignación de responsables','Control de trazabilidad']},
+    {id:'fichas',tit:'Fichas Técnicas y Documentación',sub:'Fichas biomédicas e historial',icon:'fa-file-medical-alt',color:'#059669',bg:'#ecfdf5',
+      tasks:['Creación fichas técnicas equipos biomédicos','Elaboración hojas de vida','Registro marca, modelo, serie','Registro ubicación, estado, fecha ingreso','Control de historial técnico']},
+    {id:'vacun',tit:'Aplicativos Vacunación',sub:'Aplicativos, usuarios y soporte',icon:'fa-syringe',color:'#db2777',bg:'#fdf2f8',
+      tasks:['Manejo de aplicativos institucionales','Gestión de usuarios y accesos','Soporte al personal','Verificación de funcionamiento']},
+    {id:'seg_info',tit:'Seguridad de la Información',sub:'Credenciales, accesos y políticas',icon:'fa-lock',color:'#1e293b',bg:'#f8fafc',
+      tasks:['Manejo de usuarios y credenciales','Control de accesos','Cumplimiento políticas de seguridad','Entrega segura información confidencial']},
+    {id:'sedes',tit:'Reconocimiento de Sedes',sub:'Recorrido, bodegas, puntos críticos',icon:'fa-map-marked-alt',color:'#0891b2',bg:'#ecfeff',
+      tasks:['Recorrido por sedes institucionales','Identificación de bodegas','Ubicación recámaras de desagüe','Identificación puntos críticos','Evaluación infraestructura']},
+    {id:'plan',tit:'Planeación',sub:'Cronogramas y control de pendientes',icon:'fa-calendar-check',color:'#7c3aed',bg:'#f5f3ff',
+      tasks:['Cronogramas de mantenimiento','Seguimiento de actividades','Control de pendientes']}
+  ];},
+
+  init() {
+    this.load();
+    // Check if we have a saved DB URL
+    const savedUrl = localStorage.getItem('acta_db_url');
+    if (savedUrl) {
+      this.dbUrl = savedUrl;
+      document.getElementById('db-url').value = savedUrl;
+      this.data.modo = 'firebase';
+      this.updateSyncStatus('firebase');
+      this.cargarDeFirebase();
+    } else {
+      this.render();
+      this.updateStats();
+    }
+    setInterval(()=>this.autoSync(),15000); // Sync every 15 seconds
+  },
+
+  load() {
+    const s = localStorage.getItem('acta_ips');
+    const base = this.baseCats();
+    if(s) {
+      const p = JSON.parse(s);
+      this.data.cats = base.map(c=>{ const g=p.cats?.find(x=>x.id===c.id); return {...c, done:g?.done||[], open:g?.open||false, tasks:g?.tasks||c.tasks}; });
+      this.data.fecha = p.fecha||null; this.data.obs = p.obs||{}; this.data.ind = p.ind||{}; this.data.firmas = p.firmas||{};
+    } else {
+      this.data.cats = base.map(c=>({...c,done:[],open:false}));
+    }
+  },
+
+  save() {
+    localStorage.setItem('acta_ips',JSON.stringify(this.data));
+    if (this.data.modo === 'firebase' && this.dbUrl) {
+      this.guardarEnFirebase();
+    }
+  },
+
+  // Firebase REST API functions
+  async guardarEnFirebase() {
+    if (!this.dbUrl) return;
+    try {
+      await fetch(`${this.dbUrl}/acta.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cats: this.data.cats.map(c => ({id: c.id, done: c.done, tasks: c.tasks})),
+          fecha: this.data.fecha,
+          obs: this.data.obs,
+          ind: this.data.ind,
+          firmas: this.data.firmas,
+          lastUpdate: Date.now(),
+          deviceId: this.deviceId
+        })
+      });
+      this.updateSyncStatus('synced');
+    } catch(e) {
+      this.updateSyncStatus('error');
+    }
+  },
+
+  async cargarDeFirebase() {
+    if (!this.dbUrl) return;
+    try {
+      const res = await fetch(`${this.dbUrl}/acta.json`);
+      const data = await res.json();
+      if (data && data.lastUpdate) {
+        // Merge: prefer server data but keep local if newer
+        const base = this.baseCats();
+        this.data.cats = base.map(c => {
+          const serverCat = data.cats?.find(sc => sc.id === c.id);
+          if (serverCat) {
+            return {...c, done: serverCat.done || [], tasks: serverCat.tasks || c.tasks, open: false};
+          }
+          return {...c, done: [], open: false};
+        });
+        this.data.fecha = data.fecha || null;
+        this.data.obs = data.obs || {};
+        this.data.ind = data.ind || {};
+        this.data.firmas = data.firmas || {};
+        this.saveLocalOnly();
+        this.render();
+        this.updateStats();
+        this.updateSyncStatus('synced');
+        this.toast('Datos sincronizados desde la nube', 'success');
+      } else {
+        // No data on server, save local
+        this.guardarEnFirebase();
+        this.render();
+        this.updateStats();
+      }
+    } catch(e) {
+      this.updateSyncStatus('error');
+      this.render();
+      this.updateStats();
+      this.toast('Error al conectar. Usando modo local.', 'error');
+    }
+  },
+
+  async autoSync() {
+    if (this.data.modo === 'firebase' && this.dbUrl) {
+      await this.guardarEnFirebase();
+    }
+  },
+
+  saveLocalOnly() {
+    localStorage.setItem('acta_ips',JSON.stringify(this.data));
+  },
+
+  guardarDBUrl(url) {
+    if (url && url.includes('firebaseio.com')) {
+      this.dbUrl = url.replace(/\/$/, ''); // Remove trailing slash
+      localStorage.setItem('acta_db_url', this.dbUrl);
+    }
+  },
+
+  async conectarFirebase() {
+    const url = document.getElementById('db-url').value.trim();
+    if (!url || !url.includes('firebaseio.com')) {
+      this.toast('URL inválida. Debe terminar en firebaseio.com', 'error');
+      return;
+    }
+    this.dbUrl = url.replace(/\/$/, '');
+    localStorage.setItem('acta_db_url', this.dbUrl);
+    this.data.modo = 'firebase';
+    this.updateSyncStatus('firebase');
+    await this.cargarDeFirebase();
+    document.getElementById('config-box').style.display = 'none';
+    this.toast('Conectado a Firebase', 'success');
+  },
+
+  usarLocal() {
+    this.data.modo = 'local';
+    this.updateSyncStatus('local');
+    document.getElementById('config-box').style.display = 'none';
+    this.render();
+    this.updateStats();
+    this.toast('Modo local activado', 'info');
+  },
+
+  updateSyncStatus(status) {
+    const el = document.getElementById('sync-status');
+    const texts = {
+      local: ['fa-circle', 'Local'],
+      firebase: ['fa-spinner fa-spin', 'Conectando...'],
+      synced: ['fa-check-circle', 'Sincronizado'],
+      error: ['fa-exclamation-circle', 'Error de sync']
+    };
+    const [icon, text] = texts[status] || texts.local;
+    el.innerHTML = `<i class="fas ${icon}"></i> <span>${text}</span>`;
+    el.className = 'sync-badge ' + (status === 'error' ? 'offline' : '');
+  },
+
+  mostrarAyuda() {
+    alert(`Para obtener tu URL de Firebase:
+
+1. Ve a console.firebase.google.com
+2. Crea un proyecto (o usa uno existente)
+3. Ve a "Build" → "Realtime Database"
+4. Click "Crear base de datos"
+5. Selecciona "Modo de prueba"
+6. Copia la URL que aparece (termina en firebaseio.com)
+7. Pégala arriba y click "Conectar"
+
+¡Listo! Todos los dispositivos con esa misma URL verán los mismos datos.`);
+  },
+
+  render() {
+    document.getElementById('cats').innerHTML = this.data.cats.map((c,i)=>{
+      const done=c.done.length, total=c.tasks.length, pct=Math.round(done/total*100);
+      return `<div class="cat-card">
+        <div class="cat-header" onclick="app.toggleCat('${c.id}')">
+          <div class="cat-icon" style="background:${c.bg};color:${c.color}"><i class="fas ${c.icon}"></i></div>
+          <div class="cat-info"><div class="cat-title">${c.tit}</div><div class="cat-sub">${c.sub}</div></div>
+          <div class="cat-count" style="${done===total?'color:#10b981':''}">${done}/${total}</div>
+          <div class="cat-arrow ${c.open?'open':''}" id="arr-${c.id}"><i class="fas fa-chevron-down"></i></div>
+        </div>
+        <div class="tasks ${c.open?'open':''}" id="tsk-${c.id}">
+          ${c.tasks.map((t,j)=>`<div class="task">
+            <div class="task-check ${c.done.includes(j)?'done':''}" onclick="event.stopPropagation();app.toggleTask('${c.id}',${j})">${c.done.includes(j)?'<i class="fas fa-check" style="font-size:10px;"></i>':''}</div>
+            <div class="task-text ${c.done.includes(j)?'done':''}" contenteditable="true" onblur="app.editTask('${c.id}',${j},this)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">${t}</div>
+            <div class="task-del" onclick="event.stopPropagation();app.delTask('${c.id}',${j})"><i class="fas fa-times"></i></div>
+          </div>`).join('')}
+          <div class="add-task" onclick="app.showAdd('${c.id}')"><i class="fas fa-plus"></i> Agregar tarea</div>
+          <div class="add-input" id="add-${c.id}"><input type="text" placeholder="Escribe la nueva tarea..." onkeydown="if(event.key==='Enter')app.addTask('${c.id}',this)" onblur="if(!this.value)app.hideAdd('${c.id}')"></div>
+        </div>
+      </div>`;
+    }).join('');
+  },
+
+  toggleCat(id) {
+    const c=this.data.cats.find(x=>x.id===id); c.open=!c.open; this.saveLocalOnly();
+    document.getElementById(`tsk-${id}`).classList.toggle('open');
+    document.getElementById(`arr-${id}`).classList.toggle('open');
+  },
+
+  toggleTask(cid,idx) {
+    const c=this.data.cats.find(x=>x.id===cid);
+    const i=c.done.indexOf(idx);
+    if(i>-1) c.done.splice(i,1); else c.done.push(idx);
+    this.save(); this.render(); this.updateStats();
+    this.toast(i>-1?'Tarea pendiente':'✓ Tarea completada', i>-1?'info':'success');
+  },
+
+  editTask(cid,idx,el) {
+    const c=this.data.cats.find(x=>x.id===cid);
+    c.tasks[idx]=el.textContent.trim()||c.tasks[idx];
+    this.save();
+  },
+
+  delTask(cid,idx) {
+    if(!confirm('¿Eliminar esta tarea?')) return;
+    const c=this.data.cats.find(x=>x.id===cid);
+    c.tasks.splice(idx,1);
+    c.done=c.done.filter(d=>d!==idx).map(d=>d>idx?d-1:d);
+    this.save(); this.render(); this.updateStats();
+    this.toast('Tarea eliminada','info');
+  },
+
+  showAdd(id) { document.getElementById(`add-${id}`).style.display='block'; document.querySelector(`#add-${id} input`).focus(); },
+  hideAdd(id) { document.getElementById(`add-${id}`).style.display='none'; },
+
+  addTask(cid,el) {
+    const t=el.value.trim(); if(!t) return;
+    const c=this.data.cats.find(x=>x.id===cid);
+    c.tasks.push(t); this.save(); this.render(); this.updateStats();
+    this.toast('Tarea agregada','success');
+  },
+
+  updateStats() {
+    let t=0,d=0;
+    this.data.cats.forEach(c=>{t+=c.tasks.length;d+=c.done.length;});
+    document.getElementById('s-total').textContent=t;
+    document.getElementById('s-done').textContent=d;
+    document.getElementById('s-pend').textContent=t-d;
+  },
+
+  editFecha() {
+    const f=prompt('Fecha de entrega (DD/MM/AAAA):');
+    if(f&&f.match(/^\d{2}\/\d{2}\/\d{4}$/)){
+      const p=f.split('/'); this.data.fecha=new Date(p[2],p[1]-1,p[0]).toISOString();
+      this.save(); this.showFecha(); this.toast('Fecha guardada','success');
+    }
+  },
+
+  showFecha() {
+    document.getElementById('fecha-text').textContent=new Date(this.data.fecha).toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  },
+
+  saveObs(el){this.data.obs.pendientes=el.textContent;this.save();},
+  saveInd(k,el){this.data.ind[k]=el.textContent;this.save();},
+  saveFirma(k,el){this.data.firmas[k]=el.textContent;this.save();},
+
+  toast(msg,type='info'){
+    const d=document.createElement('div');
+    d.className='toast';
+    const colors={success:'#059669',error:'#dc2626',info:'#0d9488',warning:'#d97706'};
+    d.style.background=colors[type];
+    d.innerHTML=`<i class="fas fa-${type==='success'?'check-circle':type==='error'?'exclamation-circle':'info-circle'}"></i> ${msg}`;
+    document.getElementById('toasts').appendChild(d);
+    setTimeout(()=>{d.style.opacity='0';d.style.transform='translateX(120%)';setTimeout(()=>d.remove(),300);},2500);
+  }
 };
 
-let appData = { doneTasks: [] };
-
-async function loadData() {
-    try {
-        const response = await fetch(DB_URL);
-        const data = await response.json();
-        if (data && data.doneTasks) {
-            appData.doneTasks = data.doneTasks;
-        }
-        render();
-        updateSyncStatus('CONECTADO');
-    } catch (error) {
-        console.error("Error cargando datos:", error);
-        updateSyncStatus('MODO LOCAL', true);
-    }
-}
-
-async function saveData() {
-    updateSyncStatus('GUARDANDO...');
-    try {
-        await fetch(DB_URL, {
-            method: 'PUT',
-            body: JSON.stringify(appData)
-        });
-        updateSyncStatus('SINCRONIZADO');
-    } catch (error) {
-        updateSyncStatus('ERROR AL GUARDAR', true);
-    }
-}
-
-function toggleTask(taskId) {
-    const index = appData.doneTasks.indexOf(taskId);
-    if (index > -1) {
-        appData.doneTasks.splice(index, 1);
-    } else {
-        appData.doneTasks.push(taskId);
-    }
-    render();
-    saveData();
-}
-
-function updateSyncStatus(text, isError = false) {
-    const el = document.getElementById('sync-status');
-    el.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${text}`;
-    el.style.color = isError ? '#f87171' : '#34d399';
-}
-
-function render() {
-    const container = document.getElementById('categorias-cont');
-    container.innerHTML = '';
-    let totalTasks = 0;
-
-    CONFIG.categorias.forEach(cat => {
-        let catHtml = `
-            <div class="card">
-                <div class="cat-title"><i class="fas ${cat.icon} cat-icon"></i> ${cat.title}</div>
-                <div>
-        `;
-        
-        cat.tasks.forEach((task, idx) => {
-            const taskId = `${cat.id}-${idx}`;
-            const isDone = appData.doneTasks.includes(taskId);
-            totalTasks++;
-            
-            catHtml += `
-                <div class="task-row" onclick="toggleTask('${taskId}')">
-                    <div class="checkbox ${isDone ? 'checked' : ''}">
-                        ${isDone ? '<i class="fas fa-check" style="font-size:10px; color:white;"></i>' : ''}
-                    </div>
-                    <div style="font-size: 14px; ${isDone ? 'text-decoration: line-through; color: #64748b;' : 'color: #f1f5f9;'}">
-                        ${task}
-                    </div>
-                </div>
-            `;
-        });
-
-        catHtml += `</div></div>`;
-        container.innerHTML += catHtml;
-    });
-
-    // Actualizar contadores
-    const doneCount = appData.doneTasks.length;
-    document.getElementById('s-total').innerText = totalTasks;
-    document.getElementById('s-pend').innerText = totalTasks - doneCount;
-    document.getElementById('s-pct').innerText = Math.round((doneCount / totalTasks) * 100) + '%';
-}
-
-// Inicio
-loadData();
+document.addEventListener('DOMContentLoaded',()=>app.init());
 </script>
 </body>
 </html>
