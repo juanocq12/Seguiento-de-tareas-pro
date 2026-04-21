@@ -3,1373 +3,1394 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master OS Platinum v10.0 | Gestión Profesional</title>
+    <title>Acta de Entrega de Puesto - IPS Interconsultas</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+
         body { 
             font-family: 'Inter', sans-serif; 
-            background: #f1f5f9; 
+            background: #f8fafc; 
             color: #1e293b;
             overflow-x: hidden;
         }
-        
-        /* Sidebar */
-        .sidebar {
-            width: 260px;
-            background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%);
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            z-index: 100;
-            overflow-y: auto;
-            transition: transform 0.3s;
+
+        /* Header */
+        .header-banner {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f766e 100%);
+            padding: 40px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
         }
-        
-        .sidebar.closed { transform: translateX(-100%); }
-        
-        /* Cards */
-        .card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            padding: 20px;
-            transition: all 0.2s;
+
+        .header-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            opacity: 0.3;
         }
-        
-        .card:hover {
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
+
+        .header-content {
+            position: relative;
+            z-index: 1;
         }
-        
-        /* Botones */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: none;
+
+        /* Progress Ring */
+        .progress-ring-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+            flex-wrap: wrap;
         }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+
+        .progress-ring {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+
+        .progress-ring svg {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-bg {
+            fill: none;
+            stroke: rgba(255,255,255,0.15);
+            stroke-width: 8;
+        }
+
+        .progress-ring-fill {
+            fill: none;
+            stroke: #22d3ee;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.8s ease;
+        }
+
+        .progress-ring-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
             color: white;
         }
-        
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(99,102,241,0.4);
+
+        .progress-ring-value {
+            font-size: 28px;
+            font-weight: 800;
         }
-        
-        .btn-success { background: #10b981; color: white; }
-        .btn-danger { background: #ef4444; color: white; }
-        .btn-warning { background: #f59e0b; color: white; }
-        .btn-secondary { background: #e2e8f0; color: #475569; }
-        
-        .btn-sm { padding: 6px 12px; font-size: 12px; }
-        .btn-lg { padding: 14px 28px; font-size: 16px; }
-        
-        /* Estados */
-        .badge {
-            display: inline-flex;
+
+        .progress-ring-label {
+            font-size: 11px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Category Cards */
+        .category-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+
+        .category-card:hover {
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.12);
+            transform: translateY(-4px);
+            border-color: #cbd5e1;
+        }
+
+        .category-header {
+            padding: 20px 24px;
+            display: flex;
             align-items: center;
-            gap: 4px;
-            padding: 4px 12px;
+            gap: 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.2s;
+        }
+
+        .category-header:hover {
+            background: #f8fafc;
+        }
+
+        .category-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .category-info {
+            flex: 1;
+        }
+
+        .category-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .category-subtitle {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .category-progress {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .category-progress-bar {
+            width: 80px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .category-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0d9488, #14b8a6);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .category-progress-text {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0d9488;
+            min-width: 36px;
+        }
+
+        .category-toggle {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .category-toggle:hover {
+            background: #e2e8f0;
+            color: #0d9488;
+        }
+
+        .category-toggle.rotated {
+            transform: rotate(180deg);
+            background: #ccfbf1;
+            color: #0d9488;
+        }
+
+        /* Task Items */
+        .tasks-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.3s ease;
+        }
+
+        .tasks-container.open {
+            max-height: 2000px;
+            padding: 16px 24px 24px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .task-item:hover {
+            background: #f1f5f9;
+            border-color: #e2e8f0;
+        }
+
+        .task-item.completed {
+            background: #ecfdf5;
+            border-color: #a7f3d0;
+        }
+
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: #059669;
+        }
+
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            background: white;
+        }
+
+        .task-checkbox:hover {
+            border-color: #0d9488;
+        }
+
+        .task-checkbox.checked {
+            background: #0d9488;
+            border-color: #0d9488;
+            color: white;
+        }
+
+        .task-text {
+            flex: 1;
+            font-size: 14px;
+            color: #334155;
+            line-height: 1.5;
+        }
+
+        .task-badge {
+            padding: 4px 10px;
             border-radius: 20px;
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
+            flex-shrink: 0;
         }
-        
+
         .badge-pending { background: #fef3c7; color: #92400e; }
-        .badge-progress { background: #dbeafe; color: #1e40af; }
         .badge-done { background: #d1fae5; color: #065f46; }
-        .badge-delayed { background: #fee2e2; color: #991b1b; }
-        
-        .priority-high { border-left: 4px solid #ef4444; }
-        .priority-medium { border-left: 4px solid #f59e0b; }
-        .priority-low { border-left: 4px solid #10b981; }
-        
-        /* Progress */
-        .progress-bar {
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #6366f1, #8b5cf6);
-            border-radius: 4px;
-            transition: width 0.5s ease;
-        }
-        
-        /* Kanban */
-        .kanban-board {
-            display: flex;
-            gap: 20px;
-            overflow-x: auto;
-            padding-bottom: 20px;
-        }
-        
-        .kanban-column {
-            min-width: 300px;
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 16px;
-        }
-        
-        .kanban-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #e2e8f0;
-        }
-        
-        .kanban-card {
-            background: white;
-            padding: 16px;
-            border-radius: 10px;
-            margin-bottom: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            cursor: grab;
-            transition: all 0.2s;
-        }
-        
-        .kanban-card:hover {
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
-        }
-        
-        .kanban-card.dragging {
-            opacity: 0.5;
-            cursor: grabbing;
-        }
-        
-        /* Timeline */
-        .timeline {
-            position: relative;
-            padding-left: 30px;
-        }
-        
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 10px;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: #cbd5e1;
-        }
-        
-        .timeline-item {
-            position: relative;
-            margin-bottom: 24px;
-            padding-left: 20px;
-        }
-        
-        .timeline-dot {
-            position: absolute;
-            left: -25px;
-            top: 4px;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #6366f1;
-            border: 2px solid white;
-            box-shadow: 0 0 0 2px #6366f1;
-        }
-        
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-            z-index: 200;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        .modal-overlay.active { display: flex; }
-        
-        .modal {
+
+        /* Info Card */
+        .info-card {
             background: white;
             border-radius: 20px;
-            width: 100%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
         }
-        
-        .modal-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid #e2e8f0;
+
+        .info-row {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid #f1f5f9;
         }
-        
-        .modal-body {
-            padding: 24px;
-            overflow-y: auto;
-            max-height: 60vh;
+
+        .info-row:last-child {
+            border-bottom: none;
         }
-        
-        .modal-footer {
-            padding: 20px 24px;
-            border-top: 1px solid #e2e8f0;
+
+        .info-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: #f0fdfa;
             display: flex;
-            gap: 12px;
-            justify-content: flex-end;
+            align-items: center;
+            justify-content: center;
+            color: #0d9488;
+            font-size: 18px;
+            flex-shrink: 0;
         }
-        
-        /* Formularios */
-        .form-group {
-            margin-bottom: 20px;
+
+        .info-content {
+            flex: 1;
         }
-        
-        .form-label {
-            display: block;
+
+        .info-label {
             font-size: 12px;
-            font-weight: 700;
+            color: #94a3b8;
             text-transform: uppercase;
-            color: #64748b;
-            margin-bottom: 6px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
         }
-        
-        .form-input, .form-select, .form-textarea {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
+
+        .info-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        /* Signature Section */
+        .signature-card {
+            background: linear-gradient(135deg, #0f172a, #1e3a5f);
+            border-radius: 20px;
+            padding: 32px;
+            color: white;
+        }
+
+        .signature-field {
+            background: rgba(255,255,255,0.1);
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 8px;
+            color: rgba(255,255,255,0.6);
             font-size: 14px;
             transition: all 0.2s;
         }
-        
-        .form-input:focus, .form-select:focus, .form-textarea:focus {
-            outline: none;
-            border-color: #6366f1;
-            box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+
+        .signature-field:hover {
+            border-color: rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.15);
         }
-        
+
         /* Toast */
         .toast-container {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 24px;
+            right: 24px;
             z-index: 300;
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
-        
+
         .toast {
-            padding: 16px 20px;
-            border-radius: 12px;
+            padding: 16px 24px;
+            border-radius: 14px;
             color: white;
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 10px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            animation: slideIn 0.3s ease;
-            max-width: 400px;
+            gap: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15);
+            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 380px;
+            backdrop-filter: blur(10px);
         }
-        
+
         @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
+            from { transform: translateX(120%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
-        
-        /* Responsive */
-        .main-content {
-            margin-left: 260px;
-            min-height: 100vh;
-            transition: margin-left 0.3s;
-        }
-        
-        @media (max-width: 1024px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
-            .main-content { margin-left: 0; }
-        }
-        
-        /* Utilidades */
-        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-        
-        @media (max-width: 768px) {
-            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-        }
-        
-        .hidden { display: none !important; }
-        .flex { display: flex; }
-        .items-center { align-items: center; }
-        .justify-between { justify-content: space-between; }
-        .gap-2 { gap: 8px; }
-        .gap-3 { gap: 12px; }
-        .gap-4 { gap: 16px; }
-        .mb-2 { margin-bottom: 8px; }
-        .mb-4 { margin-bottom: 16px; }
-        .mt-2 { margin-top: 8px; }
-        .mt-4 { margin-top: 16px; }
-        .p-4 { padding: 16px; }
-        .text-sm { font-size: 14px; }
-        .text-xs { font-size: 12px; }
-        .font-bold { font-weight: 700; }
-        .text-center { text-align: center; }
-        .text-slate-500 { color: #64748b; }
-        .text-slate-600 { color: #475569; }
-        .text-slate-800 { color: #1e293b; }
-        
-        /* Header */
-        .top-header {
-            background: white;
-            padding: 16px 24px;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
             align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-        
-        /* Nav item */
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            margin: 4px 12px;
-            border-radius: 10px;
-            color: #cbd5e1;
+            gap: 10px;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.2s;
-            text-decoration: none;
+            border: none;
+            outline: none;
         }
-        
-        .nav-item:hover, .nav-item.active {
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0d9488, #14b8a6);
+            color: white;
+            box-shadow: 0 4px 14px rgba(13,148,136,0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(13,148,136,0.4);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        /* Observations */
+        .obs-card {
+            background: #fffbeb;
+            border: 1px solid #fef3c7;
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .obs-item {
+            display: flex;
+            align-items: start;
+            gap: 12px;
+            padding: 10px 0;
+            color: #78350f;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .obs-icon {
+            color: #f59e0b;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .progress-ring-container { gap: 20px; }
+            .progress-ring { width: 100px; height: 100px; }
+            .progress-ring-value { font-size: 24px; }
+            .category-header { padding: 16px; }
+            .category-icon { width: 44px; height: 44px; font-size: 18px; }
+            .info-card, .signature-card { padding: 20px; }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+
+        /* Search */
+        .search-box {
+            position: relative;
+            max-width: 400px;
+            margin: 0 auto 30px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 20px 14px 48px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 14px;
             background: rgba(255,255,255,0.1);
             color: white;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s;
         }
-        
-        .nav-item.active {
-            background: rgba(99,102,241,0.3);
-            border-left: 3px solid #6366f1;
+
+        .search-input::placeholder {
+            color: rgba(255,255,255,0.5);
         }
-        
-        /* Stats cards */
-        .stat-card {
-            background: white;
-            padding: 24px;
-            border-radius: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+
+        .search-input:focus {
+            border-color: rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.15);
         }
-        
-        .stat-value {
-            font-size: 32px;
-            font-weight: 800;
-            color: #1e293b;
-            margin: 8px 0;
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.5);
+            font-size: 18px;
         }
-        
-        .stat-label {
-            font-size: 12px;
-            color: #64748b;
-            text-transform: uppercase;
+
+        /* Floating action */
+        .fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0d9488, #14b8a6);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 8px 25px rgba(13,148,136,0.4);
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        /* Status bar */
+        .status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #ecfdf5;
+            border-radius: 30px;
+            font-size: 13px;
             font-weight: 600;
-            letter-spacing: 0.5px;
+            color: #059669;
+            margin: 20px auto;
+            width: fit-content;
         }
-        
-        /* Checklist */
-        .checklist-item {
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Section title */
+        .section-title {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 10px;
-            background: #f8fafc;
-            border-radius: 8px;
-            margin-bottom: 8px;
+            margin-bottom: 24px;
         }
-        
-        .checklist-item input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
+
+        .section-title h2 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #1e293b;
         }
-        
-        .checklist-item.completed span {
-            text-decoration: line-through;
-            color: #94a3b8;
+
+        .section-line {
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, #e2e8f0, transparent);
         }
     </style>
+<base target="_blank">
 </head>
 <body>
 
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <div style="padding: 24px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #6366f1, #ec4899); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">
-                    <i class="fas fa-layer-group"></i>
+    <!-- Header -->
+    <header class="header-banner">
+        <div class="header-content">
+            <div style="display: inline-flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.1); padding: 8px 20px; border-radius: 30px; margin-bottom: 20px; backdrop-filter: blur(10px);">
+                <i class="fas fa-hospital" style="color: #5eead4;"></i>
+                <span style="color: rgba(255,255,255,0.9); font-size: 13px; font-weight: 600;">IPS Interconsultas</span>
+            </div>
+
+            <h1 style="font-size: 36px; font-weight: 800; color: white; margin-bottom: 8px; letter-spacing: -0.5px;">
+                📋 Acta de Entrega de Puesto
+            </h1>
+            <p style="color: rgba(255,255,255,0.7); font-size: 16px; max-width: 500px; margin: 0 auto; line-height: 1.6;">
+                Área Biomédica y Soporte Técnico<br>
+                <span style="color: #5eead4; font-weight: 600;">Juan Manuel Correa</span> — Soporte Técnico / Biomédico
+            </p>
+
+            <!-- Search -->
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Buscar tarea o función..." onkeyup="app.buscar(this.value)">
+            </div>
+
+            <!-- Progress Rings -->
+            <div class="progress-ring-container">
+                <div class="progress-ring">
+                    <svg width="120" height="120">
+                        <circle class="progress-ring-bg" cx="60" cy="60" r="52"/>
+                        <circle class="progress-ring-fill" id="ring-total" cx="60" cy="60" r="52" 
+                            stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
+                    </svg>
+                    <div class="progress-ring-text">
+                        <div class="progress-ring-value" id="val-total">0</div>
+                        <div class="progress-ring-label">Tareas</div>
+                    </div>
                 </div>
-                <div>
-                    <div style="color: white; font-weight: 800; font-size: 18px;">Master OS</div>
-                    <div style="color: #818cf8; font-size: 11px; font-weight: 700;">PLATINUM v10.0</div>
+
+                <div class="progress-ring">
+                    <svg width="120" height="120">
+                        <circle class="progress-ring-bg" cx="60" cy="60" r="52"/>
+                        <circle class="progress-ring-fill" id="ring-done" cx="60" cy="60" r="52" 
+                            stroke-dasharray="326.73" stroke-dashoffset="326.73" style="stroke: #34d399;"/>
+                    </svg>
+                    <div class="progress-ring-text">
+                        <div class="progress-ring-value" id="val-done">0</div>
+                        <div class="progress-ring-label">Completadas</div>
+                    </div>
                 </div>
+
+                <div class="progress-ring">
+                    <svg width="120" height="120">
+                        <circle class="progress-ring-bg" cx="60" cy="60" r="52"/>
+                        <circle class="progress-ring-fill" id="ring-pending" cx="60" cy="60" r="52" 
+                            stroke-dasharray="326.73" stroke-dashoffset="326.73" style="stroke: #fbbf24;"/>
+                    </svg>
+                    <div class="progress-ring-text">
+                        <div class="progress-ring-value" id="val-pending">0</div>
+                        <div class="progress-ring-label">Pendientes</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-bar">
+                <div class="status-dot"></div>
+                <span>Progreso General: <span id="progress-general">0%</span></span>
             </div>
         </div>
-        
-        <nav style="padding: 16px 0;">
-            <div class="nav-item active" onclick="app.navegar('dashboard')" id="nav-dashboard">
-                <i class="fas fa-chart-pie" style="width: 20px;"></i>
-                <span>Dashboard</span>
-            </div>
-            <div class="nav-item" onclick="app.navegar('tareas')" id="nav-tareas">
-                <i class="fas fa-tasks" style="width: 20px;"></i>
-                <span>Todas las Tareas</span>
-            </div>
-            <div class="nav-item" onclick="app.navegar('kanban')" id="nav-kanban">
-                <i class="fas fa-columns" style="width: 20px;"></i>
-                <span>Vista Kanban</span>
-            </div>
-            <div class="nav-item" onclick="app.navegar('timeline')" id="nav-timeline">
-                <i class="fas fa-stream" style="width: 20px;"></i>
-                <span>Línea de Tiempo</span>
-            </div>
-            <div class="nav-item" onclick="app.navegar('equipo')" id="nav-equipo">
-                <i class="fas fa-users" style="width: 20px;"></i>
-                <span>Mi Equipo</span>
-            </div>
-        </nav>
-        
-        <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
-            <div style="display: flex; align-items: center; gap: 10px; color: #cbd5e1; font-size: 12px;">
-                <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></div>
-                <span>Sistema Online</span>
-            </div>
-            <div style="color: #64748b; font-size: 11px; margin-top: 8px;">
-                v10.0.2 • <span id="last-save">Guardado</span>
-            </div>
-        </div>
-    </aside>
+    </header>
 
     <!-- Main Content -->
-    <main class="main-content">
-        <!-- Header -->
-        <header class="top-header">
-            <div style="display: flex; align-items: center; gap: 16px;">
-                <button onclick="app.toggleSidebar()" style="background: none; border: none; font-size: 20px; color: #64748b; cursor: pointer; display: none;" id="menu-btn">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1 style="font-size: 24px; font-weight: 800; color: #1e293b;" id="page-title">Dashboard</h1>
-            </div>
-            
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="position: relative;">
-                    <input type="text" placeholder="Buscar tareas..." style="padding: 10px 16px 10px 40px; border: 2px solid #e2e8f0; border-radius: 10px; width: 280px; font-size: 14px;" onkeyup="app.buscar(this.value)">
-                    <i class="fas fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
-                </div>
-                
-                <button class="btn btn-primary" onclick="app.abrirModalTarea()">
-                    <i class="fas fa-plus"></i>
-                    Nueva Tarea
-                </button>
-            </div>
-        </header>
+    <main style="max-width: 900px; margin: 0 auto; padding: 40px 20px;">
 
-        <!-- Contenido dinámico -->
-        <div style="padding: 24px;" id="contenido">
-            <!-- Se renderiza dinámicamente -->
+        <!-- Información General -->
+        <div class="section-title animate-in">
+            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #0d9488, #14b8a6); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">
+                <i class="fas fa-id-card"></i>
+            </div>
+            <h2>Información General</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="info-card animate-in delay-1" style="margin-bottom: 40px;">
+            <div class="info-row">
+                <div class="info-icon"><i class="fas fa-user"></i></div>
+                <div class="info-content">
+                    <div class="info-label">Nombre Completo</div>
+                    <div class="info-value">Juan Manuel Correa</div>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-icon"><i class="fas fa-briefcase"></i></div>
+                <div class="info-content">
+                    <div class="info-label">Cargo</div>
+                    <div class="info-value">Soporte Técnico / Biomédico</div>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-icon"><i class="fas fa-building"></i></div>
+                <div class="info-content">
+                    <div class="info-label">Empresa</div>
+                    <div class="info-value">IPS Interconsultas</div>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-icon"><i class="fas fa-calendar-alt"></i></div>
+                <div class="info-content">
+                    <div class="info-label">Fecha de Entrega</div>
+                    <div class="info-value" id="fecha-entrega" style="color: #0d9488; cursor: pointer;" onclick="app.editarFecha()">
+                        <i class="far fa-edit" style="margin-right: 6px; font-size: 12px;"></i>
+                        <span id="fecha-texto">Haz clic para establecer fecha</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Funciones y Tareas -->
+        <div class="section-title animate-in delay-2">
+            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #0d9488, #14b8a6); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <h2>Funciones e Ítems Entregados</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <p style="color: #64748b; font-size: 14px; margin-bottom: 24px; line-height: 1.6;">
+            <i class="fas fa-info-circle" style="color: #0d9488; margin-right: 6px;"></i>
+            Haz clic en cada categoría para expandir y marcar las tareas completadas. El progreso se guarda automáticamente.
+        </p>
+
+        <div id="categorias-container">
+            <!-- Se genera dinámicamente -->
+        </div>
+
+        <!-- Observaciones -->
+        <div class="section-title animate-in" style="margin-top: 40px;">
+            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #f59e0b, #fbbf24); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h2>Observaciones Importantes</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="obs-card animate-in delay-1" style="margin-bottom: 40px;">
+            <div class="obs-item">
+                <i class="fas fa-check-circle obs-icon"></i>
+                <span>Se deja inventario actualizado a la fecha</span>
+            </div>
+            <div class="obs-item">
+                <i class="fas fa-check-circle obs-icon"></i>
+                <span>Se garantiza trazabilidad de equipos y activos</span>
+            </div>
+            <div class="obs-item">
+                <i class="fas fa-check-circle obs-icon"></i>
+                <span>Se entrega documentación organizada física y digitalmente</span>
+            </div>
+            <div class="obs-item">
+                <i class="fas fa-lightbulb obs-icon"></i>
+                <span>Se recomienda continuar con cronogramas de mantenimiento</span>
+            </div>
+            <div class="obs-item">
+                <i class="fas fa-shield-alt obs-icon"></i>
+                <span>Información sensible se entrega por canal seguro</span>
+            </div>
+            <div class="obs-item" style="border-top: 1px dashed #fde68a; margin-top: 8px; padding-top: 16px;">
+                <i class="fas fa-clipboard-list obs-icon"></i>
+                <span><strong>Equipos pendientes:</strong> <span style="border-bottom: 2px dashed #f59e0b; padding: 0 4px; cursor: text;" contenteditable="true" onblur="app.guardarObservacion(this)">Haz clic para agregar...</span></span>
+            </div>
+        </div>
+
+        <!-- Indicadores -->
+        <div class="section-title animate-in">
+            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <h2>Indicadores del Área</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="info-card animate-in delay-1" style="margin-bottom: 40px;">
+            <div class="info-row">
+                <div class="info-icon" style="background: #eef2ff; color: #6366f1;"><i class="fas fa-desktop"></i></div>
+                <div class="info-content">
+                    <div class="info-label">Número de equipos gestionados</div>
+                    <div class="info-value" style="border-bottom: 2px dashed #cbd5e1; display: inline-block; min-width: 80px; cursor: text;" contenteditable="true" onblur="app.guardarIndicador('equipos', this)">___</div>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-icon" style="background: #ecfdf5; color: #059669;"><i class="fas fa-percentage"></i></div>
+                <div class="info-content">
+                    <div class="info-label">% Cumplimiento mantenimientos</div>
+                    <div class="info-value" style="border-bottom: 2px dashed #cbd5e1; display: inline-block; min-width: 80px; cursor: text;" contenteditable="true" onblur="app.guardarIndicador('cumplimiento', this)">___</div>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-icon" style="background: #fef2f2; color: #dc2626;"><i class="fas fa-clock"></i></div>
+                <div class="info-content">
+                    <div class="info-label">Tiempo de respuesta promedio</div>
+                    <div class="info-value" style="border-bottom: 2px dashed #cbd5e1; display: inline-block; min-width: 80px; cursor: text;" contenteditable="true" onblur="app.guardarIndicador('tiempo', this)">___</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Entrega Formal -->
+        <div class="section-title animate-in">
+            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #0f172a, #1e3a5f); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">
+                <i class="fas fa-file-signature"></i>
+            </div>
+            <h2>Entrega Formal</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="signature-card animate-in delay-1">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px;">
+                <div>
+                    <label style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; margin-bottom: 6px; display: block;">Entrega</label>
+                    <div class="signature-field" contenteditable="true" onblur="app.guardarFirma('entrega', this)">Nombre de quien entrega</div>
+                    <div style="margin-top: 8px; font-size: 12px; opacity: 0.5;">Firma: ___________________</div>
+                </div>
+                <div>
+                    <label style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; margin-bottom: 6px; display: block;">Recibe</label>
+                    <div class="signature-field" contenteditable="true" onblur="app.guardarFirma('recibe', this)">Nombre de quien recibe</div>
+                    <div style="margin-top: 8px; font-size: 12px; opacity: 0.5;">Firma: ___________________</div>
+                </div>
+            </div>
+            <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
+                <div style="font-size: 12px; opacity: 0.5; margin-bottom: 8px;">Fecha de firma</div>
+                <div class="signature-field" style="max-width: 200px; margin: 0 auto;" contenteditable="true" onblur="app.guardarFirma('fecha', this)">DD / MM / AAAA</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; margin-top: 60px; padding: 24px; color: #94a3b8; font-size: 13px;">
+            <p>📋 Acta de Entrega de Puesto — IPS Interconsultas</p>
+            <p style="margin-top: 4px;">Área Biomédica y Soporte Técnico</p>
+            <div style="margin-top: 12px; display: inline-flex; align-items: center; gap: 8px; background: #f1f5f9; padding: 8px 16px; border-radius: 20px;">
+                <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></div>
+                <span style="font-size: 12px; font-weight: 600;">Guardado automáticamente</span>
+            </div>
         </div>
     </main>
-
-    <!-- Modal Nueva Tarea -->
-    <div class="modal-overlay" id="modal-tarea">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 style="font-size: 20px; font-weight: 700;">🚀 Nueva Tarea</h2>
-                <button onclick="app.cerrarModal('modal-tarea')" style="background: none; border: none; font-size: 20px; color: #94a3b8; cursor: pointer;">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Título de la tarea *</label>
-                    <input type="text" class="form-input" id="t-titulo" placeholder="Ej: Revisar informe mensual">
-                </div>
-                
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label class="form-label">Responsable *</label>
-                        <select class="form-select" id="t-responsable"></select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Prioridad</label>
-                        <select class="form-select" id="t-prioridad">
-                            <option value="low">🟢 Baja</option>
-                            <option value="medium" selected>🟡 Media</option>
-                            <option value="high">🔴 Alta</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Fecha límite *</label>
-                    <input type="datetime-local" class="form-input" id="t-fecha">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Descripción</label>
-                    <textarea class="form-textarea" id="t-descripcion" rows="3" placeholder="Detalles adicionales..."></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Etiquetas</label>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <label style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: #fef3c7; border-radius: 20px; cursor: pointer; font-size: 12px;">
-                            <input type="checkbox" value="urgente" class="tag-check"> Urgente
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: #e0e7ff; border-radius: 20px; cursor: pointer; font-size: 12px;">
-                            <input type="checkbox" value="revision" class="tag-check"> Revisión
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: #fee2e2; border-radius: 20px; cursor: pointer; font-size: 12px;">
-                            <input type="checkbox" value="bloqueado" class="tag-check"> Bloqueado
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Checklist / Subtareas</label>
-                    <div id="checklist-container"></div>
-                    <div style="display: flex; gap: 8px; margin-top: 8px;">
-                        <input type="text" class="form-input" id="nueva-subtarea" placeholder="Agregar paso..." style="flex: 1;" onkeypress="if(event.key==='Enter') app.agregarSubtarea()">
-                        <button class="btn btn-secondary" onclick="app.agregarSubtarea()">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="app.cerrarModal('modal-tarea')">Cancelar</button>
-                <button class="btn btn-primary" onclick="app.guardarTarea()">
-                    <i class="fas fa-save"></i>
-                    Guardar Tarea
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Ver/Editar Tarea -->
-    <div class="modal-overlay" id="modal-ver">
-        <div class="modal" style="max-width: 700px;">
-            <div class="modal-header">
-                <h2 style="font-size: 20px; font-weight: 700;">📋 Detalle de Tarea</h2>
-                <button onclick="app.cerrarModal('modal-ver')" style="background: none; border: none; font-size: 20px; color: #94a3b8; cursor: pointer;">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body" id="ver-contenido">
-                <!-- Se llena dinámicamente -->
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-danger" onclick="app.eliminarTareaActual()">
-                    <i class="fas fa-trash"></i>
-                    Eliminar
-                </button>
-                <button class="btn btn-secondary" onclick="app.cerrarModal('modal-ver')">Cerrar</button>
-                <button class="btn btn-primary" onclick="app.guardarEdicion()">
-                    <i class="fas fa-save"></i>
-                    Guardar Cambios
-                </button>
-            </div>
-        </div>
-    </div>
 
     <!-- Toast Container -->
     <div class="toast-container" id="toasts"></div>
 
+    <!-- Floating Action Button -->
+    <button class="fab" onclick="app.exportarPDF()" title="Exportar / Imprimir">
+        <i class="fas fa-print"></i>
+    </button>
+
     <script>
-        // ==========================================
-        // MASTER OS PLATINUM v10.0 - APP COMPLETA
-        // ==========================================
-        
-        const app = {
-            // Datos iniciales
-            data: {
-                tareas: [],
-                equipo: [
-                    { id: 1, nombre: "Carlos Ruiz", cargo: "Director", email: "carlos@empresa.com", color: "#6366f1" },
-                    { id: 2, nombre: "Ana López", cargo: "Gerente de Proyectos", email: "ana@empresa.com", color: "#ec4899" },
-                    { id: 3, nombre: "Luis Torres", cargo: "Desarrollador", email: "luis@empresa.com", color: "#10b981" },
-                    { id: 4, nombre: "María García", cargo: "Diseñadora", email: "maria@empresa.com", color: "#f59e0b" }
-                ],
-                vistaActual: 'dashboard',
-                tareaEditando: null,
-                subtareasTemp: []
-            },
-            
-            // Inicialización
-            init() {
-                this.cargarDatos();
-                if (this.data.tareas.length === 0) {
-                    this.crearDatosDemo();
+    // ==========================================
+    // ACTA DE ENTREGA INTERACTIVA - IPS INTERCONSULTAS
+    // ==========================================
+
+    const app = {
+        data: {
+            categorias: [],
+            fechaEntrega: null,
+            observaciones: {},
+            indicadores: {},
+            firmas: {}
+        },
+
+        init() {
+            this.cargarDatos();
+            this.renderCategorias();
+            this.actualizarProgreso();
+            this.iniciarAutoGuardado();
+
+            // Cargar fecha si existe
+            if (this.data.fechaEntrega) {
+                document.getElementById('fecha-texto').textContent = new Date(this.data.fechaEntrega).toLocaleDateString('es-ES', {
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                });
+            }
+        },
+
+        // Definición de todas las categorías y tareas del acta
+        definirCategorias() {
+            return [
+                {
+                    id: 'equipos_tec',
+                    titulo: 'Equipos Tecnológicos',
+                    subtitulo: 'Computo, hardware, software e impresoras',
+                    icono: 'fa-laptop',
+                    color: '#3b82f6',
+                    bgColor: '#eff6ff',
+                    tareas: [
+                        'Revisión y estado de equipos de cómputo',
+                        'Mantenimiento básico de hardware y software',
+                        'Gestión de impresoras',
+                        'Soporte a usuarios'
+                    ]
+                },
+                {
+                    id: 'equipos_elec',
+                    titulo: 'Equipos Eléctricos y Electrónicos',
+                    subtitulo: 'Diagnóstico y seguimiento de fallas',
+                    icono: 'fa-bolt',
+                    color: '#f59e0b',
+                    bgColor: '#fffbeb',
+                    tareas: [
+                        'Revisión de equipos eléctricos y electrónicos',
+                        'Diagnóstico básico de fallas',
+                        'Seguimiento a mantenimientos'
+                    ]
+                },
+                {
+                    id: 'gestion_info',
+                    titulo: 'Gestión de Información y Plataformas',
+                    subtitulo: 'Drive, links y plataformas institucionales',
+                    icono: 'fa-cloud',
+                    color: '#8b5cf6',
+                    bgColor: '#f5f3ff',
+                    tareas: [
+                        'Manejo de links de salud oral',
+                        'Administración de Google Drive (organización de carpetas)',
+                        'Control de archivos en uso',
+                        'Documentación de procesos',
+                        'Manejo de links institucionales de uso diario',
+                        'Garantía de acceso y funcionamiento de plataformas'
+                    ]
+                },
+                {
+                    id: 'equipos_apoyo',
+                    titulo: 'Equipos de Apoyo e Infraestructura',
+                    subtitulo: 'Camilleras, ascensores, planta eléctrica y más',
+                    icono: 'fa-hospital',
+                    color: '#10b981',
+                    bgColor: '#ecfdf5',
+                    tareas: [
+                        'Plataforma camillera',
+                        'Salva escaleras',
+                        'Ascensor',
+                        'Tanques de reserva',
+                        'Planta eléctrica',
+                        'Compresores',
+                        'UPS',
+                        'Rack de comunicaciones'
+                    ]
+                },
+                {
+                    id: 'admin_operativa',
+                    titulo: 'Administración Operativa',
+                    subtitulo: 'Llaves de sedes y control de accesos',
+                    icono: 'fa-key',
+                    color: '#ef4444',
+                    bgColor: '#fef2f2',
+                    tareas: [
+                        'Manejo y control de llaves de sedes',
+                        'Control de accesos físicos'
+                    ]
+                },
+                {
+                    id: 'sistemas_elec',
+                    titulo: 'Sistemas Eléctricos y Seguridad',
+                    subtitulo: 'Tableros, alarmas y sistemas de emergencia',
+                    icono: 'fa-shield-alt',
+                    color: '#dc2626',
+                    bgColor: '#fef2f2',
+                    tareas: [
+                        'Manejo de tableros eléctricos',
+                        'Verificación de funcionamiento',
+                        'Manejo de alarmas de evacuación',
+                        'Validación de sistemas de emergencia'
+                    ]
+                },
+                {
+                    id: 'inventarios',
+                    titulo: 'Inventarios y Mantenimiento',
+                    subtitulo: 'Inventarios, calibraciones y hojas de vida',
+                    icono: 'fa-clipboard-list',
+                    color: '#0d9488',
+                    bgColor: '#f0fdfa',
+                    tareas: [
+                        'Inventario institucional actualizado',
+                        'Inventario de equipos biomédicos y tecnológicos',
+                        'Programación de mantenimiento preventivo',
+                        'Control de calibraciones',
+                        'Hojas de vida de equipos'
+                    ]
+                },
+                {
+                    id: 'proveedores',
+                    titulo: 'Proveedores',
+                    subtitulo: 'Gestión de proveedores y correo corporativo',
+                    icono: 'fa-handshake',
+                    color: '#6366f1',
+                    bgColor: '#eef2ff',
+                    tareas: [
+                        'Gestión de proveedores',
+                        'Manejo de correo corporativo',
+                        'Manejo de celular corporativo',
+                        'Coordinación de servicios externos'
+                    ]
+                },
+                {
+                    id: 'gestion_doc',
+                    titulo: 'Gestión Documental',
+                    subtitulo: 'Formatos, guías y documentación técnica',
+                    icono: 'fa-folder-open',
+                    color: '#d97706',
+                    bgColor: '#fffbeb',
+                    tareas: [
+                        'Organización de formatos institucionales',
+                        'Guías rápidas de equipos',
+                        'Documentación técnica'
+                    ]
+                },
+                {
+                    id: 'org_fisica',
+                    titulo: 'Organización Física',
+                    subtitulo: 'Carpetas físicas y clasificación documental',
+                    icono: 'fa-archive',
+                    color: '#78716c',
+                    bgColor: '#fafaf9',
+                    tareas: [
+                        'Organización de carpetas físicas',
+                        'Clasificación documental por áreas',
+                        'Depuración de archivos obsoletos'
+                    ]
+                },
+                {
+                    id: 'depuracion',
+                    titulo: 'Depuración de Equipos',
+                    subtitulo: 'Equipos dados de baja y disposición final',
+                    icono: 'fa-trash-alt',
+                    color: '#991b1b',
+                    bgColor: '#fef2f2',
+                    tareas: [
+                        'Identificación de equipos dados de baja',
+                        'Clasificación de equipos funcionales y no funcionales',
+                        'Registro para disposición final',
+                        'Actualización de inventarios'
+                    ]
+                },
+                {
+                    id: 'validacion',
+                    titulo: 'Validación de Equipos de Medición',
+                    subtitulo: 'Termómetros, termohigrómetros y calibraciones',
+                    icono: 'fa-thermometer-half',
+                    color: '#c2410c',
+                    bgColor: '#fff7ed',
+                    tareas: [
+                        'Validación de termómetros',
+                        'Validación de termohigrómetros',
+                        'Verificación de rangos de operación',
+                        'Registro de resultados',
+                        'Seguimiento a calibraciones'
+                    ]
+                },
+                {
+                    id: 'activos',
+                    titulo: 'Gestión de Activos (Altas y Bajas)',
+                    subtitulo: 'Movimiento de activos y control de trazabilidad',
+                    icono: 'fa-exchange-alt',
+                    color: '#4338ca',
+                    bgColor: '#eef2ff',
+                    tareas: [
+                        'Manejo de activos dados de baja',
+                        'Movimiento de activos entre sedes',
+                        'Registro de nuevos equipos',
+                        'Asignación de responsables',
+                        'Control de trazabilidad'
+                    ]
+                },
+                {
+                    id: 'fichas',
+                    titulo: 'Fichas Técnicas y Documentación',
+                    subtitulo: 'Fichas biomédicas, hojas de vida e historial',
+                    icono: 'fa-file-medical-alt',
+                    color: '#059669',
+                    bgColor: '#ecfdf5',
+                    tareas: [
+                        'Creación de fichas técnicas de equipos biomédicos',
+                        'Elaboración de hojas de vida',
+                        'Registro de marca, modelo y serie',
+                        'Registro de ubicación, estado y fecha de ingreso',
+                        'Control de historial técnico'
+                    ]
+                },
+                {
+                    id: 'vacunacion',
+                    titulo: 'Aplicativos Área de Vacunación',
+                    subtitulo: 'Aplicativos institucionales y gestión de usuarios',
+                    icono: 'fa-syringe',
+                    color: '#db2777',
+                    bgColor: '#fdf2f8',
+                    tareas: [
+                        'Manejo de aplicativos institucionales',
+                        'Gestión de usuarios y accesos',
+                        'Soporte al personal',
+                        'Verificación de funcionamiento'
+                    ]
+                },
+                {
+                    id: 'seguridad',
+                    titulo: 'Seguridad de la Información',
+                    subtitulo: 'Credenciales, accesos y políticas de seguridad',
+                    icono: 'fa-lock',
+                    color: '#1e293b',
+                    bgColor: '#f8fafc',
+                    tareas: [
+                        'Manejo de usuarios y credenciales',
+                        'Control de accesos',
+                        'Cumplimiento de políticas de seguridad',
+                        'Entrega segura de información confidencial'
+                    ]
+                },
+                {
+                    id: 'sedes',
+                    titulo: 'Reconocimiento de Sedes',
+                    subtitulo: 'Recorrido, bodegas y puntos críticos',
+                    icono: 'fa-map-marked-alt',
+                    color: '#0891b2',
+                    bgColor: '#ecfeff',
+                    tareas: [
+                        'Recorrido por sedes institucionales',
+                        'Identificación de bodegas',
+                        'Ubicación de recámaras de desagüe',
+                        'Identificación de puntos críticos',
+                        'Evaluación básica de infraestructura'
+                    ]
+                },
+                {
+                    id: 'planeacion',
+                    titulo: 'Planeación',
+                    subtitulo: 'Cronogramas, seguimiento y control de pendientes',
+                    icono: 'fa-calendar-check',
+                    color: '#7c3aed',
+                    bgColor: '#f5f3ff',
+                    tareas: [
+                        'Cronogramas de mantenimiento',
+                        'Seguimiento de actividades',
+                        'Control de pendientes'
+                    ]
                 }
-                this.actualizarSelectResponsables();
-                this.navegar('dashboard');
-                this.iniciarAutoGuardado();
-                
-                // Responsive
-                if (window.innerWidth <= 1024) {
-                    document.getElementById('menu-btn').style.display = 'block';
-                }
-            },
-            
-            // Crear datos de ejemplo
-            crearDatosDemo() {
-                const ahora = new Date();
-                const tareasDemo = [
-                    {
-                        id: Date.now(),
-                        titulo: "Implementar nuevo módulo de facturación",
-                        responsable: 1,
-                        prioridad: "high",
-                        fecha: new Date(ahora.getTime() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-                        descripcion: "Desarrollar el módulo completo con integración API",
-                        tags: ["urgente"],
-                        subtareas: [
-                            { texto: "Análisis de requerimientos", completado: true },
-                            { texto: "Diseño de base de datos", completado: true },
-                            { texto: "Desarrollo backend", completado: false },
-                            { texto: "Pruebas de integración", completado: false }
-                        ],
-                        estado: "progress",
-                        creado: ahora.toISOString()
-                    },
-                    {
-                        id: Date.now() + 1,
-                        titulo: "Diseño de interfaz usuario",
-                        responsable: 4,
-                        prioridad: "medium",
-                        fecha: new Date(ahora.getTime() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-                        descripcion: "Crear mockups y prototipos interactivos",
-                        tags: ["revision"],
-                        subtareas: [
-                            { texto: "Research de usuarios", completado: true },
-                            { texto: "Wireframes", completado: false },
-                            { texto: "Prototipo Figma", completado: false }
-                        ],
-                        estado: "progress",
-                        creado: ahora.toISOString()
-                    },
-                    {
-                        id: Date.now() + 2,
-                        titulo: "Revisión de seguridad",
-                        responsable: 3,
-                        prioridad: "high",
-                        fecha: new Date(ahora.getTime() + 1 * 24 * 60 * 60 * 1000).toISOString(),
-                        descripcion: "Auditoría de vulnerabilidades",
-                        tags: ["urgente"],
-                        subtareas: [
-                            { texto: "Scan de vulnerabilidades", completado: false },
-                            { texto: "Reporte de hallazgos", completado: false }
-                        ],
-                        estado: "pending",
-                        creado: ahora.toISOString()
+            ];
+        },
+
+        cargarDatos() {
+            const guardado = localStorage.getItem('acta_entrega_ips');
+            const categoriasBase = this.definirCategorias();
+
+            if (guardado) {
+                const parsed = JSON.parse(guardado);
+                // Fusionar datos guardados con estructura base
+                this.data.categorias = categoriasBase.map(cat => {
+                    const guardada = parsed.categorias?.find(c => c.id === cat.id);
+                    if (guardada) {
+                        return {
+                            ...cat,
+                            tareasCompletadas: guardada.tareasCompletadas || [],
+                            abierta: guardada.abierta || false
+                        };
                     }
-                ];
-                
-                this.data.tareas = tareasDemo;
-                this.guardar();
-            },
-            
-            // Persistencia
-            guardar() {
-                localStorage.setItem('masteros_data', JSON.stringify({
-                    tareas: this.data.tareas,
-                    equipo: this.data.equipo
+                    return { ...cat, tareasCompletadas: [], abierta: false };
+                });
+                this.data.fechaEntrega = parsed.fechaEntrega || null;
+                this.data.observaciones = parsed.observaciones || {};
+                this.data.indicadores = parsed.indicadores || {};
+                this.data.firmas = parsed.firmas || {};
+            } else {
+                this.data.categorias = categoriasBase.map(cat => ({
+                    ...cat,
+                    tareasCompletadas: [],
+                    abierta: false
                 }));
-                document.getElementById('last-save').textContent = 'Guardado ' + new Date().toLocaleTimeString();
-            },
-            
-            cargarDatos() {
-                const guardado = localStorage.getItem('masteros_data');
-                if (guardado) {
-                    const parsed = JSON.parse(guardado);
-                    this.data.tareas = parsed.tareas || [];
-                    this.data.equipo = parsed.equipo || this.data.equipo;
-                }
-            },
-            
-            iniciarAutoGuardado() {
-                setInterval(() => this.guardar(), 30000); // Cada 30 segundos
-            },
-            
-            // Navegación
-            navegar(vista) {
-                this.data.vistaActual = vista;
-                
-                // Actualizar nav
-                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-                document.getElementById('nav-' + vista)?.classList.add('active');
-                
-                // Actualizar título
-                const titulos = {
-                    dashboard: 'Dashboard',
-                    tareas: 'Todas las Tareas',
-                    kanban: 'Vista Kanban',
-                    timeline: 'Línea de Tiempo',
-                    equipo: 'Mi Equipo'
-                };
-                document.getElementById('page-title').textContent = titulos[vista] || 'Master OS';
-                
-                // Renderizar contenido
-                const contenedor = document.getElementById('contenido');
-                
-                switch(vista) {
-                    case 'dashboard':
-                        this.renderDashboard(contenedor);
-                        break;
-                    case 'tareas':
-                        this.renderTareas(contenedor);
-                        break;
-                    case 'kanban':
-                        this.renderKanban(contenedor);
-                        break;
-                    case 'timeline':
-                        this.renderTimeline(contenedor);
-                        break;
-                    case 'equipo':
-                        this.renderEquipo(contenedor);
-                        break;
-                }
-                
-                // Cerrar sidebar en móvil
-                if (window.innerWidth <= 1024) {
-                    document.getElementById('sidebar').classList.remove('open');
-                }
-            },
-            
-            // Renderizar Dashboard
-            renderDashboard(container) {
-                const stats = this.calcularStats();
-                
-                container.innerHTML = `
-                    <div class="grid-4 mb-4">
-                        <div class="stat-card">
-                            <div class="stat-label">Total Tareas</div>
-                            <div class="stat-value" style="color: #6366f1;">${stats.total}</div>
-                            <div style="font-size: 12px; color: #64748b;">${stats.pendientes} pendientes</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">En Progreso</div>
-                            <div class="stat-value" style="color: #3b82f6;">${stats.progreso}</div>
-                            <div style="font-size: 12px; color: #64748b;">${Math.round(stats.progreso/stats.total*100)}%</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Completadas</div>
-                            <div class="stat-value" style="color: #10b981;">${stats.completadas}</div>
-                            <div style="font-size: 12px; color: #64748b;">Este mes</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Urgentes</div>
-                            <div class="stat-value" style="color: #ef4444;">${stats.urgentes}</div>
-                            <div style="font-size: 12px; color: #64748b;">Requieren atención</div>
-                        </div>
-                    </div>
-                    
-                    <div class="card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <h3 style="font-size: 18px; font-weight: 700;">Tareas Prioritarias</h3>
-                            <button class="btn btn-sm btn-secondary" onclick="app.navegar('tareas')">Ver todas</button>
-                        </div>
-                        <div style="display: grid; gap: 16px;">
-                            ${this.data.tareas
-                                .filter(t => t.prioridad === 'high' || this.esUrgente(t))
-                                .slice(0, 5)
-                                .map(t => this.cardTarea(t))
-                                .join('') || '<p style="color: #64748b; text-align: center; padding: 40px;">No hay tareas prioritarias</p>'}
-                        </div>
-                    </div>
-                `;
-            },
-            
-            // Renderizar Lista de Tareas
-            renderTareas(container) {
-                const tareas = this.data.tareas.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
-                
-                container.innerHTML = `
-                    <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
-                        <button class="btn btn-sm btn-secondary" onclick="app.filtrar('todas')">Todas</button>
-                        <button class="btn btn-sm btn-secondary" onclick="app.filtrar('pendientes')">Pendientes</button>
-                        <button class="btn btn-sm btn-secondary" onclick="app.filtrar('progreso')">En Progreso</button>
-                        <button class="btn btn-sm btn-secondary" onclick="app.filtrar('completadas')">Completadas</button>
-                        <button class="btn btn-sm btn-secondary" onclick="app.filtrar('urgentes')">Urgentes</button>
-                    </div>
-                    
-                    <div style="display: grid; gap: 16px;">
-                        ${tareas.length > 0 ? tareas.map(t => this.cardTarea(t)).join('') : 
-                          '<div class="card" style="text-align: center; padding: 60px; color: #64748b;"><i class="fas fa-clipboard-check" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i><p>No hay tareas. ¡Crea la primera!</p></div>'}
-                    </div>
-                `;
-            },
-            
-            // Card de tarea
-            cardTarea(t) {
-                const progreso = Math.round(t.subtareas.filter(s => s.completado).length / t.subtareas.length * 100) || 0;
-                const responsable = this.data.equipo.find(e => e.id === t.responsable);
-                const esVencida = new Date(t.fecha) < new Date() && progreso < 100;
-                const prioridadClass = `priority-${t.prioridad}`;
-                
-                let badgeClass = 'badge-pending';
-                let badgeText = 'Pendiente';
-                if (progreso === 100) { badgeClass = 'badge-done'; badgeText = 'Completada'; }
-                else if (progreso > 0) { badgeClass = 'badge-progress'; badgeText = 'En Progreso'; }
-                else if (esVencida) { badgeClass = 'badge-delayed'; badgeText = 'Vencida'; }
-                
+            }
+        },
+
+        guardar() {
+            localStorage.setItem('acta_entrega_ips', JSON.stringify(this.data));
+        },
+
+        iniciarAutoGuardado() {
+            setInterval(() => this.guardar(), 10000); // Cada 10 segundos
+        },
+
+        renderCategorias() {
+            const container = document.getElementById('categorias-container');
+            container.innerHTML = this.data.categorias.map((cat, index) => {
+                const completadas = cat.tareasCompletadas.length;
+                const total = cat.tareas.length;
+                const porcentaje = Math.round((completadas / total) * 100);
+                const todasHechas = completadas === total;
+
                 return `
-                    <div class="card ${prioridadClass}" style="cursor: pointer;" onclick="app.verTarea(${t.id})">
-                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-                            <div>
-                                <span class="badge ${badgeClass}">${badgeText}</span>
-                                ${t.tags.map(tag => `<span style="margin-left: 8px; font-size: 11px; color: #64748b;">#${tag}</span>`).join('')}
+                    <div class="category-card animate-in delay-${(index % 4) + 1}" style="margin-bottom: 16px;">
+                        <div class="category-header" onclick="app.toggleCategoria('${cat.id}')">
+                            <div class="category-icon" style="background: ${cat.bgColor}; color: ${cat.color};">
+                                <i class="fas ${cat.icono}"></i>
                             </div>
-                            <div style="font-size: 12px; color: ${esVencida ? '#ef4444' : '#64748b'}; font-weight: 600;">
-                                <i class="far fa-clock"></i> ${this.formatearFecha(t.fecha)}
+                            <div class="category-info">
+                                <div class="category-title">${cat.titulo}</div>
+                                <div class="category-subtitle">${cat.subtitulo}</div>
+                            </div>
+                            <div class="category-progress">
+                                <div class="category-progress-bar">
+                                    <div class="category-progress-fill" style="width: ${porcentaje}%; ${todasHechas ? 'background: #10b981;' : ''}"></div>
+                                </div>
+                                <span class="category-progress-text" style="${todasHechas ? 'color: #10b981;' : ''}">${completadas}/${total}</span>
+                            </div>
+                            <div class="category-toggle ${cat.abierta ? 'rotated' : ''}" id="toggle-${cat.id}">
+                                <i class="fas fa-chevron-down"></i>
                             </div>
                         </div>
-                        
-                        <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 8px; ${progreso === 100 ? 'text-decoration: line-through; opacity: 0.6;' : ''}">${t.titulo}</h4>
-                        
-                        <p style="font-size: 13px; color: #64748b; margin-bottom: 12px; line-height: 1.5;">${t.descripcion || 'Sin descripción'}</p>
-                        
-                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <div style="width: 28px; height: 28px; border-radius: 50%; background: ${responsable?.color || '#cbd5e1'}; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 700;">
-                                    ${responsable?.nombre.charAt(0) || '?'}
-                                </div>
-                                <span style="font-size: 12px; color: #475569;">${responsable?.nombre || 'Sin asignar'}</span>
-                            </div>
-                            
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="flex: 1; min-width: 100px;">
-                                    <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
-                                        <span style="color: #64748b;">Progreso</span>
-                                        <span style="font-weight: 700;">${progreso}%</span>
-                                    </div>
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: ${progreso}%; ${progreso === 100 ? 'background: #10b981;' : ''}"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            },
-            
-            // Renderizar Kanban
-            renderKanban(container) {
-                const columnas = {
-                    pendiente: this.data.tareas.filter(t => this.getProgreso(t) === 0 && !this.esVencida(t)),
-                    progreso: this.data.tareas.filter(t => this.getProgreso(t) > 0 && this.getProgreso(t) < 100),
-                    revision: this.data.tareas.filter(t => t.tags.includes('revision') && this.getProgreso(t) < 100),
-                    completada: this.data.tareas.filter(t => this.getProgreso(t) === 100)
-                };
-                
-                container.innerHTML = `
-                    <div class="kanban-board">
-                        ${Object.entries(columnas).map(([estado, tareas]) => `
-                            <div class="kanban-column" ondrop="app.drop(event, '${estado}')" ondragover="app.allowDrop(event)">
-                                <div class="kanban-header">
-                                    <h4 style="font-weight: 700; text-transform: capitalize;">${this.nombreColumna(estado)}</h4>
-                                    <span style="background: #e2e8f0; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 700;">${tareas.length}</span>
-                                </div>
-                                ${tareas.map(t => `
-                                    <div class="kanban-card priority-${t.prioridad}" draggable="true" ondragstart="app.drag(event, ${t.id})" onclick="app.verTarea(${t.id})">
-                                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                            <span class="badge ${this.getBadgeClass(t)}">${this.getBadgeText(t)}</span>
-                                        </div>
-                                        <h4 style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">${t.titulo}</h4>
-                                        <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #64748b;">
-                                            <i class="far fa-clock"></i> ${this.formatearFecha(t.fecha)}
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            },
-            
-            // Renderizar Timeline
-            renderTimeline(container) {
-                const tareas = [...this.data.tareas].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
-                
-                container.innerHTML = `
-                    <div class="card">
-                        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 24px;">Línea de Tiempo de Entregas</h3>
-                        <div class="timeline">
-                            ${tareas.map(t => {
-                                const progreso = this.getProgreso(t);
-                                const esVencida = this.esVencida(t);
-                                const color = progreso === 100 ? '#10b981' : esVencida ? '#ef4444' : '#6366f1';
-                                
+                        <div class="tasks-container ${cat.abierta ? 'open' : ''}" id="tasks-${cat.id}">
+                            ${cat.tareas.map((tarea, i) => {
+                                const hecha = cat.tareasCompletadas.includes(i);
                                 return `
-                                    <div class="timeline-item">
-                                        <div class="timeline-dot" style="background: ${color}; box-shadow: 0 0 0 2px ${color};"></div>
-                                        <div class="card" style="margin-left: 12px;">
-                                            <div style="display: flex; justify-content: space-between; align-items: start;">
-                                                <div>
-                                                    <span style="font-size: 12px; color: #64748b; font-weight: 600;">
-                                                        ${new Date(t.fecha).toLocaleDateString('es-ES', {weekday: 'long', day: 'numeric', month: 'long'})}
-                                                    </span>
-                                                    <h4 style="font-weight: 700; margin: 4px 0; ${progreso === 100 ? 'text-decoration: line-through; opacity: 0.6;' : ''}">${t.titulo}</h4>
-                                                    <p style="font-size: 13px; color: #64748b;">${this.data.equipo.find(e => e.id === t.responsable)?.nombre || 'Sin asignar'}</p>
-                                                </div>
-                                                <span class="badge ${this.getBadgeClass(t)}">${this.getBadgeText(t)}</span>
-                                            </div>
+                                    <div class="task-item ${hecha ? 'completed' : ''}" onclick="app.toggleTarea('${cat.id}', ${i})">
+                                        <div class="task-checkbox ${hecha ? 'checked' : ''}">
+                                            ${hecha ? '<i class="fas fa-check" style="font-size: 12px;"></i>' : ''}
                                         </div>
+                                        <span class="task-text">${tarea}</span>
+                                        <span class="task-badge ${hecha ? 'badge-done' : 'badge-pending'}">
+                                            ${hecha ? '✓ Hecho' : 'Pendiente'}
+                                        </span>
                                     </div>
                                 `;
                             }).join('')}
                         </div>
                     </div>
                 `;
-            },
-            
-            // Renderizar Equipo
-            renderEquipo(container) {
-                container.innerHTML = `
-                    <div class="grid-2">
-                        ${this.data.equipo.map(m => {
-                            const tareasCount = this.data.tareas.filter(t => t.responsable === m.id).length;
-                            const completadas = this.data.tareas.filter(t => t.responsable === m.id && this.getProgreso(t) === 100).length;
-                            const eficiencia = tareasCount > 0 ? Math.round(completadas / tareasCount * 100) : 0;
-                            
-                            return `
-                                <div class="card">
-                                    <div style="display: flex; align-items: center; gap: 16px;">
-                                        <div style="width: 60px; height: 60px; border-radius: 50%; background: ${m.color}; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: 700;">
-                                            ${m.nombre.charAt(0)}
-                                        </div>
-                                        <div style="flex: 1;">
-                                            <h4 style="font-weight: 700; font-size: 18px;">${m.nombre}</h4>
-                                            <p style="color: #64748b; font-size: 14px;">${m.cargo}</p>
-                                            <p style="color: #94a3b8; font-size: 12px; margin-top: 4px;">${m.email}</p>
-                                        </div>
-                                    </div>
-                                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
-                                        <div class="text-center">
-                                            <div style="font-size: 24px; font-weight: 800; color: #6366f1;">${tareasCount}</div>
-                                            <div style="font-size: 11px; color: #64748b; text-transform: uppercase;">Tareas</div>
-                                        </div>
-                                        <div class="text-center">
-                                            <div style="font-size: 24px; font-weight: 800; color: #10b981;">${completadas}</div>
-                                            <div style="font-size: 11px; color: #64748b; text-transform: uppercase;">Hechas</div>
-                                        </div>
-                                        <div class="text-center">
-                                            <div style="font-size: 24px; font-weight: 800; color: #f59e0b;">${eficiencia}%</div>
-                                            <div style="font-size: 11px; color: #64748b; text-transform: uppercase;">Eficiencia</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                `;
-            },
-            
-            // Helpers
-            getProgreso(t) {
-                if (!t.subtareas || t.subtareas.length === 0) return 0;
-                return Math.round(t.subtareas.filter(s => s.completado).length / t.subtareas.length * 100);
-            },
-            
-            esVencida(t) {
-                return new Date(t.fecha) < new Date() && this.getProgreso(t) < 100;
-            },
-            
-            esUrgente(t) {
-                const horas = (new Date(t.fecha) - new Date()) / (1000 * 60 * 60);
-                return horas < 24 && horas > 0 && this.getProgreso(t) < 100;
-            },
-            
-            getBadgeClass(t) {
-                const p = this.getProgreso(t);
-                if (p === 100) return 'badge-done';
-                if (p > 0) return 'badge-progress';
-                if (this.esVencida(t)) return 'badge-delayed';
-                return 'badge-pending';
-            },
-            
-            getBadgeText(t) {
-                const p = this.getProgreso(t);
-                if (p === 100) return 'Completada';
-                if (p > 0) return 'En Progreso';
-                if (this.esVencida(t)) return 'Vencida';
-                return 'Pendiente';
-            },
-            
-            nombreColumna(estado) {
-                const nombres = {
-                    pendiente: 'Pendiente',
-                    progreso: 'En Progreso',
-                    revision: 'En Revisión',
-                    completada: 'Completada'
-                };
-                return nombres[estado] || estado;
-            },
-            
-            formatearFecha(fecha) {
-                const f = new Date(fecha);
-                const hoy = new Date();
-                const diff = Math.ceil((f - hoy) / (1000 * 60 * 60 * 24));
-                
-                if (diff === 0) return 'Hoy';
-                if (diff === 1) return 'Mañana';
-                if (diff < 0) return `Hace ${Math.abs(diff)} días`;
-                return f.toLocaleDateString('es-ES', {day: 'numeric', month: 'short'});
-            },
-            
-            calcularStats() {
-                const total = this.data.tareas.length;
-                const completadas = this.data.tareas.filter(t => this.getProgreso(t) === 100).length;
-                const progreso = this.data.tareas.filter(t => this.getProgreso(t) > 0 && this.getProgreso(t) < 100).length;
-                const pendientes = total - completadas - progreso;
-                const urgentes = this.data.tareas.filter(t => this.esUrgente(t)).length;
-                
-                return { total, completadas, progreso, pendientes, urgentes };
-            },
-            
-            // Acciones
-            abrirModalTarea() {
-                this.data.subtareasTemp = [];
-                this.data.tareaEditando = null;
-                document.getElementById('t-titulo').value = '';
-                document.getElementById('t-descripcion').value = '';
-                document.getElementById('t-fecha').value = '';
-                document.getElementById('checklist-container').innerHTML = '';
-                document.querySelectorAll('.tag-check').forEach(c => c.checked = false);
-                
-                document.getElementById('modal-tarea').classList.add('active');
-            },
-            
-            verTarea(id) {
-                const t = this.data.tareas.find(x => x.id === id);
-                if (!t) return;
-                
-                this.data.tareaEditando = t;
-                const responsable = this.data.equipo.find(e => e.id === t.responsable);
-                
-                document.getElementById('ver-contenido').innerHTML = `
-                    <div class="form-group">
-                        <label class="form-label">Título</label>
-                        <input type="text" class="form-input" id="edit-titulo" value="${t.titulo}">
-                    </div>
-                    
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label class="form-label">Responsable</label>
-                            <select class="form-select" id="edit-responsable">
-                                ${this.data.equipo.map(e => `<option value="${e.id}" ${e.id === t.responsable ? 'selected' : ''}>${e.nombre}</option>`).join('')}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Prioridad</label>
-                            <select class="form-select" id="edit-prioridad">
-                                <option value="low" ${t.prioridad === 'low' ? 'selected' : ''}>🟢 Baja</option>
-                                <option value="medium" ${t.prioridad === 'medium' ? 'selected' : ''}>🟡 Media</option>
-                                <option value="high" ${t.prioridad === 'high' ? 'selected' : ''}>🔴 Alta</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Fecha límite</label>
-                        <input type="datetime-local" class="form-input" id="edit-fecha" value="${t.fecha.slice(0, 16)}">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Descripción</label>
-                        <textarea class="form-textarea" id="edit-descripcion" rows="2">${t.descripcion || ''}</textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Checklist (${t.subtareas.filter(s => s.completado).length}/${t.subtareas.length})</label>
-                        <div id="edit-checklist">
-                            ${t.subtareas.map((s, i) => `
-                                <div class="checklist-item ${s.completado ? 'completed' : ''}">
-                                    <input type="checkbox" ${s.completado ? 'checked' : ''} onchange="app.toggleSubtarea(${i})" id="sub-${i}">
-                                    <span style="flex: 1;">${s.texto}</span>
-                                    <button onclick="app.eliminarSubtarea(${i})" style="background: none; border: none; color: #ef4444; cursor: pointer;">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            `).join('')}
-                        </div>
-                        <div style="display: flex; gap: 8px; margin-top: 8px;">
-                            <input type="text" class="form-input" id="nueva-sub-edit" placeholder="Nueva subtarea..." style="flex: 1;" onkeypress="if(event.key==='Enter') app.agregarSubtareaEdit()">
-                            <button class="btn btn-secondary" onclick="app.agregarSubtareaEdit()">
-                                <i class="fas fa-plus"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Progreso: ${this.getProgreso(t)}%</label>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${this.getProgreso(t)}%"></div>
-                        </div>
-                    </div>
-                `;
-                
-                document.getElementById('modal-ver').classList.add('active');
-            },
-            
-            guardarTarea() {
-                const titulo = document.getElementById('t-titulo').value.trim();
-                const responsable = parseInt(document.getElementById('t-responsable').value);
-                const prioridad = document.getElementById('t-prioridad').value;
-                const fecha = document.getElementById('t-fecha').value;
-                const descripcion = document.getElementById('t-descripcion').value.trim();
-                
-                if (!titulo || !fecha) {
-                    this.mostrarToast('Completa los campos obligatorios', 'error');
-                    return;
-                }
-                
-                const tags = Array.from(document.querySelectorAll('.tag-check:checked')).map(c => c.value);
-                
-                const nueva = {
-                    id: Date.now(),
-                    titulo,
-                    responsable,
-                    prioridad,
-                    fecha,
-                    descripcion,
-                    tags,
-                    subtareas: this.data.subtareasTemp,
-                    creado: new Date().toISOString()
-                };
-                
-                this.data.tareas.push(nueva);
-                this.guardar();
-                this.cerrarModal('modal-tarea');
-                this.navegar(this.data.vistaActual);
-                this.mostrarToast('Tarea creada exitosamente', 'success');
-            },
-            
-            guardarEdicion() {
-                if (!this.data.tareaEditando) return;
-                
-                const t = this.data.tareaEditando;
-                t.titulo = document.getElementById('edit-titulo').value;
-                t.responsable = parseInt(document.getElementById('edit-responsable').value);
-                t.prioridad = document.getElementById('edit-prioridad').value;
-                t.fecha = document.getElementById('edit-fecha').value;
-                t.descripcion = document.getElementById('edit-descripcion').value;
-                
-                this.guardar();
-                this.cerrarModal('modal-ver');
-                this.navegar(this.data.vistaActual);
-                this.mostrarToast('Cambios guardados', 'success');
-            },
-            
-            eliminarTareaActual() {
-                if (!this.data.tareaEditando) return;
-                if (!confirm('¿Eliminar esta tarea permanentemente?')) return;
-                
-                const idx = this.data.tareas.findIndex(t => t.id === this.data.tareaEditando.id);
-                if (idx > -1) {
-                    this.data.tareas.splice(idx, 1);
-                    this.guardar();
-                    this.cerrarModal('modal-ver');
-                    this.navegar(this.data.vistaActual);
-                    this.mostrarToast('Tarea eliminada', 'success');
-                }
-            },
-            
-            // Subtareas
-            agregarSubtarea() {
-                const input = document.getElementById('nueva-subtarea');
-                const texto = input.value.trim();
-                if (!texto) return;
-                
-                this.data.subtareasTemp.push({ texto, completado: false });
-                this.renderSubtareasTemp();
-                input.value = '';
-            },
-            
-            renderSubtareasTemp() {
-                const container = document.getElementById('checklist-container');
-                container.innerHTML = this.data.subtareasTemp.map((s, i) => `
-                    <div class="checklist-item">
-                        <span style="flex: 1;">${s.texto}</span>
-                        <button onclick="app.eliminarSubtareaTemp(${i})" style="background: none; border: none; color: #ef4444; cursor: pointer;">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                `).join('');
-            },
-            
-            eliminarSubtareaTemp(i) {
-                this.data.subtareasTemp.splice(i, 1);
-                this.renderSubtareasTemp();
-            },
-            
-            agregarSubtareaEdit() {
-                const input = document.getElementById('nueva-sub-edit');
-                const texto = input.value.trim();
-                if (!texto || !this.data.tareaEditando) return;
-                
-                this.data.tareaEditando.subtareas.push({ texto, completado: false });
-                input.value = '';
-                this.verTarea(this.data.tareaEditando.id); // Recargar
-            },
-            
-            eliminarSubtarea(i) {
-                if (!this.data.tareaEditando) return;
-                this.data.tareaEditando.subtareas.splice(i, 1);
-                this.verTarea(this.data.tareaEditando.id);
-            },
-            
-            toggleSubtarea(i) {
-                if (!this.data.tareaEditando) return;
-                this.data.tareaEditando.subtareas[i].completado = !this.data.tareaEditando.subtareas[i].completado;
-                this.verTarea(this.data.tareaEditando.id);
-                this.guardar();
-            },
-            
-            // Drag & Drop
-            drag(ev, id) {
-                ev.dataTransfer.setData("tareaId", id);
-                ev.target.classList.add('dragging');
-            },
-            
-            allowDrop(ev) {
-                ev.preventDefault();
-            },
-            
-            drop(ev, estado) {
-                ev.preventDefault();
-                const id = parseInt(ev.dataTransfer.getData("tareaId"));
-                const t = this.data.tareas.find(x => x.id === id);
-                if (!t) return;
-                
-                // Lógica de cambio de estado
-                if (estado === 'completada') {
-                    t.subtareas.forEach(s => s.completado = true);
-                } else if (estado === 'pendiente') {
-                    t.subtareas.forEach(s => s.completado = false);
-                }
-                
-                this.guardar();
-                this.renderKanban(document.getElementById('contenido'));
-                this.mostrarToast('Tarea actualizada', 'success');
-            },
-            
-            // UI Helpers
-            cerrarModal(id) {
-                document.getElementById(id).classList.remove('active');
-            },
-            
-            toggleSidebar() {
-                document.getElementById('sidebar').classList.toggle('open');
-            },
-            
-            actualizarSelectResponsables() {
-                const select = document.getElementById('t-responsable');
-                select.innerHTML = this.data.equipo.map(e => `<option value="${e.id}">${e.nombre} - ${e.cargo}</option>`).join('');
-            },
-            
-            mostrarToast(mensaje, tipo = 'info') {
-                const container = document.getElementById('toasts');
-                const toast = document.createElement('div');
-                toast.className = `toast ${tipo}`;
-                
-                const iconos = {
-                    success: 'fa-check-circle',
-                    error: 'fa-exclamation-circle',
-                    warning: 'fa-exclamation-triangle',
-                    info: 'fa-info-circle'
-                };
-                
-                toast.innerHTML = `<i class="fas ${iconos[tipo]}"></i> ${mensaje}`;
-                container.appendChild(toast);
-                
-                setTimeout(() => {
-                    toast.style.opacity = '0';
-                    toast.style.transform = 'translateX(100%)';
-                    setTimeout(() => toast.remove(), 300);
-                }, 3000);
-            },
-            
-            buscar(query) {
-                if (!query) {
-                    this.navegar(this.data.vistaActual);
-                    return;
-                }
-                
-                const q = query.toLowerCase();
-                const filtradas = this.data.tareas.filter(t => 
-                    t.titulo.toLowerCase().includes(q) || 
-                    t.descripcion.toLowerCase().includes(q)
-                );
-                
-                const container = document.getElementById('contenido');
-                container.innerHTML = `
-                    <div style="margin-bottom: 20px;">
-                        <button class="btn btn-secondary" onclick="app.navegar('${this.data.vistaActual}')">
-                            <i class="fas fa-arrow-left"></i> Volver
-                        </button>
-                        <span style="margin-left: 12px; color: #64748b;">${filtradas.length} resultados</span>
-                    </div>
-                    <div style="display: grid; gap: 16px;">
-                        ${filtradas.map(t => this.cardTarea(t)).join('') || '<p style="color: #64748b;">No se encontraron resultados</p>'}
-                    </div>
-                `;
-            },
-            
-            filtrar(tipo) {
-                // Implementación simple de filtros
-                this.mostrarToast(`Filtro: ${tipo}`, 'info');
+            }).join('');
+        },
+
+        toggleCategoria(id) {
+            const cat = this.data.categorias.find(c => c.id === id);
+            if (!cat) return;
+
+            cat.abierta = !cat.abierta;
+            this.guardar();
+
+            const tasksContainer = document.getElementById(`tasks-${id}`);
+            const toggle = document.getElementById(`toggle-${id}`);
+
+            if (cat.abierta) {
+                tasksContainer.classList.add('open');
+                toggle.classList.add('rotated');
+            } else {
+                tasksContainer.classList.remove('open');
+                toggle.classList.remove('rotated');
             }
-        };
-        
-        // Iniciar app
-        document.addEventListener('DOMContentLoaded', () => {
-            app.init();
-        });
-        
-        // Cerrar modales al hacer clic fuera
-        document.querySelectorAll('.modal-overlay').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.remove('active');
+        },
+
+        toggleTarea(catId, tareaIndex) {
+            const cat = this.data.categorias.find(c => c.id === catId);
+            if (!cat) return;
+
+            const idx = cat.tareasCompletadas.indexOf(tareaIndex);
+            if (idx > -1) {
+                cat.tareasCompletadas.splice(idx, 1);
+            } else {
+                cat.tareasCompletadas.push(tareaIndex);
+            }
+
+            this.guardar();
+            this.renderCategorias();
+            this.actualizarProgreso();
+
+            const mensaje = idx > -1 ? 'Tarea marcada como pendiente' : '¡Tarea completada!';
+            const tipo = idx > -1 ? 'info' : 'success';
+            this.mostrarToast(mensaje, tipo);
+        },
+
+        actualizarProgreso() {
+            let totalTareas = 0;
+            let totalCompletadas = 0;
+
+            this.data.categorias.forEach(cat => {
+                totalTareas += cat.tareas.length;
+                totalCompletadas += cat.tareasCompletadas.length;
+            });
+
+            const totalPendientes = totalTareas - totalCompletadas;
+            const porcentajeGeneral = totalTareas > 0 ? Math.round((totalCompletadas / totalTareas) * 100) : 0;
+
+            // Actualizar rings
+            this.actualizarRing('ring-total', 'val-total', totalTareas, totalTareas);
+            this.actualizarRing('ring-done', 'val-done', totalCompletadas, totalTareas);
+            this.actualizarRing('ring-pending', 'val-pending', totalPendientes, totalTareas);
+
+            document.getElementById('progress-general').textContent = porcentajeGeneral + '%';
+        },
+
+        actualizarRing(ringId, valId, valor, total) {
+            const ring = document.getElementById(ringId);
+            const val = document.getElementById(valId);
+            const circumference = 2 * Math.PI * 52; // r=52
+            const offset = circumference - (valor / (total || 1)) * circumference;
+
+            ring.style.strokeDashoffset = offset;
+            val.textContent = valor;
+        },
+
+        editarFecha() {
+            const fecha = prompt('Ingresa la fecha de entrega (DD/MM/AAAA):');
+            if (fecha) {
+                const partes = fecha.split('/');
+                if (partes.length === 3) {
+                    const fechaObj = new Date(partes[2], partes[1] - 1, partes[0]);
+                    this.data.fechaEntrega = fechaObj.toISOString();
+                    this.guardar();
+                    document.getElementById('fecha-texto').textContent = fechaObj.toLocaleDateString('es-ES', {
+                        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                    });
+                    this.mostrarToast('Fecha guardada', 'success');
+                }
+            }
+        },
+
+        guardarObservacion(el) {
+            this.data.observaciones.pendientes = el.textContent;
+            this.guardar();
+        },
+
+        guardarIndicador(tipo, el) {
+            this.data.indicadores[tipo] = el.textContent;
+            this.guardar();
+        },
+
+        guardarFirma(tipo, el) {
+            this.data.firmas[tipo] = el.textContent;
+            this.guardar();
+        },
+
+        buscar(query) {
+            if (!query) {
+                this.renderCategorias();
+                return;
+            }
+
+            const q = query.toLowerCase();
+            const cards = document.querySelectorAll('.category-card');
+
+            cards.forEach((card, index) => {
+                const cat = this.data.categorias[index];
+                const match = cat.titulo.toLowerCase().includes(q) || 
+                             cat.subtitulo.toLowerCase().includes(q) ||
+                             cat.tareas.some(t => t.toLowerCase().includes(q));
+
+                card.style.display = match ? 'block' : 'none';
+
+                if (match && q.length > 2) {
+                    // Auto-expandir si hay coincidencia en tareas
+                    const tareaMatch = cat.tareas.some(t => t.toLowerCase().includes(q));
+                    if (tareaMatch && !cat.abierta) {
+                        this.toggleCategoria(cat.id);
+                    }
                 }
             });
-        });
+        },
+
+        exportarPDF() {
+            window.print();
+            this.mostrarToast('Preparando para imprimir...', 'info');
+        },
+
+        mostrarToast(mensaje, tipo = 'info') {
+            const container = document.getElementById('toasts');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+
+            const colores = {
+                success: 'background: linear-gradient(135deg, #059669, #10b981);',
+                error: 'background: linear-gradient(135deg, #dc2626, #ef4444);',
+                warning: 'background: linear-gradient(135deg, #d97706, #f59e0b);',
+                info: 'background: linear-gradient(135deg, #0d9488, #14b8a6);'
+            };
+
+            const iconos = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+
+            toast.style.cssText = colores[tipo];
+            toast.innerHTML = `<i class="fas ${iconos[tipo]}"></i> ${mensaje}`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(120%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    };
+
+    // Iniciar
+    document.addEventListener('DOMContentLoaded', () => {
+        app.init();
+    });
     </script>
 </body>
 </html>
