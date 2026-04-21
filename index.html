@@ -3,417 +3,531 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master OS Platinum v10.0 | Enterprise Pro</title>
+    <title>Master OS Platinum v10.0 | Gestión Profesional</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
-        
-        :root { 
-            --primary: #6366f1; 
-            --accent: #06b6d4; 
-            --bg: #f8fafc;
-            --soft-blue: #e0e7ff;
-            --soft-green: #d1fae5;
-            --soft-red: #fee2e2;
-            --soft-yellow: #fef3c7;
-            --soft-purple: #f3e8ff;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body { 
-            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; 
-            background-color: var(--bg); 
-            color: #334155; 
-            overflow: hidden; 
-            transition: background-color 0.3s, color 0.3s;
+            font-family: 'Inter', sans-serif; 
+            background: #f1f5f9; 
+            color: #1e293b;
+            overflow-x: hidden;
         }
         
-        .dark-mode {
-            --bg: #0f172a;
-            color: #e2e8f0;
-        }
-        
-        .sidebar { 
-            background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%);
-            width: 280px;
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%);
             height: 100vh;
             position: fixed;
             left: 0;
             top: 0;
-            z-index: 50;
+            z-index: 100;
+            overflow-y: auto;
             transition: transform 0.3s;
         }
         
-        .main-content {
-            margin-left: 280px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
+        .sidebar.closed { transform: translateX(-100%); }
+        
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 20px;
+            transition: all 0.2s;
         }
         
-        .glass-card { 
-            background: rgba(255, 255, 255, 0.95); 
-            backdrop-filter: blur(20px); 
-            border: 1px solid rgba(226, 232, 240, 0.6); 
-            border-radius: 16px; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+        .card:hover {
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
         }
         
-        .glass-card:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08); 
-        }
-        
-        .dark-mode .glass-card {
-            background: rgba(30, 41, 59, 0.9);
-            border-color: rgba(71, 85, 105, 0.5);
-            color: #e2e8f0;
+        /* Botones */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
         }
         
         .btn-primary {
-            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
             color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
         }
         
         .btn-primary:hover {
             transform: translateY(-1px);
-            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 12px rgba(99,102,241,0.4);
         }
         
-        .progress-bar { 
-            height: 6px; 
-            border-radius: 10px; 
-            background: #e2e8f0; 
-            overflow: hidden; 
-        }
+        .btn-success { background: #10b981; color: white; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .btn-secondary { background: #e2e8f0; color: #475569; }
         
-        .progress-fill { 
-            height: 100%; 
-            transition: width 0.5s ease;
-            background: linear-gradient(90deg, #6366f1, #8b5cf6); 
-        }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .btn-lg { padding: 14px 28px; font-size: 16px; }
         
         /* Estados */
-        .status-pending { background: var(--soft-yellow); color: #92400e; }
-        .status-progress { background: var(--soft-blue); color: #3730a3; }
-        .status-done { background: var(--soft-green); color: #065f46; }
-        .status-delayed { background: var(--soft-red); color: #991b1b; }
-        .status-review { background: var(--soft-purple); color: #6b21a8; }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
         
-        /* Prioridades */
+        .badge-pending { background: #fef3c7; color: #92400e; }
+        .badge-progress { background: #dbeafe; color: #1e40af; }
+        .badge-done { background: #d1fae5; color: #065f46; }
+        .badge-delayed { background: #fee2e2; color: #991b1b; }
+        
         .priority-high { border-left: 4px solid #ef4444; }
         .priority-medium { border-left: 4px solid #f59e0b; }
         .priority-low { border-left: 4px solid #10b981; }
         
+        /* Progress */
+        .progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
         /* Kanban */
+        .kanban-board {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+        }
+        
         .kanban-column {
-            min-height: 400px;
-            background: rgba(241, 245, 249, 0.5);
+            min-width: 300px;
+            background: #f8fafc;
             border-radius: 12px;
-            padding: 12px;
+            padding: 16px;
+        }
+        
+        .kanban-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .kanban-card {
+            background: white;
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            cursor: grab;
             transition: all 0.2s;
         }
         
-        .kanban-column.drag-over {
-            border: 2px dashed #6366f1;
-            background: rgba(99, 102, 241, 0.05);
+        .kanban-card:hover {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .kanban-card.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
         }
         
         /* Timeline */
-        .timeline-line {
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: '';
             position: absolute;
-            left: 24px;
+            left: 10px;
             top: 0;
             bottom: 0;
             width: 2px;
-            background: linear-gradient(to bottom, #e2e8f0, #cbd5e1);
+            background: #cbd5e1;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 24px;
+            padding-left: 20px;
         }
         
         .timeline-dot {
+            position: absolute;
+            left: -25px;
+            top: 4px;
             width: 12px;
             height: 12px;
             border-radius: 50%;
+            background: #6366f1;
             border: 2px solid white;
             box-shadow: 0 0 0 2px #6366f1;
-            transition: all 0.3s;
         }
         
-        /* Drag and drop */
-        .dragging {
-            opacity: 0.5;
-            transform: scale(0.98);
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
         
-        /* Animaciones */
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .modal-overlay.active { display: flex; }
+        
+        .modal {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
         }
         
-        .animate-slide-in {
-            animation: slideIn 0.3s ease-out;
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            max-height: 60vh;
         }
         
-        .pulse {
-            animation: pulse 2s infinite;
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
         }
         
-        /* Scrollbar personalizado */
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        /* Formularios */
+        .form-group {
+            margin-bottom: 20px;
+        }
         
-        /* Toast notifications */
-        .toast {
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+        }
+        
+        /* Toast */
+        .toast-container {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            padding: 16px 24px;
+            z-index: 300;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .toast {
+            padding: 16px 20px;
             border-radius: 12px;
             color: white;
             font-weight: 600;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s;
-            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            animation: slideIn 0.3s ease;
+            max-width: 400px;
         }
         
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
-        
-        .toast.success { background: #10b981; }
-        .toast.error { background: #ef4444; }
-        .toast.warning { background: #f59e0b; }
-        .toast.info { background: #6366f1; }
         
         /* Responsive */
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+            transition: margin-left 0.3s;
+        }
+        
         @media (max-width: 1024px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
             .main-content { margin-left: 0; }
-            .mobile-menu-btn { display: flex !important; }
         }
         
-        @media print {
-            .no-print { display: none !important; }
-            body { background: white !important; overflow: visible !important; }
-            .main-content { margin-left: 0 !important; overflow: visible !important; }
+        /* Utilidades */
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        
+        @media (max-width: 768px) {
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+        }
+        
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 8px; }
+        .gap-3 { gap: 12px; }
+        .gap-4 { gap: 16px; }
+        .mb-2 { margin-bottom: 8px; }
+        .mb-4 { margin-bottom: 16px; }
+        .mt-2 { margin-top: 8px; }
+        .mt-4 { margin-top: 16px; }
+        .p-4 { padding: 16px; }
+        .text-sm { font-size: 14px; }
+        .text-xs { font-size: 12px; }
+        .font-bold { font-weight: 700; }
+        .text-center { text-align: center; }
+        .text-slate-500 { color: #64748b; }
+        .text-slate-600 { color: #475569; }
+        .text-slate-800 { color: #1e293b; }
+        
+        /* Header */
+        .top-header {
+            background: white;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        /* Nav item */
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin: 4px 12px;
+            border-radius: 10px;
+            color: #cbd5e1;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .nav-item.active {
+            background: rgba(99,102,241,0.3);
+            border-left: 3px solid #6366f1;
+        }
+        
+        /* Stats cards */
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 8px 0;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Checklist */
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .checklist-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .checklist-item.completed span {
+            text-decoration: line-through;
+            color: #94a3b8;
         }
     </style>
 </head>
-<body class="flex h-screen">
+<body>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar flex flex-col h-screen shrink-0 text-slate-400" id="sidebar">
-        <div class="p-6 border-b border-slate-700/50 flex items-center gap-3">
-            <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-white shadow-lg relative overflow-hidden">
-                <div class="absolute inset-0 bg-white/20 rotate-45 translate-y-full hover:translate-y-0 transition-transform"></div>
-                <i class="fas fa-layer-group text-xl relative z-10"></i>
-            </div>
-            <div>
-                <span class="block font-extrabold text-white text-lg tracking-tight leading-none">MASTER OS</span>
-                <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Platinum v10.0</span>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div style="padding: 24px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #6366f1, #ec4899); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div>
+                    <div style="color: white; font-weight: 800; font-size: 18px;">Master OS</div>
+                    <div style="color: #818cf8; font-size: 11px; font-weight: 700;">PLATINUM v10.0</div>
+                </div>
             </div>
         </div>
-
-        <nav class="flex-1 overflow-y-auto p-4 space-y-1 custom-scrollbar">
-            <button onclick="app.cambiarVista('global')" id="nav-global" class="w-full text-left p-3 rounded-xl flex items-center gap-3 hover:text-white transition btn-active">
-                <i class="fas fa-chart-pie w-5 text-center"></i> 
-                <span class="font-semibold text-sm">Dashboard Global</span>
-            </button>
-            
-            <button onclick="App.cambiarVista('kanban')" id="nav-kanban" class="w-full text-left p-3 rounded-xl flex items-center gap-3 hover:text-white transition hover:bg-slate-800/50 text-slate-400">
-                <i class="fas fa-columns w-5 text-center"></i> 
-                <span class="font-semibold text-sm">Vista Kanban</span>
-            </button>
-            
-            <button onclick="App.cambiarVista('timeline')" id="nav-timeline" class="w-full text-left p-3 rounded-xl flex items-center gap-3 hover:text-white transition hover:bg-slate-800/50 text-slate-400">
-                <i class="fas fa-stream w-5 text-center"></i> 
-                <span class="font-semibold text-sm">Línea de Tiempo</span>
-            </button>
-            
-            <button onclick="App.cambiarVista('analytics')" id="nav-analytics" class="w-full text-left p-3 rounded-xl flex items-center gap-3 hover:text-white transition hover:bg-slate-800/50 text-slate-400">
-                <i class="fas fa-chart-line w-5 text-center"></i> 
-                <span class="font-semibold text-sm">Analytics Avanzado</span>
-            </button>
-            
-            <button onclick="App.abrirModalAdmin()" class="w-full text-left p-3 rounded-xl flex items-center gap-3 hover:text-white transition hover:bg-slate-800/50 text-slate-400">
-                <i class="fas fa-users-cog w-5 text-center"></i> 
-                <span class="font-semibold text-sm">Administrar Equipo</span>
-            </button>
-
-            <div class="mt-6 px-4">
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Mi Equipo</p>
-                <div id="sidebar-team-list" class="space-y-2"></div>
+        
+        <nav style="padding: 16px 0;">
+            <div class="nav-item active" onclick="app.navegar('dashboard')" id="nav-dashboard">
+                <i class="fas fa-chart-pie" style="width: 20px;"></i>
+                <span>Dashboard</span>
             </div>
-            
-            <div class="mt-4 px-2 space-y-1">
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Etiquetas</p>
-                <button onclick="App.filtrarPorTag('urgente')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-red-400 hover:bg-red-500/10 transition flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-red-500"></span> Urgente
-                </button>
-                <button onclick="App.filtrarPorTag('revision')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-purple-400 hover:bg-purple-500/10 transition flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-purple-500"></span> En Revisión
-                </button>
-                <button onclick="App.filtrarPorTag('bloqueado')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-amber-400 hover:bg-amber-500/10 transition flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-amber-500"></span> Bloqueado
-                </button>
+            <div class="nav-item" onclick="app.navegar('tareas')" id="nav-tareas">
+                <i class="fas fa-tasks" style="width: 20px;"></i>
+                <span>Todas las Tareas</span>
+            </div>
+            <div class="nav-item" onclick="app.navegar('kanban')" id="nav-kanban">
+                <i class="fas fa-columns" style="width: 20px;"></i>
+                <span>Vista Kanban</span>
+            </div>
+            <div class="nav-item" onclick="app.navegar('timeline')" id="nav-timeline">
+                <i class="fas fa-stream" style="width: 20px;"></i>
+                <span>Línea de Tiempo</span>
+            </div>
+            <div class="nav-item" onclick="app.navegar('equipo')" id="nav-equipo">
+                <i class="fas fa-users" style="width: 20px;"></i>
+                <span>Mi Equipo</span>
             </div>
         </nav>
-
-        <div class="p-4 m-4 rounded-2xl bg-slate-800/50 border border-slate-700/50 space-y-3 no-print">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                    <span class="text-[10px] font-bold text-emerald-400 uppercase">Sistema Online</span>
-                </div>
-                <button onclick="App.toggleDarkMode()" class="text-slate-400 hover:text-white transition">
-                    <i class="fas fa-moon"></i>
-                </button>
+        
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div style="display: flex; align-items: center; gap: 10px; color: #cbd5e1; font-size: 12px;">
+                <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></div>
+                <span>Sistema Online</span>
             </div>
-            <div class="h-px bg-slate-700/50"></div>
-            <div class="flex justify-between text-[10px] text-slate-500">
-                <span>Horario:</span>
-                <span class="font-semibold text-slate-300">L-V 7-18h | S 7-13h</span>
-            </div>
-            <div class="flex justify-between text-[10px] text-slate-500">
-                <span>Último backup:</span>
-                <span class="font-semibold text-emerald-400" id="last-backup">Hace 5 min</span>
+            <div style="color: #64748b; font-size: 11px; margin-top: 8px;">
+                v10.0.2 • <span id="last-save">Guardado</span>
             </div>
         </div>
     </aside>
 
-    <!-- MAIN CONTENT -->
-    <main class="main-content flex flex-col overflow-hidden relative">
-        
+    <!-- Main Content -->
+    <main class="main-content">
         <!-- Header -->
-        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-8 shrink-0 sticky top-0 z-40 no-print">
-            <div class="flex items-center gap-4">
-                <button onclick="document.getElementById('sidebar').classList.toggle('open')" class="lg:hidden p-2 text-slate-600 hover:text-indigo-600">
-                    <i class="fas fa-bars text-xl"></i>
+        <header class="top-header">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <button onclick="app.toggleSidebar()" style="background: none; border: none; font-size: 20px; color: #64748b; cursor: pointer; display: none;" id="menu-btn">
+                    <i class="fas fa-bars"></i>
                 </button>
-                <div>
-                    <h1 class="font-black text-xl text-slate-800" id="header-title">Panel de Control Global</h1>
-                    <div class="flex items-center gap-2 mt-1">
-                        <span id="live-clock" class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg"></span>
-                        <span class="text-xs text-slate-400">•</span>
-                        <span id="business-status" class="text-xs font-bold px-2 py-1 rounded-lg"></span>
-                        <span class="text-xs text-slate-400">•</span>
-                        <span id="active-users" class="text-xs font-semibold text-slate-500"><i class="fas fa-users mr-1"></i>3 activos</span>
-                    </div>
-                </div>
+                <h1 style="font-size: 24px; font-weight: 800; color: #1e293b;" id="page-title">Dashboard</h1>
             </div>
             
-            <div class="flex items-center gap-3">
-                <div class="relative">
-                    <input type="text" id="search-global" placeholder="Buscar tareas..." 
-                        class="pl-10 pr-4 py-2.5 bg-slate-100 border-none rounded-xl text-sm font-medium w-64 focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
-                        onkeyup="App.buscarGlobal(this.value)">
-                    <i class="fas fa-search absolute left-3.5 top-3 text-slate-400"></i>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="position: relative;">
+                    <input type="text" placeholder="Buscar tareas..." style="padding: 10px 16px 10px 40px; border: 2px solid #e2e8f0; border-radius: 10px; width: 280px; font-size: 14px;" onkeyup="app.buscar(this.value)">
+                    <i class="fas fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
                 </div>
                 
-                <button onclick="App.abrirModalTarea()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-indigo-200 transition active:scale-95 flex items-center gap-2">
-                    <i class="fas fa-plus"></i> Nueva Tarea
-                </button>
-                
-                <button onclick="App.abrirNotificaciones()" class="relative p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl transition text-slate-600">
-                    <i class="fas fa-bell"></i>
-                    <span id="notif-badge" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center hidden">0</span>
+                <button class="btn btn-primary" onclick="app.abrirModalTarea()">
+                    <i class="fas fa-plus"></i>
+                    Nueva Tarea
                 </button>
             </div>
         </header>
 
-        <!-- Barra de filtros -->
-        <div id="filter-bar" class="bg-white border-b border-slate-200 px-8 py-3 flex items-center gap-4 no-print hidden">
-            <div class="flex bg-slate-100 p-1 rounded-xl">
-                <button onclick="App.setFiltro('dia')" id="f-dia" class="px-4 py-2 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900">DÍA</button>
-                <button onclick="App.setFiltro('semana')" id="f-semana" class="px-4 py-2 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900">SEMANA</button>
-                <button onclick="App.setFiltro('mes')" id="f-mes" class="px-4 py-2 rounded-lg text-xs font-bold bg-white text-indigo-600 shadow-sm transition">MES</button>
-                <button onclick="App.setFiltro('trimestre')" id="f-trimestre" class="px-4 py-2 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900">TRIMESTRE</button>
-            </div>
-            
-            <div class="h-6 w-px bg-slate-200"></div>
-            
-            <select id="priority-filter" onchange="App.render()" class="text-xs font-bold p-2 border border-slate-200 rounded-lg outline-none focus:border-indigo-500 bg-white">
-                <option value="all">Todas las prioridades</option>
-                <option value="high">🔴 Alta</option>
-                <option value="medium">🟡 Media</option>
-                <option value="low">🟢 Baja</option>
-            </select>
-            
-            <input type="date" id="calendar-input" onchange="App.render()" class="text-xs font-bold p-2 border border-slate-200 rounded-lg outline-none focus:border-indigo-500 bg-white">
-            
-            <div class="ml-auto flex gap-2">
-                <button onclick="App.exportarExcel()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold text-xs flex items-center gap-2 transition">
-                    <i class="fas fa-file-excel"></i> Excel
-                </button>
-                <button onclick="App.enviarEmail()" class="bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-lg font-bold text-xs flex items-center gap-2 transition">
-                    <i class="fas fa-envelope text-indigo-500"></i> Email
-                </button>
-                <button onclick="App.notificarWhatsApp()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-bold text-xs flex items-center gap-2 transition shadow-lg shadow-emerald-200">
-                    <i class="fab fa-whatsapp"></i> WhatsApp
-                </button>
-                <button onclick="App.generarPDF()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg font-bold text-xs flex items-center gap-2 transition">
-                    <i class="fas fa-file-pdf"></i> PDF
-                </button>
-            </div>
-        </div>
-
         <!-- Contenido dinámico -->
-        <div class="flex-1 overflow-y-auto p-8 custom-scrollbar" id="main-render">
-            <!-- Aquí se renderiza el contenido según la vista -->
+        <div style="padding: 24px;" id="contenido">
+            <!-- Se renderiza dinámicamente -->
         </div>
     </main>
 
-    <!-- MODAL: Nueva Tarea -->
-    <div id="modal-tarea" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-        <div class="glass-card p-0 w-full max-w-3xl border-t-4 border-indigo-500 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
-                        <i class="fas fa-rocket"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-black text-slate-800">Nueva Actividad</h3>
-                        <p class="text-xs text-slate-500">Complete los detalles de la asignación</p>
-                    </div>
-                </div>
-                <button onclick="App.cerrarModal('modal-tarea')" class="text-slate-400 hover:text-slate-600 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 transition">
+    <!-- Modal Nueva Tarea -->
+    <div class="modal-overlay" id="modal-tarea">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 style="font-size: 20px; font-weight: 700;">🚀 Nueva Tarea</h2>
+                <button onclick="app.cerrarModal('modal-tarea')" style="background: none; border: none; font-size: 20px; color: #94a3b8; cursor: pointer;">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            
-            <div class="p-6 overflow-y-auto custom-scrollbar">
-                <div class="grid grid-cols-3 gap-4 mb-4">
-                    <div class="col-span-2">
-                        <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block">Título <span class="text-red-500">*</span></label>
-                        <input type="text" id="t-nombre" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none font-semibold focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" placeholder="Ej: Implementar módulo de facturación electrónica">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Título de la tarea *</label>
+                    <input type="text" class="form-input" id="t-titulo" placeholder="Ej: Revisar informe mensual">
+                </div>
+                
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Responsable *</label>
+                        <select class="form-select" id="t-responsable"></select>
                     </div>
-                    <div>
-                        <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block">Prioridad</label>
-                        <select id="t-priority" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold outline-none focus:ring-2 focus:ring-indigo-500">
+                    <div class="form-group">
+                        <label class="form-label">Prioridad</label>
+                        <select class="form-select" id="t-prioridad">
                             <option value="low">🟢 Baja</option>
                             <option value="medium" selected>🟡 Media</option>
                             <option value="high">🔴 Alta</option>
@@ -421,597 +535,419 @@
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block">Responsable <span class="text-red-500">*</span></label>
-                        <select id="t-resp" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold outline-none focus:ring-2 focus:ring-indigo-500"></select>
-                    </div>
-                    <div>
-                        <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block">Fecha/Hora Límite <span class="text-red-500">*</span></label>
-                        <input type="datetime-local" id="t-deadline" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold outline-none focus:ring-2 focus:ring-indigo-500">
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Fecha límite *</label>
+                    <input type="datetime-local" class="form-input" id="t-fecha">
                 </div>
                 
-                <div class="mb-4">
-                    <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block">Descripción / Notas</label>
-                    <textarea id="t-desc" rows="3" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-medium text-sm outline-none focus:ring-2 focus:ring-indigo-500 resize-none" placeholder="Detalles adicionales, requisitos específicos..."></textarea>
+                <div class="form-group">
+                    <label class="form-label">Descripción</label>
+                    <textarea class="form-textarea" id="t-descripcion" rows="3" placeholder="Detalles adicionales..."></textarea>
                 </div>
                 
-                <div class="mb-4">
-                    <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block">Etiquetas</label>
-                    <div class="flex gap-2 flex-wrap mb-2">
-                        <label class="flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-200 rounded-lg cursor-pointer hover:bg-red-100 transition">
-                            <input type="checkbox" name="tags" value="urgente" class="rounded text-red-500 focus:ring-red-500">
-                            <span class="text-xs font-bold text-red-700">Urgente</span>
+                <div class="form-group">
+                    <label class="form-label">Etiquetas</label>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <label style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: #fef3c7; border-radius: 20px; cursor: pointer; font-size: 12px;">
+                            <input type="checkbox" value="urgente" class="tag-check"> Urgente
                         </label>
-                        <label class="flex items-center gap-2 px-3 py-2 bg-purple-50 border border-purple-200 rounded-lg cursor-pointer hover:bg-purple-100 transition">
-                            <input type="checkbox" name="tags" value="revision" class="rounded text-purple-500 focus:ring-purple-500">
-                            <span class="text-xs font-bold text-purple-700">Revisión</span>
+                        <label style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: #e0e7ff; border-radius: 20px; cursor: pointer; font-size: 12px;">
+                            <input type="checkbox" value="revision" class="tag-check"> Revisión
                         </label>
-                        <label class="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg cursor-pointer hover:bg-amber-100 transition">
-                            <input type="checkbox" name="tags" value="bloqueado" class="rounded text-amber-500 focus:ring-amber-500">
-                            <span class="text-xs font-bold text-amber-700">Bloqueado</span>
+                        <label style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: #fee2e2; border-radius: 20px; cursor: pointer; font-size: 12px;">
+                            <input type="checkbox" value="bloqueado" class="tag-check"> Bloqueado
                         </label>
                     </div>
                 </div>
                 
-                <div class="border-t border-slate-100 pt-4">
-                    <label class="text-[11px] font-bold text-slate-500 uppercase mb-3 block">Etapas / Checklist</label>
-                    <div class="flex gap-2 mb-3">
-                        <input type="text" id="sub-input" placeholder="Agregar etapa..." class="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-indigo-500" onkeypress="if(event.key==='Enter') App.addEtapaDraft()">
-                        <input type="number" id="sub-hours" placeholder="Horas" class="w-20 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-indigo-500" min="1" value="2">
-                        <button onclick="App.addEtapaDraft()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 rounded-xl font-bold text-sm transition">
+                <div class="form-group">
+                    <label class="form-label">Checklist / Subtareas</label>
+                    <div id="checklist-container"></div>
+                    <div style="display: flex; gap: 8px; margin-top: 8px;">
+                        <input type="text" class="form-input" id="nueva-subtarea" placeholder="Agregar paso..." style="flex: 1;" onkeypress="if(event.key==='Enter') app.agregarSubtarea()">
+                        <button class="btn btn-secondary" onclick="app.agregarSubtarea()">
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
-                    <div id="etapas-draft" class="space-y-2"></div>
-                </div>
-                
-                <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mt-4">
-                    <div class="flex items-center gap-2 mb-2">
-                        <i class="fas fa-lightbulb text-indigo-500"></i>
-                        <span class="text-xs font-bold text-indigo-700 uppercase">Estimación Inteligente</span>
-                    </div>
-                    <p class="text-xs text-indigo-600" id="time-estimate">Tiempo total estimado: <span class="font-bold">0 horas</span></p>
                 </div>
             </div>
-            
-            <div class="p-6 border-t border-slate-100 bg-slate-50/50 flex gap-3">
-                <button onclick="App.cerrarModal('modal-tarea')" class="flex-1 p-3 font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition text-sm">
-                    Cancelar
-                </button>
-                <button onclick="App.guardarTarea()" class="flex-[2] p-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 transition text-sm flex items-center justify-center gap-2">
-                    <i class="fas fa-paper-plane"></i> Crear y Asignar
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="app.cerrarModal('modal-tarea')">Cancelar</button>
+                <button class="btn btn-primary" onclick="app.guardarTarea()">
+                    <i class="fas fa-save"></i>
+                    Guardar Tarea
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: Justificar Retraso -->
-    <div id="modal-retraso" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-        <div class="glass-card p-6 w-full max-w-lg border-t-4 border-red-500 shadow-2xl">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center text-red-600">
-                    <i class="fas fa-exclamation-triangle text-xl"></i>
-                </div>
-                <div>
-                    <h3 class="text-lg font-black text-slate-800">Justificación de Retraso</h3>
-                    <p class="text-xs text-slate-500">Tarea vencida requiere explicación</p>
-                </div>
-            </div>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block">Motivo del retraso <span class="text-red-500">*</span></label>
-                    <select id="motivo-select" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold outline-none focus:ring-2 focus:ring-red-500 mb-2" onchange="if(this.value==='otro') document.getElementById('motivo-otro').classList.remove('hidden')">
-                        <option value="">Seleccione un motivo...</option>
-                        <option value="dependencia_externa">Esperando aprobación/dependencia externa</option>
-                        <option value="recursos">Falta de recursos/herramientas</option>
-                        <option value="alcance">Cambio de alcance/requerimientos</option>
-                        <option value="capacidad">Sobrecarga de trabajo/capacidad</option>
-                        <option value="tecnico">Problemas técnicos/imprevistos</option>
-                        <option value="otro">Otro (especificar)</option>
-                    </select>
-                    <textarea id="motivo-text" class="w-full p-3 bg-red-50 border border-red-200 rounded-xl h-24 outline-none font-medium text-sm resize-none focus:ring-2 focus:ring-red-500 hidden" placeholder="Describa el Motivo específico..."></textarea>
-                </div>
-                
-                <div>
-                    <label class="text-[11px] font-bold text-slate-500 uppercase mb-2 block">Nueva fecha compromiso (opcional)</label>
-                    <input type="datetime-local" id="nueva-fecha" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold outline-none focus:ring-2 focus:ring-indigo-500">
-                </div>
-            </div>
-            
-            <div class="flex gap-3 mt-6">
-                <button onclick="App.cerrarModal('modal-retraso')" class="flex-1 p-3 font-bold text-slate-500 hover:bg-slate-50 rounded-xl transition text-sm">Cancelar</button>
-                <button onclick="App.guardarMotivo()" class="flex-1 p-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold shadow-lg shadow-red-200 transition text-sm">
-                    Registrar Justificación
+    <!-- Modal Ver/Editar Tarea -->
+    <div class="modal-overlay" id="modal-ver">
+        <div class="modal" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2 style="font-size: 20px; font-weight: 700;">📋 Detalle de Tarea</h2>
+                <button onclick="app.cerrarModal('modal-ver')" style="background: none; border: none; font-size: 20px; color: #94a3b8; cursor: pointer;">
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
-        </div>
-    </div>
-
-    <!-- MODAL: Admin de Equipo -->
-    <div id="modal-admin" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-        <div class="glass-card p-0 w-full max-w-4xl border-t-4 border-purple-500 shadow-2xl max-h-[90vh] overflow-hidden flex flex-col">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                <h3 class="text-xl font-black text-slate-800">Administración de Equipo</h3>
-                <button onclick="App.cerrarModal('modal-admin')" class="text-slate-400 hover:text-slate-600">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            
-            <div class="flex-1 overflow-y-auto custom-scrollbar p-6">
-                <!-- Stats del equipo -->
-                <div class="grid grid-cols-4 gap-4 mb-6" id="admin-stats">
-                    <!-- Se llena dinámicamente -->
-                </div>
-
-                <!-- Formulario nuevo -->
-                <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 mb-6">
-                    <h4 class="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
-                        <i class="fas fa-user-plus text-purple-500"></i> Agregar Nuevo Miembro
-                    </h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <input type="text" id="new-nombre" placeholder="Nombre completo *" class="p-3 rounded-lg border border-slate-200 outline-none focus:border-purple-500 text-sm">
-                        <input type="text" id="new-cargo" placeholder="Cargo / Rol *" class="p-3 rounded-lg border border-slate-200 outline-none focus:border-purple-500 text-sm">
-                        <input type="email" id="new-email" placeholder="Correo electrónico *" class="p-3 rounded-lg border border-slate-200 outline-none focus:border-purple-500 text-sm">
-                        <input type="tel" id="new-tel" placeholder="WhatsApp (57300...)" class="p-3 rounded-lg border border-slate-200 outline-none focus:border-purple-500 text-sm">
-                        <select id="new-rol" class="p-3 rounded-lg border border-slate-200 outline-none focus:border-purple-500">
-                            <option value="miembro">Miembro de Equipo</option>
-                            <option value="lider">Líder de Proyecto</option>
-                            <option value="admin">Administrador</option>
-                        </select>
-                        <button onclick="App.agregarMiembro()" class="bg-purple-600 hover:bg-purple-700 text-white p-3 rounded-lg font-bold text-sm transition flex items-center justify-center gap-2">
-                            <i class="fas fa-plus"></i> Agregar al Equipo
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Lista detallada -->
-                <div id="lista-equipo-admin" class="space-y-3"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: Notificaciones -->
-    <div id="modal-notificaciones" class="fixed inset-0 z-50 hidden items-center justify-end p-4">
-        <div class="glass-card p-0 w-full max-w-md shadow-2xl overflow-hidden">
-            <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="font-bold text-slate-800">Notificaciones</h3>
-                <button onclick="App.marcarTodasLeidas()" class="text-xs font-bold text-indigo-600 hover:text-indigo-700">Marcar todas leídas</button>
-            </div>
-            <div id="lista-notificaciones" class="max-h-96 overflow-y-auto custom-scrollbar p-2">
+            <div class="modal-body" id="ver-contenido">
                 <!-- Se llena dinámicamente -->
             </div>
-        </div>
-    </div>
-
-    <!-- MODAL: Detalle de Tarea -->
-    <div id="modal-detalle" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-        <div class="glass-card p-0 w-full max-w-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
-            <div id="detalle-content" class="flex-1 overflow-y-auto custom-scrollbar p-6">
-                <!-- Se llena dinámicamente -->
+            <div class="modal-footer">
+                <button class="btn btn-danger" onclick="app.eliminarTareaActual()">
+                    <i class="fas fa-trash"></i>
+                    Eliminar
+                </button>
+                <button class="btn btn-secondary" onclick="app.cerrarModal('modal-ver')">Cerrar</button>
+                <button class="btn btn-primary" onclick="app.guardarEdicion()">
+                    <i class="fas fa-save"></i>
+                    Guardar Cambios
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Toast notifications -->
-    <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-2 pointer-events-none"></div>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toasts"></div>
 
     <script>
-        // =====================================================
-        // MASTER OS PLATINUM v10.0 - SISTEMA COMPLETO
-        // =====================================================
+        // ==========================================
+        // MASTER OS PLATINUM v10.0 - APP COMPLETA
+        // ==========================================
         
-        const App = {
-            // Configuración
-            config: {
-                horario: { inicio: 7, finLV: 18, finS: 13, diasLaborales: [1,2,3,4,5], Sabado: 6 },
-                colores: {
-                    prioridad: { high: '#ef4444', medium: '#f59e0b', low: '#10b981' },
-                    estado: { pendiente: '#f59e0b', progreso: '#6366f1', revision: '#8b5cf6', completada: '#10b981', bloqueada: '#ef4444' }
-                }
-            },
-            
-            // Estado global
-            estado: {
-                equipo: [],
+        const app = {
+            // Datos iniciales
+            data: {
                 tareas: [],
-                notificaciones: [],
-                vistaActual: 'global',
-                filtroTemporal: 'mes',
-                filtroPrioridad: 'all',
-                filtroTag: null,
-                busqueda: '',
-                darkMode: false,
-                usuarioActual: { id: 1, nombre: 'Admin', rol: 'admin' }
+                equipo: [
+                    { id: 1, nombre: "Carlos Ruiz", cargo: "Director", email: "carlos@empresa.com", color: "#6366f1" },
+                    { id: 2, nombre: "Ana López", cargo: "Gerente de Proyectos", email: "ana@empresa.com", color: "#ec4899" },
+                    { id: 3, nombre: "Luis Torres", cargo: "Desarrollador", email: "luis@empresa.com", color: "#10b981" },
+                    { id: 4, nombre: "María García", cargo: "Diseñadora", email: "maria@empresa.com", color: "#f59e0b" }
+                ],
+                vistaActual: 'dashboard',
+                tareaEditando: null,
+                subtareasTemp: []
             },
             
             // Inicialización
             init() {
                 this.cargarDatos();
-                if (this.estado.tareas.length === 0) this.generarDatosDemo();
-                this.actualizarSidebar();
-                this.render();
-                this.startTime();
+                if (this.data.tareas.length === 0) {
+                    this.crearDatosDemo();
+                }
+                this.actualizarSelectResponsables();
+                this.navegar('dashboard');
+                this.iniciarAutoGuardado();
                 
-                // Verificaciones periódicas
-                setInterval(() => {
-                    this.ActualizarEstadoLaboral();
-                    this.VerificarVencimientos();
-                    this.Render();
-                }, 60000);
-                
-                // Set fecha actual en calendario
-                document.getElementById('calendar-input').valueAsDate = new Date();
-                this.ActualizarEstadoLaboral();
-                this.VerificarVencimientos();
-            },
-            
-            // Carga y persistencia
-            cargarDatos() {
-                const savedTeam = localStorage.getItem('v10_team');
-                const savedTasks = localStorage.getItem('v10_tasks');
-                const savedNotif = localStorage.getItem('v10_notif');
-                
-                if (savedTeam) this.estado.equipo = JSON.parse(savedTeam);
-                if (savedTasks) this.estado.tareas = JSON.parse(savedTasks);
-                if (savedNotif) this.estado.notificaciones = JSON.parse(savedNotif);
-            },
-            
-            guardarTodo() {
-                localStorage.setItem('v10_team', JSON.stringify(this.estado.equipo));
-                localStorage.setItem('v10_tasks', JSON.stringify(this.estado.tareas));
-                localStorage.setItem('v10_notif', JSON.stringify(this.estado.notificaciones));
-                document.getElementById('last-backup').innerText = 'Hace ' + Math.floor(Math.random() * 10) + ' min';
-            },
-            
-            // Datos de ejemplo
-            generarDatosDemo() {
-                const plantillas = [
-                    { texto: "Auditoría Financiera Q2", cat: "finanzas", prio: "high", etapas: [["Recopilación", 4], ["Análisis", 8], ["Informe", 4]] },
-                    { texto: "Migración Sistema Legacy", cat: "tecnología", prio: "high", etapas: [["Backup", 2], ["Migración", 12], ["Testing", 6], ["Deploy", 2]] },
-                    { texto: "Diseño UX Portal Clientes", cat: "diseño", prio: "medium", etapas: [["Research", 8], ["Wireframes", 12], ["Prototipos", 16], ["Testing", 8]] },
-                    { texto: "Capacitación Equipo Scrum", cat: "rrhh", prio: "low", etapas: [["Plan", 4], ["Material", 8], ["Ejecución", 16]] },
-                    { texto: "Optimización Procesos ERP", cat: "operaciones", prio: "medium", etapas: [["Diagnóstico", 8], ["Propuesta", 8], ["Implementación", 20]] },
-                    { texto: "Informe de Sostenibilidad", cat: "legal", prio: "medium", etapas: [["Datos", 8], ["Redacción", 12], ["Revisión", 4]] },
-                    { texto: "Integración API Bancaria", cat: "tecnología", prio: "high", etapas: [["Análisis", 6], ["Desarrollo", 20], ["Seguridad", 12]] },
-                    { texto: "Campaña Marketing Q3", cat: "marketing", prio: "medium", etapas: [["Estrategia", 8], ["Creativos", 12], ["Ejecución", 16]] },
-                    { texto: "Revisión de Seguros", cat: "legal", prio: "low", etapas: [["Cotización", 4], ["Comparativo", 4], ["Negociación", 4]] },
-                    { texto: "Automatización Reportes", cat: "tecnología", prio: "medium", etapas: [["Requerimientos", 4], ["ETL", 16], ["Dashboard", 12]] }
-                ];
-                
-                let idCounter = Date.now();
-                
-                this.estado.equipo.forEach((user, uIdx) => {
-                    plantillas.forEach((plantilla, pIdx) => {
-                        const diasOffset = (uIdx * 10) + pIdx + Math.floor(Math.random() * 5);
-                        const fecha = new Date();
-                        fecha.setDate(fecha.getDate() + diasOffset);
-                        fecha.setHours(17, 0, 0, 0);
-                        
-                        const progreso = Math.random();
-                        const subtasks = plantilla.etapas.map(([nombre, horas], i) => ({
-                            t: nombre,
-                            c: progreso > ((i + 1) / plantilla.etapas.length),
-                            h: horas
-                        }));
-                        
-                        this.estado.tareas.push({
-                            id: idCounter++,
-                            texto: plantilla.texto,
-                            userId: user.id,
-                            categoria: plantilla.cat,
-                            prioridad: plantilla.prio,
-                            deadline: fecha.toISOString(),
-                            created: new Date().toISOString(),
-                            descripcion: `Tarea crítica para el área de ${plantilla.cat}. Requiere coordinación con stakeholders.`,
-                            tags: progreso > 0.8 ? [] : (Math.random() > 0.7 ? ['urgente'] : []),
-                            delayReason: "",
-                            subtasks: subtasks,
-                            tiempoEstimado: plantilla.etapas.reduce((a, b) => a + b[1], 0),
-                            comentarios: [],
-                            Historial: [{fecha: new Date().toISOString(), accion: 'Tarea creada', usuario: 'Sistema'}]
-                        });
-                    });
-                });
-                
-                this.guardarTodo();
-            },
-            
-            // Sistema de notificaciones
-            VerificarVencimientos() {
-                const ahora = new Date();
-                const umbralUrgente = 4 * 60 * 60 * 1000;
-                
-                this.estado.tareas.forEach(t => {
-                    const deadline = new Date(t.deadline);
-                    const tiempoRestante = Deadline - ahora;
-                    
-                    if (TiempoRestante > 0 && TiempoRestante < umbralUrgente && !t.notificadoUrgente) {
-                        const user = this.estado.equipo.find(u => U.id === t.userId);
-                        this.CrearNotificacion({
-                            tipo: 'urgente',
-                            titulo: `⏰ Tarea próxima a vencer: ${t.texto}`,
-                            mensaje: `Vence En ${Math.round(TiempoRestante/3600000)} horas. Responsable: ${user?.nombre || 'N/A'}`,
-                            tareaId: t.id,
-                            Leida: false,
-                            fecha: new Date().toISOString()
-                        });
-                        t.NotificadoUrgente = true;
-                    }
-                    
-                    if (TiempoRestante < 0 && !T.Subtasks.every(s => s.c) && !T.NotificadoVencida) {
-                        const user = this.estado.equipo.find(U => U.id === T.userId);
-                        this.CrearNotificacion({
-                            tipo: 'vencida',
-                            titulo: `🚨 Tarea vencida: ${t.texto}`,
-                            mensaje: `Requiere justificación inmediata. Responsable: ${user?.nombre || 'N/A'}`,
-                            tareaId: t.id,
-                            Leida: False,
-                            fecha: new Date().toISOString()
-                        });
-                        T.NotificadoVencida = true;
-                    }
-                });
-                
-                this.ActualizarBadgeNotificaciones();
-                this.GuardarTodo();
-            },
-            
-            CrearNotificacion(notif) {
-                this.estado.notificaciones.unshift(notif);
-                if (this.estado.notificaciones.length > 50) this.estado.notificaciones.pop();
-                this.MostrarToast(notif.titulo, notif.tipo);
-            },
-            
-            MostrarToast(mensaje, tipo = 'info') {
-                const colores = {
-                    urgente: 'bg-red-500',
-                    vencida: 'bg-red-600',
-                    info: 'bg-indigo-500',
-                    exito: 'bg-emerald-500'
-                };
-                
-                const Toast = document.createElement('div');
-                Toast.className = `${colores[tipo] || colores.info} text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-slide-in pointer-events-auto cursor-pointer`;
-                Toast.innerHTML = `
-                    <i class="fas ${tipo === 'exito' ? 'fa-check-circle' : tipo === 'urgente' || tipo === 'vencida' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
-                    <span class="font-semibold text-sm">${mensaje}</span>
-                `;
-                Toast.onclick = () => Toast.remove();
-                
-                document.getElementById('toast-container').appendChild(Toast);
-                
-                setTimeout(() => {
-                    Toast.style.opacity = '0';
-                    Toast.style.transform = 'translateY(20px)';
-                    setTimeout(() => Toast.remove(), 300);
-                }, 5000);
-            },
-            
-            // Renderizado principal
-            Render() {
-                const Container = document.getElementById('main-render');
-                const FilterBar = document.getElementById('filter-bar');
-                
-                // Mostrar/ocultar filtros según vista
-                const vistasConFiltro = ['rep-', 'analytics', 'timeline'];
-                FilterBar.ClassList.toggle('hidden', !vistasConFiltro.some(v => this.estado.vistaActual.startsWith(v)));
-                
-                // Actualizar navegación activa
-                document.querySelectorAll('nav button').forEach(BTN => BTN.ClassList.remove('btn-active'));
-                
-                switch(this.estado.vistaActual) {
-                    case 'global':
-                        document.getElementById('nav-global').classList.add('btn-active');
-                        this.RenderGlobal(Container);
-                        break;
-                    case 'Kanban':
-                        document.getElementById('nav-Kanban').classList.add('btn-active');
-                        this.RenderKanban(Container);
-                        break;
-                    case 'Timeline':
-                        document.getElementById('nav-timeline').classList.add('btn-active');
-                        this.RenderTimeline(Container);
-                        break;
-                    case 'Analytics':
-                        document.getElementById('nav-analytics').classList.add('btn-active');
-                        this.RenderAnalytics(Container);
-                        break;
-                    default:
-                        if (this.estado.vistaActual.startsWith('rep-')) {
-                            const userId = this.estado.vistaActual.split('-')[1];
-                            document.querySelector(`button[onclick="App.CambiarVista('rep-${userId}')"]`)?.classList.add('btn-active');
-                            this.RenderInformePersonal(Container, userId);
-                        }
+                // Responsive
+                if (window.innerWidth <= 1024) {
+                    document.getElementById('menu-btn').style.display = 'block';
                 }
             },
             
-            RenderGlobal(Container) {
-                const tareasFiltradas = this.AplicarFiltrosGlobales(this.estado.tareas);
-                const Stats = this.CalcularEstadisticas(tareasFiltradas);
+            // Crear datos de ejemplo
+            crearDatosDemo() {
+                const ahora = new Date();
+                const tareasDemo = [
+                    {
+                        id: Date.now(),
+                        titulo: "Implementar nuevo módulo de facturación",
+                        responsable: 1,
+                        prioridad: "high",
+                        fecha: new Date(ahora.getTime() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+                        descripcion: "Desarrollar el módulo completo con integración API",
+                        tags: ["urgente"],
+                        subtareas: [
+                            { texto: "Análisis de requerimientos", completado: true },
+                            { texto: "Diseño de base de datos", completado: true },
+                            { texto: "Desarrollo backend", completado: false },
+                            { texto: "Pruebas de integración", completado: false }
+                        ],
+                        estado: "progress",
+                        creado: ahora.toISOString()
+                    },
+                    {
+                        id: Date.now() + 1,
+                        titulo: "Diseño de interfaz usuario",
+                        responsable: 4,
+                        prioridad: "medium",
+                        fecha: new Date(ahora.getTime() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+                        descripcion: "Crear mockups y prototipos interactivos",
+                        tags: ["revision"],
+                        subtareas: [
+                            { texto: "Research de usuarios", completado: true },
+                            { texto: "Wireframes", completado: false },
+                            { texto: "Prototipo Figma", completado: false }
+                        ],
+                        estado: "progress",
+                        creado: ahora.toISOString()
+                    },
+                    {
+                        id: Date.now() + 2,
+                        titulo: "Revisión de seguridad",
+                        responsable: 3,
+                        prioridad: "high",
+                        fecha: new Date(ahora.getTime() + 1 * 24 * 60 * 60 * 1000).toISOString(),
+                        descripcion: "Auditoría de vulnerabilidades",
+                        tags: ["urgente"],
+                        subtareas: [
+                            { texto: "Scan de vulnerabilidades", completado: false },
+                            { texto: "Reporte de hallazgos", completado: false }
+                        ],
+                        estado: "pending",
+                        creado: ahora.toISOString()
+                    }
+                ];
                 
-                Container.innerHTML = `
-                    <div class="space-y-6">
-                        <!-- KPIs -->
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            ${this.RenderKPI('Total Tareas', Stats.total, 'indigo', 'fa-tasks', Stats.cambioTotal)}
-                            ${this.RenderKPI('Completadas', Stats.completadas, 'emerald', 'fa-check-circle', Stats.cambioCompletadas)}
-                            ${This.RenderKPI('En Progreso', Stats.progreso, 'blue', 'fa-spinner', null)}
-                            ${This.RenderKPI('Vencidas', Stats.vencidas, 'red', 'fa-exclamation-triangle', null, true)}
+                this.data.tareas = tareasDemo;
+                this.guardar();
+            },
+            
+            // Persistencia
+            guardar() {
+                localStorage.setItem('masteros_data', JSON.stringify({
+                    tareas: this.data.tareas,
+                    equipo: this.data.equipo
+                }));
+                document.getElementById('last-save').textContent = 'Guardado ' + new Date().toLocaleTimeString();
+            },
+            
+            cargarDatos() {
+                const guardado = localStorage.getItem('masteros_data');
+                if (guardado) {
+                    const parsed = JSON.parse(guardado);
+                    this.data.tareas = parsed.tareas || [];
+                    this.data.equipo = parsed.equipo || this.data.equipo;
+                }
+            },
+            
+            iniciarAutoGuardado() {
+                setInterval(() => this.guardar(), 30000); // Cada 30 segundos
+            },
+            
+            // Navegación
+            navegar(vista) {
+                this.data.vistaActual = vista;
+                
+                // Actualizar nav
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                document.getElementById('nav-' + vista)?.classList.add('active');
+                
+                // Actualizar título
+                const titulos = {
+                    dashboard: 'Dashboard',
+                    tareas: 'Todas las Tareas',
+                    kanban: 'Vista Kanban',
+                    timeline: 'Línea de Tiempo',
+                    equipo: 'Mi Equipo'
+                };
+                document.getElementById('page-title').textContent = titulos[vista] || 'Master OS';
+                
+                // Renderizar contenido
+                const contenedor = document.getElementById('contenido');
+                
+                switch(vista) {
+                    case 'dashboard':
+                        this.renderDashboard(contenedor);
+                        break;
+                    case 'tareas':
+                        this.renderTareas(contenedor);
+                        break;
+                    case 'kanban':
+                        this.renderKanban(contenedor);
+                        break;
+                    case 'timeline':
+                        this.renderTimeline(contenedor);
+                        break;
+                    case 'equipo':
+                        this.renderEquipo(contenedor);
+                        break;
+                }
+                
+                // Cerrar sidebar en móvil
+                if (window.innerWidth <= 1024) {
+                    document.getElementById('sidebar').classList.remove('open');
+                }
+            },
+            
+            // Renderizar Dashboard
+            renderDashboard(container) {
+                const stats = this.calcularStats();
+                
+                container.innerHTML = `
+                    <div class="grid-4 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Tareas</div>
+                            <div class="stat-value" style="color: #6366f1;">${stats.total}</div>
+                            <div style="font-size: 12px; color: #64748b;">${stats.pendientes} pendientes</div>
                         </div>
-                        
-                        <!-- Gráfico de actividad -->
-                        <div class="glass-card p-6">
-                            <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                <i class="fas fa-fire text-orange-500"></i> Actividad Reciente
-                            </h3>
-                            <div class="flex gap-1 flex-wrap">
-                                ${This.GenerarHeatmap()}
-                            </div>
-                            <div class="flex items-center gap-4 mt-4 text-xs text-slate-500">
-                                <span>Menos</span>
-                                <div class="flex gap-1">
-                                    <div class="w-3 h-3 rounded bg-slate-200"></div>
-                                    <div class="W-3 h-3 rounded bg-indigo-300"></div>
-                                    <div class="W-3 h-3 rounded bg-indigo-500"></div>
-                                    <div class="W-3 h-3 rounded bg-indigo-700"></div>
-                                </div>
-                                <span>Más actividad</span>
-                            </div>
+                        <div class="stat-card">
+                            <div class="stat-label">En Progreso</div>
+                            <div class="stat-value" style="color: #3b82f6;">${stats.progreso}</div>
+                            <div style="font-size: 12px; color: #64748b;">${Math.round(stats.progreso/stats.total*100)}%</div>
                         </div>
-                        
-                        <!-- Lista de tareas -->
-                        <div>
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="font-bold text-slate-800">Tareas Activas</h3>
-                                <div class="flex gap-2">
-                                    <button onclick="App.CambiarVista('Kanban')" class="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
-                                        <i class="fas fa-columns"></i> Vista Kanban
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-                                ${TareasFiltradas.map(t => this.CardTarea(t)).join('')}
-                            </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Completadas</div>
+                            <div class="stat-value" style="color: #10b981;">${stats.completadas}</div>
+                            <div style="font-size: 12px; color: #64748b;">Este mes</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Urgentes</div>
+                            <div class="stat-value" style="color: #ef4444;">${stats.urgentes}</div>
+                            <div style="font-size: 12px; color: #64748b;">Requieren atención</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3 style="font-size: 18px; font-weight: 700;">Tareas Prioritarias</h3>
+                            <button class="btn btn-sm btn-secondary" onclick="app.navegar('tareas')">Ver todas</button>
+                        </div>
+                        <div style="display: grid; gap: 16px;">
+                            ${this.data.tareas
+                                .filter(t => t.prioridad === 'high' || this.esUrgente(t))
+                                .slice(0, 5)
+                                .map(t => this.cardTarea(t))
+                                .join('') || '<p style="color: #64748b; text-align: center; padding: 40px;">No hay tareas prioritarias</p>'}
                         </div>
                     </div>
                 `;
             },
             
-            RenderKPI(titulo, valor, color, icono, cambio, clickable = false) {
-                const colores = {
-                    indigo: 'bg-indigo-500', emerald: 'bg-emerald-500', blue: 'bg-blue-500',
-                    red: 'bg-red-500', amber: 'bg-amber-500', purple: 'bg-purple-500'
-                };
-                const onClick = clickable ? `onclick="App.FiltrarPorEstado('vencidas')"` : '';
-                const cursor = clickable ? 'cursor-pointer hover:scale-105' : '';
+            // Renderizar Lista de Tareas
+            renderTareas(container) {
+                const tareas = this.data.tareas.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+                
+                container.innerHTML = `
+                    <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="btn btn-sm btn-secondary" onclick="app.filtrar('todas')">Todas</button>
+                        <button class="btn btn-sm btn-secondary" onclick="app.filtrar('pendientes')">Pendientes</button>
+                        <button class="btn btn-sm btn-secondary" onclick="app.filtrar('progreso')">En Progreso</button>
+                        <button class="btn btn-sm btn-secondary" onclick="app.filtrar('completadas')">Completadas</button>
+                        <button class="btn btn-sm btn-secondary" onclick="app.filtrar('urgentes')">Urgentes</button>
+                    </div>
+                    
+                    <div style="display: grid; gap: 16px;">
+                        ${tareas.length > 0 ? tareas.map(t => this.cardTarea(t)).join('') : 
+                          '<div class="card" style="text-align: center; padding: 60px; color: #64748b;"><i class="fas fa-clipboard-check" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i><p>No hay tareas. ¡Crea la primera!</p></div>'}
+                    </div>
+                `;
+            },
+            
+            // Card de tarea
+            cardTarea(t) {
+                const progreso = Math.round(t.subtareas.filter(s => s.completado).length / t.subtareas.length * 100) || 0;
+                const responsable = this.data.equipo.find(e => e.id === t.responsable);
+                const esVencida = new Date(t.fecha) < new Date() && progreso < 100;
+                const prioridadClass = `priority-${t.prioridad}`;
+                
+                let badgeClass = 'badge-pending';
+                let badgeText = 'Pendiente';
+                if (progreso === 100) { badgeClass = 'badge-done'; badgeText = 'Completada'; }
+                else if (progreso > 0) { badgeClass = 'badge-progress'; badgeText = 'En Progreso'; }
+                else if (esVencida) { badgeClass = 'badge-delayed'; badgeText = 'Vencida'; }
                 
                 return `
-                    <div class="glass-card p-5 ${cursor} transition-transform" ${onclick}>
-                        <div class="flex justify-between items-start">
+                    <div class="card ${prioridadClass}" style="cursor: pointer;" onclick="app.verTarea(${t.id})">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                             <div>
-                                <p class="text-[11px] font-bold text-slate-500 uppercase mb-1">${titulo}</p>
-                                <p class="text-3xl font-black text-slate-800">${valor}</p>
-                                ${cambio !== null ? `<p class="text-xs ${cambio >= 0 ? 'text-emerald-600' : 'text-red-600'} font-semibold mt-1">
-                                    <i class="fas fa-arrow-${cambio >= 0 ? 'up' : 'down'}"></i> ${Math.abs(cambio)}% vs ayer
-                                </p>` : ''}
+                                <span class="badge ${badgeClass}">${badgeText}</span>
+                                ${t.tags.map(tag => `<span style="margin-left: 8px; font-size: 11px; color: #64748b;">#${tag}</span>`).join('')}
                             </div>
-                            <div class="w-12 h-12 ${colores[color] || colores.indigo} bg-opacity-10 rounded-xl flex items-center justify-center text-${color}-600">
-                                <i class="fas ${icono} text-xl ${colores[color] ? `text-${color}-600` : 'text-indigo-600'}"></i>
+                            <div style="font-size: 12px; color: ${esVencida ? '#ef4444' : '#64748b'}; font-weight: 600;">
+                                <i class="far fa-clock"></i> ${this.formatearFecha(t.fecha)}
+                            </div>
+                        </div>
+                        
+                        <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 8px; ${progreso === 100 ? 'text-decoration: line-through; opacity: 0.6;' : ''}">${t.titulo}</h4>
+                        
+                        <p style="font-size: 13px; color: #64748b; margin-bottom: 12px; line-height: 1.5;">${t.descripcion || 'Sin descripción'}</p>
+                        
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 28px; height: 28px; border-radius: 50%; background: ${responsable?.color || '#cbd5e1'}; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 700;">
+                                    ${responsable?.nombre.charAt(0) || '?'}
+                                </div>
+                                <span style="font-size: 12px; color: #475569;">${responsable?.nombre || 'Sin asignar'}</span>
+                            </div>
+                            
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="flex: 1; min-width: 100px;">
+                                    <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
+                                        <span style="color: #64748b;">Progreso</span>
+                                        <span style="font-weight: 700;">${progreso}%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${progreso}%; ${progreso === 100 ? 'background: #10b981;' : ''}"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 `;
             },
             
-            RenderKanban(Container) {
-                const Columnas = {
-                    pendiente: this.estado.tareas.filter(t => !t.Subtasks.some(s => s.c) && !this.CalcularTiempoRestante(t.deadline).vencida),
-                    progreso: this.estado.tareas.filter(t => T.Subtasks.some(s => s.c) && !T.Subtasks.every(s => s.c)),
-                    revision: this.estado.tareas.filter(T => T.tags?.includes('revision')),
-                    completada: this.estado.tareas.filter(T => T.Subtasks.every(s => S.c))
+            // Renderizar Kanban
+            renderKanban(container) {
+                const columnas = {
+                    pendiente: this.data.tareas.filter(t => this.getProgreso(t) === 0 && !this.esVencida(t)),
+                    progreso: this.data.tareas.filter(t => this.getProgreso(t) > 0 && this.getProgreso(t) < 100),
+                    revision: this.data.tareas.filter(t => t.tags.includes('revision') && this.getProgreso(t) < 100),
+                    completada: this.data.tareas.filter(t => this.getProgreso(t) === 100)
                 };
                 
-                Container.innerHTML = `
-                    <div class="flex gap-4 overflow-x-auto custom-scrollbar pb-4 h-full">
-                        ${This.RenderColumnaKanban('Pendiente', Columnas.pendiente, 'bg-slate-100', 'border-slate-300')}
-                        ${This.RenderColumnaKanban('En Progreso', Columnas.progreso, 'bg-blue-50', 'border-blue-200')}
-                        ${This.RenderColumnaKanban('En Revisión', Columnas.revision, 'bg-Purple-50', 'border-purple-200')}
-                        ${This.RenderColumnaKanban('Completada', Columnas.completada, 'bg-emerald-50', 'border-emerald-200')}
-                    </div>
-                `;
-            },
-            
-            RenderColumnaKanban(titulo, tareas, bgColor, borderColor) {
-                return `
-                    <div class="flex-shrink-0 w-80 flex flex-col">
-                        <div class="flex items-center justify-between mb-3 px-1">
-                            <h4 class="font-bold text-slate-700 text-sm">${titulo}</h4>
-                            <span class="bg-white px-2 py-1 rounded-lg text-xs font-bold text-slate-500 shadow-sm">${tareas.length}</span>
-                        </div>
-                        <div class="Kanban-column ${bgColor} border ${borderColor} flex-1 space-y-3" 
-                             ondrop="App.DropTarea(event, '${titulo}')" onDragover="App.AllowDrop(event)">
-                            ${Tareas.map(t => this.MiniCardTarea(t)).join('')}
-                            ${Tareas.length === 0 ? '<div class="text-center py-8 text-slate-400 text-xs">Arrastre tareas aquí</div>' : ''}
-                        </div>
-                    </div>
-                `;
-            },
-            
-            MiniCardTarea(t) {
-                const Tiempo = this.CalcularTiempoRestante(t.deadline);
-                const prioridad = T.prioridad === 'high' ? '🔴' : T.prioridad === 'medium' ? '🟡' : '🟢';
-                
-                return `
-                    <div draggable="true" Ondragstart="App.DragTarea(event, ${T.id})" 
-                         class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 cursor-Move hover:shadow-md transition group"
-                         data-tarea-id="${T.id}">
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="text-xs">${prioridad}</span>
-                            ${tiempo.vencida ? '<span class="text-xs text-red-500 font-bold">VENCIDA</span>' : ''}
-                        </div>
-                        <p class="text-sm font-bold text-slate-800 mb-2 line-clamp-2">${T.texto}</p>
-                        <div class="flex justify-between items-center text-xs text-slate-500">
-                            <span><i class="far fa-clock mr-1"></i>${tiempo.texto}</span>
-                            <div class="flex -space-x-2">
-                                ${T.Subtasks.map((s, i) => `
-                                    <div class="W-6 h-6 rounded-full ${S.c ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'} flex items-center justify-center text-[10px] border-2 border-white" title="${S.t}">
-                                        ${S.c ? '<i class="fas fa-check"></i>' : i + 1}
+                container.innerHTML = `
+                    <div class="kanban-board">
+                        ${Object.entries(columnas).map(([estado, tareas]) => `
+                            <div class="kanban-column" ondrop="app.drop(event, '${estado}')" ondragover="app.allowDrop(event)">
+                                <div class="kanban-header">
+                                    <h4 style="font-weight: 700; text-transform: capitalize;">${this.nombreColumna(estado)}</h4>
+                                    <span style="background: #e2e8f0; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 700;">${tareas.length}</span>
+                                </div>
+                                ${tareas.map(t => `
+                                    <div class="kanban-card priority-${t.prioridad}" draggable="true" ondragstart="app.drag(event, ${t.id})" onclick="app.verTarea(${t.id})">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                            <span class="badge ${this.getBadgeClass(t)}">${this.getBadgeText(t)}</span>
+                                        </div>
+                                        <h4 style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">${t.titulo}</h4>
+                                        <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #64748b;">
+                                            <i class="far fa-clock"></i> ${this.formatearFecha(t.fecha)}
+                                        </div>
                                     </div>
                                 `).join('')}
                             </div>
-                        </div>
+                        `).join('')}
                     </div>
                 `;
             },
             
-            RenderTimeline(Container) {
-                const TareasOrdenadas = [...this.estado.tareas].sort((a, b) => new Date(a.deadline) - new Date(b.Deadline));
-                const Hoy = new Date();
+            // Renderizar Timeline
+            renderTimeline(container) {
+                const tareas = [...this.data.tareas].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
                 
-                Container.innerHTML = `
-                    <div class="max-w-4xl mx-auto">
-                        <h3 class="font-bold text-slate-800 mb-6">Línea de Tiempo de Entregas</h3>
-                        <div class="relative pl-8 space-y-6">
-                            <div class="timeline-line"></div>
-                            ${TareasOrdenadas.map((t, i) => {
-                                const Fecha = new Date(T.deadline);
-                                const Diff = Math.ceil((Fecha - Hoy) / (1000 * 60 * 60 * 24));
-                                Let Color = 'bg-slate-400';
-                                If (Diff < 0) Color = 'bg-red-500';
-                                Else If (Diff <= 2) Color = 'bg-amber-500';
-                                Else If (Diff <= 7) Color = 'bg-indigo-500';
-                                Else Color = 'bg-emerald-500';
-                                
-                                Const User = this.estado.equipo.find(U => U.id === T.userId);
+                container.innerHTML = `
+                    <div class="card">
+                        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 24px;">Línea de Tiempo de Entregas</h3>
+                        <div class="timeline">
+                            ${tareas.map(t => {
+                                const progreso = this.getProgreso(t);
+                                const esVencida = this.esVencida(t);
+                                const color = progreso === 100 ? '#10b981' : esVencida ? '#ef4444' : '#6366f1';
                                 
                                 return `
-                                    <div class="relative animate-slide-in" style="animation-delay: ${i * 50}ms">
-                                        <div class="timeline-dot absolute -left-8 top-1 ${color}"></div>
-                                        <div class="glass-card p-4 ${T.Subtasks.every(s => s.c) ? 'opacity-60' : ''}">
-                                            <div class="flex justify-between items-start">
+                                    <div class="timeline-item">
+                                        <div class="timeline-dot" style="background: ${color}; box-shadow: 0 0 0 2px ${color};"></div>
+                                        <div class="card" style="margin-left: 12px;">
+                                            <div style="display: flex; justify-content: space-between; align-items: start;">
                                                 <div>
-                                                    <div class="flex items-center gap-2 mb-1">
-                                                        <span class="text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">
-                                                            ${Fecha.toLocaleDateString('es-ES', {weekday: 'short', day: 'numeric', month: 'short'})}
-                                                        </span>
-                                                        <span class="text-xs font-bold ${diff < 0 ? 'text-red-600' : diff <= 2 ? 'text-amber-600' : 'text-slate-500'}">
-                                                            ${diff < 0 ? `Vencido hace ${Math.abs(diff)} días` : diff === 0 ? '¡Hoy!' : `En ${diff} días`}
-                                                        </span>
-                                                    </div>
-                                                    <h4 class="font-bold text-slate-800 ${T.Subtasks.every(s => S.c) ? 'line-through text-slate-400' : ''}">${T.texto}</h4>
-                                                    <p class="text-xs text-slate-500 mt-1">
-                                                        <i class="fas fa-user mr-1"></i>${User?.nombre || 'Sin asignar'} • 
-                                                        <i class="fas fa-check-circle mr-1"></i>${T.Subtasks.filter(s => S.c).length}/${T.Subtasks.length} etapas
-                                                    </p>
+                                                    <span style="font-size: 12px; color: #64748b; font-weight: 600;">
+                                                        ${new Date(t.fecha).toLocaleDateString('es-ES', {weekday: 'long', day: 'numeric', month: 'long'})}
+                                                    </span>
+                                                    <h4 style="font-weight: 700; margin: 4px 0; ${progreso === 100 ? 'text-decoration: line-through; opacity: 0.6;' : ''}">${t.titulo}</h4>
+                                                    <p style="font-size: 13px; color: #64748b;">${this.data.equipo.find(e => e.id === t.responsable)?.nombre || 'Sin asignar'}</p>
                                                 </div>
-                                                <div class="text-right">
-                                                    <div class="text-2xl font-black ${T.Subtasks.every(s => S.c) ? 'text-emerald-500' : 'text-slate-300'}">
-                                                        ${Math.round((T.Subtasks.filter(s => S.c).length / T.Subtasks.length) * 100)}%
-                                                    </div>
-                                                </div>
+                                                <span class="badge ${this.getBadgeClass(t)}">${this.getBadgeText(t)}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -1022,1129 +958,418 @@
                 `;
             },
             
-            RenderAnalytics(Container) {
-                const Stats = this.CalcularEstadisticasDetalladas();
-                
-                Container.innerHTML = `
-                    <div class="space-y-6">
-                        <div class="flex justify-between items-center">
-                            <h2 class="text-2xl font-black text-slate-800">Analytics Avanzado</h2>
-                            <div class="flex gap-2">
-                                <button onclick="App.ExportarReporteAnalytics()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold text-sm">
-                                    <i class="fas fa-download mr-2"></i>Exportar
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <div class="glass-card p-6">
-                                <h4 class="font-bold text-slate-800 mb-4">Productividad por Miembro</h4>
-                                <canvas id="chartProductividad" height="250"></canvas>
-                            </div>
+            // Renderizar Equipo
+            renderEquipo(container) {
+                container.innerHTML = `
+                    <div class="grid-2">
+                        ${this.data.equipo.map(m => {
+                            const tareasCount = this.data.tareas.filter(t => t.responsable === m.id).length;
+                            const completadas = this.data.tareas.filter(t => t.responsable === m.id && this.getProgreso(t) === 100).length;
+                            const eficiencia = tareasCount > 0 ? Math.round(completadas / tareasCount * 100) : 0;
                             
-                            <div class="glass-card p-6">
-                                <h4 class="font-bold text-slate-800 mb-4">Distribución por Prioridad</h4>
-                                <Canvas id="ChartPrioridad" height="250"></canvas>
-                            </div>
-                            
-                            <div class="glass-card p-6 lg:col-span-2">
-                                <h4 class="Font-bold text-slate-800 mb-4">Tendencia de Completación (Últimos 7 días)</h4>
-                                <Canvas id="ChartTendencia" height="200"></canvas>
-                            </div>
-                        </div>
-                        
-                        <div class="glass-card p-6">
-                            <h4 class="font-bold text-slate-800 mb-4">Tabla de Rendimiento Detallado</h4>
-                            <div class="overflow-x-auto">
-                                <Table class="w-full text-sm">
-                                    <thead class="bg-slate-50 text-slate-600 font-bold text-xs uppercase">
-                                        <tr>
-                                            <th class="px-4 py-3 text-left">Miembro</th>
-                                            <Th class="px-4 py-3 text-center">Tareas Asignadas</th>
-                                            <Th class="px-4 py-3 text-center">Completadas</th>
-                                            <Th class="px-4 py-3 text-center">Eficiencia</th>
-                                            <Th class="px-4 py-3 text-center">Tiempo Promedio</th>
-                                            <Th class="px-4 py-3 text-center">Tendencia</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-slate-100">
-                                        ${Stats.porPersona.map(p => `
-                                            <tr class="hover:bg-slate-50 transition">
-                                                <td class="px-4 py-3 font-semibold text-slate-800">
-                                                    <div class="flex items-center gap-2">
-                                                        <div class="W-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center text-xs font-bold">
-                                                            ${p.nombre.split(' ').map(n => n[0]).join('').substring(0,2)}
-                                                        </div>
-                                                        ${p.nombre}
-                                                    </div>
-                                                </td>
-                                                <td class="px-4 py-3 text-center font-bold">${p.total}</td>
-                                                <td class="px-4 py-3 text-center text-emerald-600 font-bold">${p.completadas}</td>
-                                                <td class="px-4 py-3 text-center">
-                                                    <div class="flex items-center justify-center gap-2">
-                                                        <div class="W-16 h-2 bg-slate-200 rounded-full overflow-hidden">
-                                                            <div class="h-full bg-indigo-500" style="width: ${p.eficiencia}%"></div>
-                                                        </div>
-                                                        <span class="font-bold text-slate-700">${p.eficiencia}%</span>
-                                                    </div>
-                                                </td>
-                                                <td class="px-4 py-3 text-center text-slate-500">${p.tiempoPromedio}h</td>
-                                                <td class="px-4 py-3 text-center">
-                                                    <span class="text-${p.tendencia > 0 ? 'emerald' : 'red'}-500 font-bold">
-                                                        <i class="fas fa-arrow-${p.tendencia > 0 ? 'up' : 'down'}"></i> ${Math.abs(p.tendencia)}%
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        `).join('')}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                // Inicializar gráficos
-                setTimeout(() => this.InitGraficos(Stats), 100);
-            },
-            
-            InitGraficos(Stats) {
-                // Gráfico de barras
-                new Chart(document.getElementById('ChartProductividad'), {
-                    type: 'bar',
-                    data: {
-                        labels: Stats.porPersona.map(p => p.nombre.split(' ')[0]),
-                        datasets: [{
-                            label: 'Eficiencia %',
-                            data: Stats.porPersona.map(p => p.eficiencia),
-                            backgroundColor: 'rgba(99, 102, 241, 0.8)',
-                            borderRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: { y: { beginAtZero: true, max: 100 } }
-                    }
-                });
-                
-                // Gráfico circular
-                const prioridades = { high: 0, medium: 0, low: 0 };
-                this.estado.tareas.forEach(t => prioridades[T.prioridad || 'medium']++);
-                
-                new Chart(document.getElementById('ChartPrioridad'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Alta', 'Media', 'Baja'],
-                        datasets: [{
-                            data: [prioridades.high, prioridades.medium, prioridades.low],
-                            backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        cutout: '70%'
-                    }
-                });
-                
-                // Gráfico de línea
-                const dias = Array.from({length: 7}, (_, i) => {
-                    const d = new Date();
-                    d.setDate(d.getDate() - (6 - i));
-                    return d.toLocaleDateString('es-ES', {weekday: 'short'});
-                });
-                
-                new Chart(document.getElementById('ChartTendencia'), {
-                    type: 'line',
-                    data: {
-                        labels: dias,
-                        datasets: [{
-                            label: 'Tareas Completadas',
-                            data: Stats.tendenciaDiaria,
-                            borderColor: '#6366f1',
-                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 3
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: { y: { beginAtZero: true } }
-                    }
-                });
-            },
-            
-            RenderInformePersonal(Container, uId) {
-                const user = this.estado.equipo.find(U => U.id == uId);
-                if (!user) return;
-                
-                const tareasUser = this.AplicarFiltrosGlobales(this.estado.tareas.filter(T => T.userId == uId));
-                const Stats = this.CalcularEstadisticas(TareasUser);
-                
-                document.getElementById('header-title').innerText = `Informe: ${User.nombre}`;
-                
-                Container.innerHTML = `
-                    <div class="max-w-5xl mx-auto pb-10 space-y-6">
-                        <div class="glass-card p-8 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white border-none shadow-xl relative overflow-hidden">
-                            <div class="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/svg%3E')]"></div>
-                            <div class="relative z-10 flex justify-between items-center">
-                                <div class="flex items-center gap-4">
-                                    <div class="W-20 h-20 bg-white/20 backdrop-blur rounded-2xl flex items-center justify-center text-3xl font-black border border-white/30">
-                                        ${User.nombre.split(' ').map(n => n[0]).join('').substring(0,2)}
+                            return `
+                                <div class="card">
+                                    <div style="display: flex; align-items: center; gap: 16px;">
+                                        <div style="width: 60px; height: 60px; border-radius: 50%; background: ${m.color}; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: 700;">
+                                            ${m.nombre.charAt(0)}
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <h4 style="font-weight: 700; font-size: 18px;">${m.nombre}</h4>
+                                            <p style="color: #64748b; font-size: 14px;">${m.cargo}</p>
+                                            <p style="color: #94a3b8; font-size: 12px; margin-top: 4px;">${m.email}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h2 class="text-3xl font-black mb-1">${User.nombre}</h2>
-                                        <p class="text-indigo-200 font-semibold text-sm">${User.cargo}</p>
-                                        <div class="flex gap-3 mt-2 text-xs text-indigo-200">
-                                            <span><i class="fas fa-envelope mr-1"></i>${User.email}</span>
-                                            <span><i class="fas fa-phone mr-1"></i>${User.tel}</span>
+                                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                                        <div class="text-center">
+                                            <div style="font-size: 24px; font-weight: 800; color: #6366f1;">${tareasCount}</div>
+                                            <div style="font-size: 11px; color: #64748b; text-transform: uppercase;">Tareas</div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div style="font-size: 24px; font-weight: 800; color: #10b981;">${completadas}</div>
+                                            <div style="font-size: 11px; color: #64748b; text-transform: uppercase;">Hechas</div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div style="font-size: 24px; font-weight: 800; color: #f59e0b;">${eficiencia}%</div>
+                                            <div style="font-size: 11px; color: #64748b; text-transform: uppercase;">Eficiencia</div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="text-right">
-                                    <div class="text-6xl font-black mb-1">${Stats.eficiencia}%</div>
-                                    <div class="text-xs font-bold text-indigo-200 uppercase tracking-wider">Eficiencia del Periodo</div>
-                                </div>
-                            </div>
-                            
-                            <div class="grid grid-cols-4 gap-4 mt-8 pt-6 border-t border-white/20">
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold">${Stats.total}</div>
-                                    <div class="text-[10px] uppercase tracking-wider text-indigo-200">Total Tareas</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-emerald-300">${Stats.completadas}</div>
-                                    <div class="text-[10px] uppercase tracking-wider text-indigo-200">Completadas</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-amber-300">${Stats.progreso}</div>
-                                    <div class="text-[10px] uppercase tracking-wider text-indigo-200">En Progreso</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-red-300">${Stats.vencidas}</div>
-                                    <div class="text-[10px] uppercase tracking-wider text-indigo-200">Vencidas</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h4 class="font-bold text-slate-800 mb-4">Detalle de Tareas</h4>
-                            <div class="space-y-4">
-                                ${tareasUser.length > 0 ? tareasUser.map(t => this.CardTarea(t, true)).join('') : `
-                                    <div class="text-center py-12 text-slate-400 glass-card">
-                                        <i class="fas fa-clipboard-check text-4xl mb-3"></i>
-                                        <p class="font-semibold">No hay tareas para el período seleccionado</p>
-                                    </div>
-                                `}
-                            </div>
-                        </div>
+                            `;
+                        }).join('')}
                     </div>
                 `;
             },
             
-            // Componentes reutilizables
-            CardTarea(t, detallado = false) {
-                const done = T.Subtasks.filter(s => s.c).length;
-                const total = T.Subtasks.length;
-                const pct = Math.round((done / total) * 100);
-                const tiempo = this.CalcularTiempoRestante(T.deadline);
-                const isVencida = tiempo.vencida && pct < 100;
-                const user = this.estado.equipo.find(U => U.id == T.userId);
-                const prioridad = T.prioridad || 'medium';
-                const prioridadClass = `priority-${prioridad}`;
+            // Helpers
+            getProgreso(t) {
+                if (!t.subtareas || t.subtareas.length === 0) return 0;
+                return Math.round(t.subtareas.filter(s => s.completado).length / t.subtareas.length * 100);
+            },
+            
+            esVencida(t) {
+                return new Date(t.fecha) < new Date() && this.getProgreso(t) < 100;
+            },
+            
+            esUrgente(t) {
+                const horas = (new Date(t.fecha) - new Date()) / (1000 * 60 * 60);
+                return horas < 24 && horas > 0 && this.getProgreso(t) < 100;
+            },
+            
+            getBadgeClass(t) {
+                const p = this.getProgreso(t);
+                if (p === 100) return 'badge-done';
+                if (p > 0) return 'badge-progress';
+                if (this.esVencida(t)) return 'badge-delayed';
+                return 'badge-pending';
+            },
+            
+            getBadgeText(t) {
+                const p = this.getProgreso(t);
+                if (p === 100) return 'Completada';
+                if (p > 0) return 'En Progreso';
+                if (this.esVencida(t)) return 'Vencida';
+                return 'Pendiente';
+            },
+            
+            nombreColumna(estado) {
+                const nombres = {
+                    pendiente: 'Pendiente',
+                    progreso: 'En Progreso',
+                    revision: 'En Revisión',
+                    completada: 'Completada'
+                };
+                return nombres[estado] || estado;
+            },
+            
+            formatearFecha(fecha) {
+                const f = new Date(fecha);
+                const hoy = new Date();
+                const diff = Math.ceil((f - hoy) / (1000 * 60 * 60 * 24));
                 
-                let statusClass = "status-progress";
-                let statusText = "En progreso";
-                if (pct === 100) { statusClass = "status-done"; statusText = "Completada"; }
-                else if (isVencida) { statusClass = "status-delayed"; statusText = "Vencida"; }
-                else if (tiempo.urgente) { statusClass = "status-pending"; statusText = "Urgente"; }
-                else if (T.tags?.includes('revision')) { statusClass = "status-review"; statusText = "En revisión"; }
+                if (diff === 0) return 'Hoy';
+                if (diff === 1) return 'Mañana';
+                if (diff < 0) return `Hace ${Math.abs(diff)} días`;
+                return f.toLocaleDateString('es-ES', {day: 'numeric', month: 'short'});
+            },
+            
+            calcularStats() {
+                const total = this.data.tareas.length;
+                const completadas = this.data.tareas.filter(t => this.getProgreso(t) === 100).length;
+                const progreso = this.data.tareas.filter(t => this.getProgreso(t) > 0 && this.getProgreso(t) < 100).length;
+                const pendientes = total - completadas - progreso;
+                const urgentes = this.data.tareas.filter(t => this.esUrgente(t)).length;
                 
-                return `
-                    <div class="glass-card p-5 ${prioridadClass} ${isVencida ? 'bg-red-50/50' : ''} hover:shadow-lg transition group" data-tarea-id="${T.id}">
-                        <div class="flex justify-between items-start mb-3">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <span class="text-[10px] font-bold px-2.5 py-1 rounded-full ${statusClass}">
-                                    ${statusText}
-                                </span>
-                                ${T.tags?.map(tag => `
-                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">
-                                        #${tag}
-                                    </span>
-                                `).join('') || ''}
-                                ${tiempo.urgente && !isVencida ? '<span class="animate-pulse text-amber-500"><i class="fas fa-clock"></i></span>' : ''}
-                            </div>
-                            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition">
-                                <button onclick="App.AbrirDetalleTarea(${T.id})" class="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-indigo-600 transition" title="Ver detalle">
-                                    <i class="fas fa-expand-alt"></i>
-                                </button>
-                                <button onclick="App.DuplicarTarea(${T.id})" class="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-indigo-600 transition" title="Duplicar">
-                                    <i class="fas fa-copy"></i>
-                                </button>
-                                <button onclick="App.EliminarTarea(${T.id})" class="p-1.5 hover:bg-red-100 rounded-lg text-slate-400 hover:text-red-600 transition" title="Eliminar">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </div>
+                return { total, completadas, progreso, pendientes, urgentes };
+            },
+            
+            // Acciones
+            abrirModalTarea() {
+                this.data.subtareasTemp = [];
+                this.data.tareaEditando = null;
+                document.getElementById('t-titulo').value = '';
+                document.getElementById('t-descripcion').value = '';
+                document.getElementById('t-fecha').value = '';
+                document.getElementById('checklist-container').innerHTML = '';
+                document.querySelectorAll('.tag-check').forEach(c => c.checked = false);
+                
+                document.getElementById('modal-tarea').classList.add('active');
+            },
+            
+            verTarea(id) {
+                const t = this.data.tareas.find(x => x.id === id);
+                if (!t) return;
+                
+                this.data.tareaEditando = t;
+                const responsable = this.data.equipo.find(e => e.id === t.responsable);
+                
+                document.getElementById('ver-contenido').innerHTML = `
+                    <div class="form-group">
+                        <label class="form-label">Título</label>
+                        <input type="text" class="form-input" id="edit-titulo" value="${t.titulo}">
+                    </div>
+                    
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Responsable</label>
+                            <select class="form-select" id="edit-responsable">
+                                ${this.data.equipo.map(e => `<option value="${e.id}" ${e.id === t.responsable ? 'selected' : ''}>${e.nombre}</option>`).join('')}
+                            </select>
                         </div>
-                        
-                        <h4 class="text-base font-bold text-slate-800 mb-2 leading-snug cursor-pointer hover:text-indigo-600 transition" onclick="App.AbrirDetalleTarea(${T.id})">
-                            ${T.texto}
-                        </h4>
-                        
-                        ${detallado && T.descripcion ? `<p class="text-xs text-slate-500 mb-3 line-clamp-2">${T.descripcion}</p>` : ''}
-                        
-                        ${user ? `
-                            <div class="flex items-center gap-2 mb-3">
-                                <div class="W-6 h-6 rounded-full bg-gradient-to-br from-indigo-400 to-purple-400 text-white flex items-center justify-center text-[10px] font-bold">
-                                    ${User.nombre.split(' ').map(n => n[0]).join('').substring(0,2)}
-                                </div>
-                                <span class="text-[11px] text-slate-500 font-medium">${User.nombre}</span>
-                            </div>
-                        ` : ''}
-                        
-                        <div class="space-y-2 mb-4">
-                            ${T.Subtasks.map((s, i) => `
-                                <div class="flex items-center gap-3 group/sub">
-                                    <input type="checkbox" ${S.c ? 'checked' : ''} onchange="App.ToggleSub(${T.id}, ${i})" 
-                                        class="W-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 no-print cursor-pointer transition">
-                                    <span class="text-xs ${S.c ? 'text-slate-400 line-through' : 'text-slate-700 font-semibold'} flex-1">${S.t}</span>
-                                    ${S.h ? `<span class="text-[10px] text-slate-400 font-mono">${S.h}h</span>` : ''}
-                                    ${S.c ? '<i class="fas fa-check-circle text-emerald-500 text-xs"></i>' : ''}
+                        <div class="form-group">
+                            <label class="form-label">Prioridad</label>
+                            <select class="form-select" id="edit-prioridad">
+                                <option value="low" ${t.prioridad === 'low' ? 'selected' : ''}>🟢 Baja</option>
+                                <option value="medium" ${t.prioridad === 'medium' ? 'selected' : ''}>🟡 Media</option>
+                                <option value="high" ${t.prioridad === 'high' ? 'selected' : ''}>🔴 Alta</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Fecha límite</label>
+                        <input type="datetime-local" class="form-input" id="edit-fecha" value="${t.fecha.slice(0, 16)}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-textarea" id="edit-descripcion" rows="2">${t.descripcion || ''}</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Checklist (${t.subtareas.filter(s => s.completado).length}/${t.subtareas.length})</label>
+                        <div id="edit-checklist">
+                            ${t.subtareas.map((s, i) => `
+                                <div class="checklist-item ${s.completado ? 'completed' : ''}">
+                                    <input type="checkbox" ${s.completado ? 'checked' : ''} onchange="app.toggleSubtarea(${i})" id="sub-${i}">
+                                    <span style="flex: 1;">${s.texto}</span>
+                                    <button onclick="app.eliminarSubtarea(${i})" style="background: none; border: none; color: #ef4444; cursor: pointer;">
+                                        <i class="fas fa-times"></i>
+                                    </button>
                                 </div>
                             `).join('')}
                         </div>
-                        
-                        <div class="pt-3 border-t border-slate-100">
-                            <div class="flex justify-between items-center mb-2">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-[10px] font-bold text-slate-500 uppercase">Progreso</span>
-                                    ${T.tiempoEstimado ? `<span class="text-[10px] text-slate-400">• ${T.tiempoEstimado}h estimadas</span>` : ''}
-                                </div>
-                                <span class="text-xs font-black text-slate-800">${pct}%</span>
-                            </div>
-                            <div class="progress-bar bg-slate-200">
-                                <div class="progress-fill ${pct === 100 ? '!bg-emerald-500' : isVencida ? '!bg-red-500' : ''}" style="width: ${pct}%"></div>
-                            </div>
-                            
-                            <div class="flex justify-between items-center mt-3 text-xs">
-                                <div class="flex items-center gap-2">
-                                    <span class="${isVencida ? 'text-red-600 font-bold' : 'text-slate-500'} timer-display">
-                                        <i class="far fa-clock mr-1"></i>${tiempo.texto}
-                                    </span>
-                                    <span class="text-slate-300">|</span>
-                                    <span class="text-slate-400">${new Date(T.deadline).toLocaleDateString('es-ES', {day:'numeric', month:'short', hour:'2-digit'})}</span>
-                                </div>
-                                ${T.comentarios?.length > 0 ? `<span class="text-indigo-500 font-bold"><i class="fas fa-comment mr-1"></i>${T.comentarios.length}</span>` : ''}
-                            </div>
-                            
-                            ${T.delayReason ? `
-                                <div class="mt-3 p-3 bg-red-50 border border-red-100 rounded-lg">
-                                    <p class="text-[11px] font-bold text-red-700 mb-1"><i class="fas fa-exclamation-circle mr-1"></i>Motivo de retraso:</p>
-                                    <p class="text-xs text-red-600 italic">"${T.delayReason}"</p>
-                                </div>
-                            ` : (isVencida ? `
-                                <button onclick="App.PedirMotivo(${T.id})" class="W-full mt-3 p-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg no-print transition flex items-center justify-center gap-2">
-                                    <i class="fas fa-comment-alt"></i> Justificar Retraso
-                                </button>
-                            ` : '')}
+                        <div style="display: flex; gap: 8px; margin-top: 8px;">
+                            <input type="text" class="form-input" id="nueva-sub-edit" placeholder="Nueva subtarea..." style="flex: 1;" onkeypress="if(event.key==='Enter') app.agregarSubtareaEdit()">
+                            <button class="btn btn-secondary" onclick="app.agregarSubtareaEdit()">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Progreso: ${this.getProgreso(t)}%</label>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${this.getProgreso(t)}%"></div>
                         </div>
                     </div>
                 `;
+                
+                document.getElementById('modal-ver').classList.add('active');
             },
             
-            // Funciones de cálculo
-            CalcularTiempoRestante(deadline) {
-                const ahora = new Date();
-                const vencimiento = new Date(deadline);
+            guardarTarea() {
+                const titulo = document.getElementById('t-titulo').value.trim();
+                const responsable = parseInt(document.getElementById('t-responsable').value);
+                const prioridad = document.getElementById('t-prioridad').value;
+                const fecha = document.getElementById('t-fecha').value;
+                const descripcion = document.getElementById('t-descripcion').value.trim();
                 
-                if (vencimiento <= ahora) return { vencida: true, texto: "VENCIDA", clase: "status-delayed" };
-                
-                const diffMs = vencimiento - ahora;
-                const horas = Math.floor(diffMs / (1000 * 60 * 60));
-                const dias = Math.floor(horas / 24);
-                const horasRest = horas % 24;
-                const mins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-                
-                if (dias > 7) return { vencida: false, texto: `${dias} días`, clase: "status-progress", urgente: false };
-                if (dias > 0) return { vencida: false, texto: `${dias}d ${horasRest}h`, clase: "status-progress", urgente: dias <= 1 };
-                if (horasRest > 4) return { vencida: false, texto: `${horasRest}h ${mins}m`, clase: "status-progress", urgente: false };
-                if (horasRest > 0) return { vencida: false, texto: `${horasRest}h ${mins}m`, clase: "status-pending", urgente: true };
-                return { vencida: false, texto: `${mins}m`, clase: "status-delayed", urgente: true };
-            },
-            
-            CalcularEstadisticas(tareas) {
-                const total = tareas.length;
-                const completadas = tareas.filter(t => t.Subtasks.every(s => s.c)).length;
-                const vencidas = tareas.filter(t => this.CalcularTiempoRestante(t.deadline).vencida && !t.Subtasks.every(s => s.c)).length;
-                const progreso = total - completadas - vencidas;
-                const eficiencia = total > 0 ? Math.round((completadas / total) * 100) : 0;
-                
-                return { total, completadas, vencidas, progreso, eficiencia, cambioTotal: 5, cambioCompletadas: 12 };
-            },
-            
-            CalcularEstadisticasDetalladas() {
-                const porPersona = this.estado.equipo.map(U => {
-                    const tareasUser = this.estado.tareas.filter(T => T.userId === U.id);
-                    const completadas = tareasUser.filter(T => T.Subtasks.every(s => s.c));
-                    const total = tareasUser.length;
-                    const eficiencia = total > 0 ? Math.round((completadas.length / total) * 100) : 0;
-                    
-                    return {
-                        nombre: U.nombre,
-                        total,
-                        completadas: completadas.length,
-                        eficiencia,
-                        tiempoPromedio: total > 0 ? Math.round(tareasUser.reduce((a, t) => a + (T.tiempoEstimado || 0), 0) / total) : 0,
-                        tendencia: Math.floor(Math.random() * 20) - 5
-                    };
-                });
-                
-                const tendenciaDiaria = Array.from({length: 7}, () => Math.floor(Math.random() * 5) + 1);
-                
-                return { porPersona, tendenciaDiaria };
-            },
-            
-            // Filtros y búsqueda
-            AplicarFiltrosGlobales(tareas) {
-                let resultado = [...tareas];
-                
-                const dateVal = document.getElementById('calendar-input')?.value;
-                if (dateVal && this.estado.filtroTemporal !== 'mes') {
-                    const fechaSel = new Date(dateVal);
-                    if (this.estado.filtroTemporal === 'dia') {
-                        resultado = resultado.filter(t => new Date(T.deadline).toDateString() === fechaSel.toDateString());
-                    } else if (this.estado.filtroTemporal === 'semana') {
-                        const finSemana = new Date(fechaSel);
-                        finSemana.setDate(finSemana.getDate() + 7);
-                        resultado = resultado.filter(t => {
-                            const f = new Date(T.deadline);
-                            return f >= fechaSel && f <= finSemana;
-                        });
-                    }
-                }
-                
-                const prio = document.getElementById('priority-filter')?.value;
-                if (prio && prio !== 'all') {
-                    resultado = resultado.filter(t => T.prioridad === prio);
-                }
-                
-                if (this.estado.filtroTag) {
-                    resultado = resultado.filter(t => T.tags?.includes(this.estado.filtroTag));
-                }
-                
-                if (this.estado.busqueda) {
-                    const q = this.estado.busqueda.toLowerCase();
-                    resultado = resultado.filter(t => 
-                        T.texto.toLowerCase().includes(q) || 
-                        T.descripcion?.toLowerCase().includes(q) ||
-                        this.estado.equipo.find(U => U.id === T.userId)?.nombre.toLowerCase().includes(q)
-                    );
-                }
-                
-                return resultado;
-            },
-            
-            BuscarGlobal(valor) {
-                this.estado.busqueda = valor;
-                this.Render();
-            },
-            
-            FiltrarPorTag(tag) {
-                this.estado.filtroTag = this.estado.filtroTag === tag ? null : tag;
-                this.Render();
-            },
-            
-            SetFiltro(f) {
-                this.estado.filtroTemporal = f;
-                ['dia', 'semana', 'mes', 'trimestre'].forEach(tipo => {
-                    const btn = document.getElementById(`f-${tipo}`);
-                    if (tipo === f) {
-                        btn.classList.add('bg-white', 'text-indigo-600', 'shadow-sm');
-                        btn.classList.remove('text-slate-600');
-                    } else {
-                        btn.classList.remove('bg-white', 'text-indigo-600', 'shadow-sm');
-                        btn.classList.add('text-slate-600');
-                    }
-                });
-                this.Render();
-            },
-            
-            // Acciones de tareas
-            ToggleSub(tId, sIdx) {
-                const t = this.estado.tareas.find(x => x.id == tId);
-                if (t) {
-                    t.Subtasks[sIdx].c = !t.Subtasks[sIdx].c;
-                    t.Historial.push({
-                        fecha: new Date().toISOString(),
-                        accion: `Etapa "${T.Subtasks[sIdx].t}" ${T.Subtasks[sIdx].c ? 'completada' : 'revertida'}`,
-                        usuario: this.estado.usuarioActual.nombre
-                    });
-                    
-                    if (T.Subtasks.every(s => s.c)) {
-                        t.status = "completada";
-                        t.fechaCompletada = new Date().toISOString();
-                        this.MostrarToast(`¡Tarea "${T.texto}" completada!`, 'exito');
-                    }
-                    
-                    this.GuardarTodo();
-                    this.Render();
-                }
-            },
-            
-            GuardarTarea() {
-                const nombre = document.getElementById('t-nombre').value.trim();
-                const userId = parseInt(document.getElementById('t-resp').value);
-                const deadline = document.getElementById('t-deadline').value;
-                const prioridad = document.getElementById('t-priority').value;
-                const descripcion = document.getElementById('t-desc')?.value.trim();
-                
-                if (!nombre || !deadline) {
-                    this.MostrarToast("Complete los campos obligatorios", 'urgente');
+                if (!titulo || !fecha) {
+                    this.mostrarToast('Completa los campos obligatorios', 'error');
                     return;
                 }
                 
-                const tags = Array.from(document.querySelectorAll('input[name="tags"]:checked')).map(cb => cb.value);
-                const tiempoTotal = this.draftEtapas.reduce((a, e) => a + (e.horas || 2), 0);
-                
-                const t = {
-                    id: Date.now(),
-                    texto: nombre,
-                    userId: userId,
-                    prioridad,
-                    deadline,
-                    created: new Date().toISOString(),
-                    descripcion,
-                    tags,
-                    delayReason: "",
-                    subtasks: this.draftEtapas.map(s => ({ t: s.texto, c: false, h: s.horas })),
-                    tiempoEstimado: tiempoTotal,
-                    comentarios: [],
-                    Historial: [{fecha: new Date().toISOString(), accion: 'Tarea creada', usuario: this.estado.usuarioActual.nombre}],
-                    status: "pendiente"
-                };
-                
-                this.estado.tareas.push(t);
-                this.GuardarTodo();
-                this.CerrarModal('modal-tarea');
-                
-                // Reset form
-                document.getElementById('t-nombre').value = '';
-                document.getElementById('t-deadline').value = '';
-                document.getElementById('t-desc').value = '';
-                this.draftEtapas = [];
-                this.RenderDrafts();
-                
-                this.MostrarToast("Tarea creada exitosamente", 'exito');
-            },
-            
-            DuplicarTarea(id) {
-                const original = this.estado.tareas.find(T => T.id === id);
-                if (!original) return;
+                const tags = Array.from(document.querySelectorAll('.tag-check:checked')).map(c => c.value);
                 
                 const nueva = {
-                    ...original,
                     id: Date.now(),
-                    texto: `${original.texto} (Copia)`,
-                    created: new Date().toISOString(),
-                    deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-                    subtasks: original.subtasks.map(s => ({...s, c: false})),
-                    status: "pendiente",
-                    Historial: [{fecha: new Date().toISOString(), accion: 'Tarea duplicada', usuario: this.estado.usuarioActual.nombre}]
+                    titulo,
+                    responsable,
+                    prioridad,
+                    fecha,
+                    descripcion,
+                    tags,
+                    subtareas: this.data.subtareasTemp,
+                    creado: new Date().toISOString()
                 };
                 
-                this.estado.tareas.push(nueva);
-                this.GuardarTodo();
-                this.Render();
-                this.MostrarToast("Tarea duplicada", 'exito');
+                this.data.tareas.push(nueva);
+                this.guardar();
+                this.cerrarModal('modal-tarea');
+                this.navegar(this.data.vistaActual);
+                this.mostrarToast('Tarea creada exitosamente', 'success');
             },
             
-            EliminarTarea(id) {
-                if (!confirm('¿Está seguro de eliminar esta tarea? Esta acción no se puede deshacer.')) return;
+            guardarEdicion() {
+                if (!this.data.tareaEditando) return;
                 
-                const idx = this.estado.tareas.findIndex(T => T.id === id);
+                const t = this.data.tareaEditando;
+                t.titulo = document.getElementById('edit-titulo').value;
+                t.responsable = parseInt(document.getElementById('edit-responsable').value);
+                t.prioridad = document.getElementById('edit-prioridad').value;
+                t.fecha = document.getElementById('edit-fecha').value;
+                t.descripcion = document.getElementById('edit-descripcion').value;
+                
+                this.guardar();
+                this.cerrarModal('modal-ver');
+                this.navegar(this.data.vistaActual);
+                this.mostrarToast('Cambios guardados', 'success');
+            },
+            
+            eliminarTareaActual() {
+                if (!this.data.tareaEditando) return;
+                if (!confirm('¿Eliminar esta tarea permanentemente?')) return;
+                
+                const idx = this.data.tareas.findIndex(t => t.id === this.data.tareaEditando.id);
                 if (idx > -1) {
-                    this.estado.tareas.splice(idx, 1);
-                    this.GuardarTodo();
-                    this.Render();
-                    this.MostrarToast("Tarea eliminada", 'exito');
+                    this.data.tareas.splice(idx, 1);
+                    this.guardar();
+                    this.cerrarModal('modal-ver');
+                    this.navegar(this.data.vistaActual);
+                    this.mostrarToast('Tarea eliminada', 'success');
                 }
             },
             
-            AbrirDetalleTarea(id) {
-                const t = this.estado.tareas.find(x => x.id === id);
-                if (!t) return;
-                
-                const user = this.estado.equipo.find(U => U.id === T.userId);
-                const tiempo = this.CalcularTiempoRestante(T.deadline);
-                
-                document.getElementById('detalle-content').innerHTML = `
-                    <div class="p-6 border-b border-slate-100 flex justify-between items-start bg-slate-50/50">
-                        <div>
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="text-[10px] font-bold px-2 py-1 rounded-full ${T.prioridad === 'high' ? 'bg-red-100 text-red-700' : T.prioridad === 'medium' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'} uppercase">
-                                    ${T.prioridad}
-                                </span>
-                                ${T.tags?.map(tag => `<span class="text-[10px] font-bold px-2 py-1 rounded-full bg-slate-100 text-slate-600">#${tag}</span>`).join('') || ''}
-                            </div>
-                            <h3 class="text-xl font-black text-slate-800">${T.texto}</h3>
-                            <p class="text-sm text-slate-500 mt-1">${User?.nombre || 'Sin asignar'} • Creada ${new Date(T.created).toLocaleDateString('es-ES')}</p>
-                        </div>
-                        <button onclick="App.CerrarModal('modal-detalle')" class="text-slate-400 hover:text-slate-600">
-                            <i class="fas fa-times text-xl"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="p-6 space-y-6">
-                        ${T.descripcion ? `
-                            <div>
-                                <h5 class="text-xs font-bold text-slate-500 uppercase mb-2">Descripción</h5>
-                                <p class="text-sm text-slate-700 bg-slate-50 p-4 rounded-xl">${T.descripcion}</p>
-                            </div>
-                        ` : ''}
-                        
-                        <div>
-                            <h5 class="text-xs font-bold text-slate-500 uppercase mb-2">Progreso (${Math.round((T.Subtasks.filter(s=>s.c).length/T.Subtasks.length)*100)}%)</h5>
-                            <div class="space-y-2">
-                                ${T.Subtasks.map((s, i) => `
-                                    <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-                                        <input type="checkbox" ${S.c ? 'checked' : ''} onchange="App.ToggleSub(${T.id}, ${i}); App.AbrirDetalleTarea(${T.id})" 
-                                            class="W-5 h-5 rounded border-slate-300 text-indigo-600 cursor-pointer">
-                                        <span class="flex-1 ${S.c ? 'line-through text-slate-400' : 'text-slate-700 font-semibold'}">${S.t}</span>
-                                        ${S.h ? `<span class="text-xs text-slate-400 font-mono">${S.h}h</span>` : ''}
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-indigo-50 p-4 rounded-xl">
-                                <p class="text-xs font-bold text-indigo-600 uppercase mb-1">Tiempo Restante</p>
-                                <p class="text-lg font-black text-indigo-900">${tiempo.texto}</p>
-                            </div>
-                            <div class="bg-slate-50 p-4 rounded-xl">
-                                <p class="text-xs font-bold text-slate-600 uppercase mb-1">Tiempo Estimado Total</p>
-                                <p class="text-lg font-black text-slate-900">${T.tiempoEstimado || '-'} horas</p>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <h5 class="text-xs font-bold text-slate-500 uppercase mb-2">Comentarios (${T.comentarios?.length || 0})</h5>
-                            <div class="space-y-2 mb-3">
-                                ${T.comentarios?.map(c => `
-                                    <div class="bg-slate-50 p-3 rounded-lg">
-                                        <div class="flex justify-between items-center mb-1">
-                                            <span class="text-xs font-bold text-slate-700">${C.usuario}</span>
-                                            <span class="text-[10px] text-slate-400">${new Date(C.fecha).toLocaleString('es-ES')}</span>
-                                        </div>
-                                        <p class="text-sm text-slate-600">${C.texto}</p>
-                                    </div>
-                                `).join('') || '<p class="text-sm text-slate-400 italic">Sin comentarios</p>'}
-                            </div>
-                            <div class="flex gap-2">
-                                <input type="text" id="nuevo-comentario" placeholder="Agregar comentario..." class="flex-1 p-2 border border-slate-200 rounded-lg text-sm outline-none focus:border-indigo-500" onkeypress="if(event.key==='Enter') App.AgregarComentario(${T.id})">
-                                <button onclick="App.AgregarComentario(${T.id})" class="bg-indigo-600 text-white px-4 rounded-lg text-sm font-bold hover:bg-indigo-700 transition">Enviar</button>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <h5 class="text-xs font-bold text-slate-500 uppercase mb-2">Historial de Cambios</h5>
-                            <div class="space-y-2 max-h-40 overflow-y-auto custom-scrollbar">
-                                ${T.Historial?.map(h => `
-                                    <div class="flex items-center gap-3 text-xs">
-                                        <span class="text-slate-400 whitespace-nowrap">${new Date(H.fecha).toLocaleString('es-ES')}</span>
-                                        <span class="W-1.5 h-1.5 rounded-full bg-indigo-400"></span>
-                                        <span class="text-slate-600">${H.accion}</span>
-                                        <span class="text-slate-400">por ${H.usuario}</span>
-                                    </div>
-                                `).join('') || ''}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="p-6 border-t border-slate-100 bg-slate-50/50 flex gap-2">
-                        ${tiempo.vencida && !T.Subtasks.every(s => s.c) ? `
-                            <button onclick="App.CerrarModal('modal-detalle'); App.PedirMotivo(${T.id})" class="flex-1 p-2.5 bg-red-600 text-white rounded-lg font-bold text-sm hover:bg-red-700 transition">
-                                <i class="fas fa-exclamation-circle mr-2"></i>Justificar Retraso
-                            </button>
-                        ` : ''}
-                        <button onclick="App.DuplicarTarea(${T.id})" class="px-4 py-2.5 border border-slate-300 text-slate-700 rounded-lg font-bold text-sm hover:bg-white transition">
-                            <i class="fas fa-copy mr-2"></i>Duplicar
-                        </button>
-                        <button onclick="App.EliminarTarea(${T.id}); App.CerrarModal('modal-detalle')" class="px-4 py-2.5 border border-red-300 text-red-600 rounded-lg font-bold text-sm hover:bg-red-50 transition">
-                            <i class="fas fa-trash-alt mr-2"></i>Eliminar
-                        </button>
-                    </div>
-                `;
-                
-                document.getElementById('modal-detalle').style.display = 'flex';
-            },
-            
-            AgregarComentario(tareaId) {
-                const input = document.getElementById('nuevo-comentario');
+            // Subtareas
+            agregarSubtarea() {
+                const input = document.getElementById('nueva-subtarea');
                 const texto = input.value.trim();
                 if (!texto) return;
                 
-                const t = this.estado.tareas.find(x => x.id === tareaId);
-                if (!t.comentarios) t.comentarios = [];
-                t.comentarios.push({
-                    texto,
-                    usuario: this.estado.usuarioActual.nombre,
-                    fecha: new Date().toISOString()
-                });
-                
-                this.GuardarTodo();
-                this.AbrirDetalleTarea(tareaId);
-                this.MostrarToast("Comentario agregado", 'exito');
-            },
-            
-            PedirMotivo(id) {
-                this.tareaActualRetraso = id;
-                document.getElementById('modal-retraso').style.display = 'flex';
-            },
-            
-            GuardarMotivo() {
-                const motivo = document.getElementById('motivo-select').value;
-                const texto = document.getElementById('motivo-text').value.trim();
-                const nuevaFecha = document.getElementById('nueva-fecha').value;
-                
-                if (!motivo) {
-                    this.MostrarToast("Seleccione un motivo", 'error');
-                    return;
-                }
-                
-                const t = this.estado.tareas.find(x => x.id === this.tareaActualRetraso);
-                if (t) {
-                    t.delayReason = texto || motivo;
-                    if (nuevaFecha) t.deadline = nuevaFecha;
-                    t.Historial.push({
-                        fecha: new Date().toISOString(),
-                        accion: `Retraso justificado: ${motivo}`,
-                        usuario: this.estado.usuarioActual.nombre
-                    });
-                    
-                    this.GuardarTodo();
-                    this.CerrarModal('modal-retraso');
-                    this.Render();
-                    this.MostrarToast("Justificación registrada", 'exito');
-                }
-            },
-            
-            // Administración de equipo
-            AbrirModalAdmin() {
-                this.RenderListaEquipo();
-                document.getElementById('modal-admin').style.display = 'flex';
-                
-                // Stats
-                const stats = this.CalcularEstadisticasDetalladas();
-                document.getElementById('admin-stats').innerHTML = `
-                    <div class="glass-card p-4 text-center">
-                        <p class="text-2xl font-black text-indigo-600">${this.estado.equipo.length}</p>
-                        <p class="text-[10px] font-bold text-slate-500 uppercase">Miembros</p>
-                    </div>
-                    <div class="glass-card p-4 text-center">
-                        <p class="text-2xl font-black text-emerald-600">${this.estado.tareas.filter(t => t.Subtasks.every(s => s.c)).length}</p>
-                        <p class="text-[10px] font-bold text-slate-500 uppercase">Tareas Completadas</p>
-                    </div>
-                    <div class="glass-card p-4 text-center">
-                        <p class="text-2xl font-black text-amber-600">${this.estado.tareas.filter(t => !t.Subtasks.every(s => s.c)).length}</p>
-                        <p class="text-[10px] font-bold text-slate-500 uppercase">En Progreso</p>
-                    </div>
-                    <div class="glass-card p-4 text-center">
-                        <p class="text-2xl font-black text-purple-600">${Math.round(stats.porPersona.reduce((a,p) => a + p.eficiencia, 0) / (stats.porPersona.length || 1))}%</p>
-                        <p class="text-[10px] font-bold text-slate-500 uppercase">Eficiencia Global</p>
-                    </div>
-                `;
-            },
-            
-            RenderListaEquipo() {
-                const container = document.getElementById('lista-equipo-admin');
-                container.innerHTML = this.estado.equipo.map(p => {
-                    const tareasCount = this.estado.tareas.filter(T => T.userId === P.id).length;
-                    const eficiencia = this.CalcularEficienciaPersonal(P.id);
-                    
-                    return `
-                        <div class="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl hover:shadow-md transition">
-                            <div class="flex items-center gap-3">
-                                <div class="W-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-lg">
-                                    ${P.nombre.split(' ').map(n => n[0]).join('').substring(0,2)}
-                                </div>
-                                <div>
-                                    <p class="font-bold text-slate-800">${P.nombre}</p>
-                                    <p class="text-xs text-slate-500">${P.cargo} • ${P.email}</p>
-                                    <div class="flex gap-3 mt-1 text-[10px] font-bold text-slate-400">
-                                        <span>${tareasCount} tareas</span>
-                                        <span>•</span>
-                                        <span class="${eficiencia > 70 ? 'text-emerald-600' : eficiencia > 40 ? 'text-amber-600' : 'text-red-600'}">${eficiencia}% eficiencia</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex gap-2">
-                                <button onclick="App.VerTareasMiembro(${P.id})" class="p-2 text-indigo-500 hover:bg-indigo-50 rounded-lg transition" title="Ver tareas">
-                                    <i class="fas fa-tasks"></i>
-                                </button>
-                                <button onclick="App.EliminarMiembro(${P.id})" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition" title="Eliminar">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            },
-            
-            CalcularEficienciaPersonal(userId) {
-                const tareasUser = this.estado.tareas.filter(T => T.userId === userId);
-                if (!tareasUser.length) return 0;
-                let sum = 0;
-                tareasUser.forEach(T => {
-                    sum += T.Subtasks.filter(s => s.c).length / T.Subtasks.length;
-                });
-                return Math.round((sum / tareasUser.length) * 100);
-            },
-            
-            AgregarMiembro() {
-                const nombre = document.getElementById('new-nombre').value.trim();
-                const cargo = document.getElementById('new-cargo').value.trim();
-                const email = document.getElementById('new-email').value.trim();
-                const tel = document.getElementById('new-tel').value.trim();
-                const rol = document.getElementById('new-rol').value;
-                
-                if (!nombre || !cargo || !email) {
-                    this.MostrarToast("Complete los campos obligatorios", 'error');
-                    return;
-                }
-                
-                const nuevo = {
-                    id: Date.now(),
-                    nombre,
-                    cargo,
-                    email,
-                    tel,
-                    rol,
-                    activo: true
-                };
-                
-                this.estado.equipo.push(nuevo);
-                this.GuardarTodo();
-                this.RenderListaEquipo();
-                this.ActualizarSidebar();
-                
-                // Limpiar form
-                document.getElementById('new-nombre').value = '';
-                document.getElementById('new-cargo').value = '';
-                document.getElementById('new-email').value = '';
-                document.getElementById('new-tel').value = '';
-                
-                this.MostrarToast("Miembro agregado exitosamente", 'exito');
-            },
-            
-            EliminarMiembro(id) {
-                if (!confirm('¿Eliminar este miembro? Se reasignarán sus tareas.')) return;
-                
-                const idx = this.estado.equipo.findIndex(U => U.id === id);
-                if (idx > -1) {
-                    // Reasignar tareas al admin
-                    this.estado.tareas.filter(T => T.userId === id).forEach(T => {
-                        T.userId = this.estado.usuarioActual.id;
-                    });
-                    
-                    this.estado.equipo.splice(idx, 1);
-                    this.GuardarTodo();
-                    this.RenderListaEquipo();
-                    this.ActualizarSidebar();
-                    this.MostrarToast("Miembro eliminado", 'exito');
-                }
-            },
-            
-            VerTareasMiembro(userId) {
-                this.CerrarModal('modal-admin');
-                this.CambiarVista(`rep-${userId}`);
-            },
-            
-            // Utilidades
-            GenerarHeatmap() {
-                let html = '';
-                for (let i = 0; i < 90; i++) {
-                    const intensidad = Math.random();
-                    let bg = 'bg-slate-200';
-                    if (intensidad > 0.8) bg = 'bg-indigo-700';
-                    else if (intensidad > 0.6) bg = 'bg-indigo-500';
-                    else if (intensidad > 0.3) bg = 'bg-indigo-300';
-                    html += `<div class="W-3 h-3 rounded ${bg}"></div>`;
-                }
-                return html;
-            },
-            
-            // Drag and drop
-            AllowDrop(ev) { ev.preventDefault(); },
-            
-            DragTarea(ev, tareaId) {
-                ev.dataTransfer.setData("tareaId", tareaId);
-                ev.target.classList.add('dragging');
-            },
-            
-            DropTarea(ev, columna) {
-                ev.preventDefault();
-                const tareaId = parseInt(ev.dataTransfer.getData("tareaId"));
-                const t = this.estado.tareas.find(x => x.id === tareaId);
-                
-                if (t) {
-                    if (columna === 'Completada') {
-                        t.Subtasks.forEach(s => s.c = true);
-                        t.status = 'completada';
-                        t.fechaCompletada = new Date().toISOString();
-                    } else if (columna === 'Pendiente') {
-                        t.Subtasks.forEach(s => s.c = false);
-                        t.status = 'pendiente';
-                    }
-                    this.GuardarTodo();
-                    this.Render();
-                    this.MostrarToast(`Tarea movida a ${columna}`, 'exito');
-                }
-                
-                document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
-            },
-            
-            // Exportaciones
-            ExportarExcel() {
-                let csv = 'ID,Tarea,Responsable,Prioridad,Estado,Progreso,Vencimiento,Etiquetas\n';
-                const tareas = this.AplicarFiltrosGlobales(this.estado.tareas);
-                
-                tareas.forEach(T => {
-                    const user = this.estado.equipo.find(U => U.id === T.userId);
-                    const pct = Math.round((T.Subtasks.filter(s => s.c).length / T.Subtasks.length) * 100);
-                    csv += `${T.id},"${T.texto}","${User?.nombre || ''}",${T.prioridad || 'medium'},${pct}%,${new Date(T.deadline).toLocaleDateString('es-ES')},"${T.tags?.join(', ') || ''}"\n`;
-                });
-                
-                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = `master-os-reporte-${new Date().toISOString().split('T')[0]}.csv`;
-                link.click();
-                
-                this.MostrarToast("Reporte CSV descargado", 'exito');
-            },
-            
-            GenerarPDF() {
-                window.print();
-            },
-            
-            EnviarEmail() {
-                if (!this.estado.vistaActual.startsWith('rep-')) {
-                    this.MostrarToast("Seleccione un miembro primero", 'urgente');
-                    return;
-                }
-                const userId = this.estado.vistaActual.split('-')[1];
-                const user = this.estado.equipo.find(U => U.id == userId);
-                
-                setTimeout(() => {
-                    this.MostrarToast(`Informe enviado a ${User.email}`, 'exito');
-                }, 1000);
-            },
-            
-            NotificarWhatsApp() {
-                if (!this.estado.vistaActual.startsWith('rep-')) {
-                    this.MostrarToast("Seleccione un miembro primero", 'urgente');
-                    return;
-                }
-                const userId = this.estado.vistaActual.split('-')[1];
-                const user = this.estado.equipo.find(U => U.id == userId);
-                const eficiencia = this.CalcularEficienciaPersonal(userId);
-                
-                const mensaje = `*Master OS - Informe de Actividades*%0A%0A` +
-                               `👤 *${User.nombre}*%0A` +
-                               `💼 ${User.cargo}%0A` +
-                               `📊 Eficiencia: ${eficiencia}%25%0A%0A` +
-                               `Tareas: ${this.estado.tareas.filter(T => T.userId == userId).length}%0A` +
-                               `Generado: ${new Date().toLocaleDateString('es-ES')}`;
-                
-                window.open(`https://wa.me/${User.tel}?text=${mensaje}`, '_blank');
-            },
-            
-            // Sistema
-            ActualizarSidebar() {
-                const container = document.getElementById('sidebar-team-list');
-                container.innerHTML = this.estado.equipo.map(P => {
-                    const tareasCount = this.estado.tareas.filter(T => T.userId === P.id && !T.Subtasks.every(s => s.c)).length;
-                    return `
-                        <button onclick="App.CambiarVista('rep-${P.id}')" 
-                            class="W-full text-left p-3 rounded-xl flex items-center gap-3 hover:text-white transition text-sm ${this.estado.vistaActual === 'rep-' + P.id ? 'btn-active' : 'text-slate-400 hover:bg-slate-800/50'}">
-                            <div class="W-2 h-2 rounded-full ${this.estado.vistaActual === 'rep-' + P.id ? 'bg-indigo-400 shadow-lg shadow-indigo-500/50' : 'bg-slate-600'}"></div>
-                            <div class="flex-1 min-w-0">
-                                <p class="font-semibold truncate text-sm">${P.nombre}</p>
-                                <div class="flex justify-between items-center">
-                                    <p class="text-[10px] opacity-70 truncate">${P.cargo}</p>
-                                    ${tareasCount > 0 ? `<span class="text-[10px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded-full font-bold">${tareasCount}</span>` : ''}
-                                </div>
-                            </div>
-                        </button>
-                    `;
-                }).join('');
-            },
-            
-            CambiarVista(v) {
-                this.estado.vistaActual = v;
-                this.Render();
-                this.ActualizarSidebar();
-            },
-            
-            ToggleDarkMode() {
-                this.estado.darkMode = !this.estado.darkMode;
-                document.body.classList.toggle('dark-mode', this.estado.darkMode);
-            },
-            
-            CerrarModal(id) { 
-                document.getElementById(id).style.display = 'none'; 
-            },
-            
-            AbrirModalTarea() {
-                document.getElementById('modal-tarea').style.display = 'flex';
-                document.getElementById('t-resp').innerHTML = this.estado.equipo.map(P => `<option value="${P.id}">${P.nombre} - ${P.cargo}</option>`).join('');
-                this.draftEtapas = [];
-                this.RenderDrafts();
-            },
-            
-            draftEtapas: [],
-            
-            AddEtapaDraft() {
-                const input = document.getElementById('sub-input');
-                const horasInput = document.getElementById('sub-hours');
-                const texto = input.value.trim();
-                const horas = parseInt(horasInput.value) || 2;
-                
-                if (!texto) return;
-                
-                this.draftEtapas.push({ texto, horas });
+                this.data.subtareasTemp.push({ texto, completado: false });
+                this.renderSubtareasTemp();
                 input.value = '';
-                horasInput.value = '2';
-                this.RenderDrafts();
-                this.ActualizarEstimacion();
             },
             
-            RenderDrafts() {
-                const container = document.getElementById('etapas-draft');
-                container.innerHTML = this.draftEtapas.map((s, i) => `
-                    <div class="flex items-center justify-between p-3 bg-indigo-50 border border-indigo-100 rounded-lg">
-                        <div class="flex items-center gap-3">
-                            <span class="text-xs font-bold text-indigo-600 W-6 h-6 bg-white rounded-full flex items-center justify-center">${i + 1}</span>
-                            <span class="text-sm font-semibold text-indigo-900">${S.texto}</span>
-                            <span class="text-xs text-indigo-400 font-mono">${S.horas}h</span>
-                        </div>
-                        <button onclick="App.EliminarEtapaDraft(${i})" class="text-indigo-400 hover:text-red-500 transition">
+            renderSubtareasTemp() {
+                const container = document.getElementById('checklist-container');
+                container.innerHTML = this.data.subtareasTemp.map((s, i) => `
+                    <div class="checklist-item">
+                        <span style="flex: 1;">${s.texto}</span>
+                        <button onclick="app.eliminarSubtareaTemp(${i})" style="background: none; border: none; color: #ef4444; cursor: pointer;">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
                 `).join('');
             },
             
-            EliminarEtapaDraft(index) {
-                this.draftEtapas.splice(index, 1);
-                this.RenderDrafts();
-                this.ActualizarEstimacion();
+            eliminarSubtareaTemp(i) {
+                this.data.subtareasTemp.splice(i, 1);
+                this.renderSubtareasTemp();
             },
             
-            ActualizarEstimacion() {
-                const total = this.draftEtapas.reduce((a, e) => a + e.horas, 0);
-                document.getElementById('time-estimate').innerHTML = `Tiempo total estimado: <span class="font-bold">${total} horas</span> (${Math.ceil(total/8)} días laborales)`;
+            agregarSubtareaEdit() {
+                const input = document.getElementById('nueva-sub-edit');
+                const texto = input.value.trim();
+                if (!texto || !this.data.tareaEditando) return;
+                
+                this.data.tareaEditando.subtareas.push({ texto, completado: false });
+                input.value = '';
+                this.verTarea(this.data.tareaEditando.id); // Recargar
             },
             
-            StartTime() {
-                const update = () => {
-                    const now = new Date();
-                    document.getElementById('live-clock').innerText = now.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'});
+            eliminarSubtarea(i) {
+                if (!this.data.tareaEditando) return;
+                this.data.tareaEditando.subtareas.splice(i, 1);
+                this.verTarea(this.data.tareaEditando.id);
+            },
+            
+            toggleSubtarea(i) {
+                if (!this.data.tareaEditando) return;
+                this.data.tareaEditando.subtareas[i].completado = !this.data.tareaEditando.subtareas[i].completado;
+                this.verTarea(this.data.tareaEditando.id);
+                this.guardar();
+            },
+            
+            // Drag & Drop
+            drag(ev, id) {
+                ev.dataTransfer.setData("tareaId", id);
+                ev.target.classList.add('dragging');
+            },
+            
+            allowDrop(ev) {
+                ev.preventDefault();
+            },
+            
+            drop(ev, estado) {
+                ev.preventDefault();
+                const id = parseInt(ev.dataTransfer.getData("tareaId"));
+                const t = this.data.tareas.find(x => x.id === id);
+                if (!t) return;
+                
+                // Lógica de cambio de estado
+                if (estado === 'completada') {
+                    t.subtareas.forEach(s => s.completado = true);
+                } else if (estado === 'pendiente') {
+                    t.subtareas.forEach(s => s.completado = false);
+                }
+                
+                this.guardar();
+                this.renderKanban(document.getElementById('contenido'));
+                this.mostrarToast('Tarea actualizada', 'success');
+            },
+            
+            // UI Helpers
+            cerrarModal(id) {
+                document.getElementById(id).classList.remove('active');
+            },
+            
+            toggleSidebar() {
+                document.getElementById('sidebar').classList.toggle('open');
+            },
+            
+            actualizarSelectResponsables() {
+                const select = document.getElementById('t-responsable');
+                select.innerHTML = this.data.equipo.map(e => `<option value="${e.id}">${e.nombre} - ${e.cargo}</option>`).join('');
+            },
+            
+            mostrarToast(mensaje, tipo = 'info') {
+                const container = document.getElementById('toasts');
+                const toast = document.createElement('div');
+                toast.className = `toast ${tipo}`;
+                
+                const iconos = {
+                    success: 'fa-check-circle',
+                    error: 'fa-exclamation-circle',
+                    warning: 'fa-exclamation-triangle',
+                    info: 'fa-info-circle'
                 };
-                update();
-                setInterval(update, 1000);
+                
+                toast.innerHTML = `<i class="fas ${iconos[tipo]}"></i> ${mensaje}`;
+                container.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
             },
             
-            ActualizarEstadoLaboral() {
-                const now = new Date();
-                const day = now.getDay();
-                const hour = now.getHours();
-                
-                let status = "Cerrado";
-                let color = "bg-red-100 text-red-700";
-                
-                if (this.config.horario.diasLaborales.includes(day)) {
-                    if (hour >= this.config.horario.inicio && hour < this.config.horario.finLV) {
-                        status = "Abierto";
-                        color = "bg-emerald-100 text-emerald-700";
-                    }
-                } else if (day === this.config.horario.Sabado) {
-                    if (hour >= this.config.horario.inicio && hour < this.config.horario.finS) {
-                        status = "Abierto (Sáb)";
-                        color = "bg-amber-100 text-amber-700";
-                    }
+            buscar(query) {
+                if (!query) {
+                    this.navegar(this.data.vistaActual);
+                    return;
                 }
                 
-                const el = document.getElementById('business-status');
-                el.innerText = status;
-                el.className = `text-xs font-bold px-2 py-1 rounded-lg ${color}`;
+                const q = query.toLowerCase();
+                const filtradas = this.data.tareas.filter(t => 
+                    t.titulo.toLowerCase().includes(q) || 
+                    t.descripcion.toLowerCase().includes(q)
+                );
+                
+                const container = document.getElementById('contenido');
+                container.innerHTML = `
+                    <div style="margin-bottom: 20px;">
+                        <button class="btn btn-secondary" onclick="app.navegar('${this.data.vistaActual}')">
+                            <i class="fas fa-arrow-left"></i> Volver
+                        </button>
+                        <span style="margin-left: 12px; color: #64748b;">${filtradas.length} resultados</span>
+                    </div>
+                    <div style="display: grid; gap: 16px;">
+                        ${filtradas.map(t => this.cardTarea(t)).join('') || '<p style="color: #64748b;">No se encontraron resultados</p>'}
+                    </div>
+                `;
             },
             
-            AbrirNotificaciones() {
-                const container = document.getElementById('lista-notificaciones');
-                if (this.estado.notificaciones.length === 0) {
-                    container.innerHTML = '<div class="text-center py-8 text-slate-400"><i class="fas fa-bell-slash text-2xl mb-2"></i><p class="text-sm">No hay notificaciones</p></div>';
-                } else {
-                    container.innerHTML = this.estado.notificaciones.map(N => `
-                        <div class="p-3 rounded-lg mb-2 cursor-pointer hover:bg-slate-50 transition ${N.leida ? 'opacity-60' : 'bg-indigo-50 border border-indigo-100'} ${N.tipo === 'vencida' ? 'bg-red-50 border-red-100' : ''}" onclick="App.IrANotificacion(${N.tareaId})">
-                            <div class="flex items-start gap-3">
-                                <div class="W-2 h-2 rounded-full mt-2 ${N.tipo === 'vencida' ? 'bg-red-500' : N.tipo === 'urgente' ? 'bg-amber-500' : 'bg-indigo-500'}"></div>
-                                <div class="flex-1">
-                                    <p class="text-sm font-bold text-slate-800 ${N.leida ? 'font-normal' : ''}">${N.titulo}</p>
-                                    <p class="text-xs text-slate-500 mt-1">${N.mensaje}</p>
-                                    <p class="text-[10px] text-slate-400 mt-1">${new Date(N.fecha).toLocaleString('es-ES')}</p>
-                                </div>
-                            </div>
-                        </div>
-                    `).join('');
-                }
-                document.getElementById('modal-notificaciones').style.display = 'flex';
-            },
-            
-            IrANotificacion(tareaId) {
-                const tarea = this.estado.tareas.find(T => T.id === tareaId);
-                if (tarea) {
-                    this.CambiarVista(`rep-${tarea.userId}`);
-                    this.CerrarModal('modal-notificaciones');
-                    setTimeout(() => {
-                        const elem = document.querySelector(`[data-tarea-id="${tareaId}"]`);
-                        elem?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        elem?.classList.add('ring-2', 'ring-indigo-500');
-                        setTimeout(() => elem?.classList.remove('ring-2', 'ring-indigo-500'), 2000);
-                    }, 100);
-                }
-            },
-            
-            MarcarTodasLeidas() {
-                this.estado.notificaciones.forEach(N => N.leida = true);
-                this.GuardarTodo();
-                this.AbrirNotificaciones();
-                this.ActualizarBadgeNotificaciones();
-            },
-            
-            ActualizarBadgeNotificaciones() {
-                const noLeidas = this.estado.notificaciones.filter(N => !N.leida).length;
-                const badge = document.getElementById('notif-badge');
-                badge.innerText = noLeidas;
-                badge.classList.toggle('hidden', noLeidas === 0);
+            filtrar(tipo) {
+                // Implementación simple de filtros
+                this.mostrarToast(`Filtro: ${tipo}`, 'info');
             }
         };
         
-        // Inicializar al cargar
-        window.addEventListener('load', () => App.init());
+        // Iniciar app
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
         
         // Cerrar modales al hacer clic fuera
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-            }
-        }
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
     </script>
 </body>
 </html>
